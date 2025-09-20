@@ -3,18 +3,19 @@ const { execSync } = require('child_process');
 try {
   console.log('Starting custom build process...');
   
-  // Use npx to execute commands to avoid permission issues
+  // Skip TypeScript compilation if it causes permission issues
   try {
     console.log('Running TypeScript check...');
-    execSync('npx tsc -b --noEmit', { stdio: 'inherit' });
+    execSync('npx --no-install tsc -b --noEmit', { stdio: 'inherit' });
+    console.log('TypeScript check completed');
   } catch (e) {
-    console.warn('TypeScript check failed, but continuing with build...');
-    // TypeScript errors won't stop the build
+    console.warn('TypeScript check failed, continuing with build...');
+    // Continue even if TypeScript fails
   }
   
-  // Run Vite build
+  // Run Vite build directly with npx
   console.log('Running Vite build...');
-  execSync('npx vite build', { stdio: 'inherit' });
+  execSync('npx --no-install vite build', { stdio: 'inherit' });
   
   console.log('Build completed successfully!');
 } catch (error) {
