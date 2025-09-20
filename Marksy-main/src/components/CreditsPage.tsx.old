@@ -1,0 +1,587 @@
+import { Coffee, DollarSign, Gift } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useRef, useEffect } from 'react';
+
+const CreditsPage = () => {
+  const { t } = useLanguage();
+  const { theme } = useTheme();
+  const creditsContentRef = useRef<HTMLDivElement>(null);
+  
+  // Functions to control the credits animation
+  const restartAnimation = () => {
+    if (creditsContentRef.current) {
+      creditsContentRef.current.style.animation = 'none';
+      setTimeout(() => {
+        if (creditsContentRef.current) {
+          creditsContentRef.current.style.animation = 'scroll 40s linear infinite';
+        }
+      }, 10);
+    }
+  };
+
+  const pauseAnimation = () => {
+    if (creditsContentRef.current) {
+      creditsContentRef.current.style.animationPlayState = 'paused';
+    }
+  };
+
+  const resumeAnimation = () => {
+    if (creditsContentRef.current) {
+      creditsContentRef.current.style.animationPlayState = 'running';
+    }
+  };
+  
+  // Space bar toggles pause/resume
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'Space' && creditsContentRef.current) {
+        if (creditsContentRef.current.style.animationPlayState === 'paused') {
+          creditsContentRef.current.style.animationPlayState = 'running';
+        } else {
+          creditsContentRef.current.style.animationPlayState = 'paused';
+        }
+        e.preventDefault();
+      }
+    };
+    
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+  
+  return (
+    <div className="min-h-screen relative overflow-hidden flex flex-col isolate" style={{ borderBottom: 'none', position: 'relative', zIndex: 1000 }}>
+      {/* Remove any bottom decorations */}
+      <style>{`
+        .min-h-screen::after,
+        .min-h-screen::before,
+        body::after,
+        html::after {
+          display: none !important;
+        }
+        
+        /* Override any global decorative elements */
+        body, html {
+          border-bottom: none !important;
+          background-image: none !important;
+        }
+      `}</style>
+      
+      {/* Background with advanced animation */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background"></div>
+      
+      {/* Background Symbols */}
+      <div className="background-symbols absolute inset-0 z-0 opacity-15 overflow-hidden">
+        <div className="symbol symbol-circle"></div>
+        <div className="symbol symbol-square"></div>
+        <div className="symbol symbol-triangle"></div>
+        <div className="symbol symbol-hexagon"></div>
+        
+        <div className="symbol-dots">
+          {[...Array(10)].map((_, i) => (
+            <div key={i} className="dot"></div>
+          ))}
+        </div>
+        
+        <div className="symbol-lines">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="line"></div>
+          ))}
+        </div>
+      </div>
+
+      {/* Main Content Container */}
+      <div className="relative z-10 flex-1 flex flex-col container mx-auto">
+        {/* Header */}
+        <div className="text-center space-y-4 pt-8 pb-8">
+          <h1 className="text-4xl md:text-5xl font-bold text-gradient bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-4">
+            {t('credits.panel')}
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            {t('credits.tagline')}
+          </p>
+        </div>
+
+        {/* Auto-scrolling Credits */}
+        <div className="flex-1 relative overflow-hidden credits max-h-[500px] perspective-500">
+          <div className="credits-content" ref={creditsContentRef}>
+              <div className="credit-section" style={{ "--delay": "1" } as React.CSSProperties}>
+                <h2 className="section-title">Directed By</h2>
+                <p className="credit-name">KGX (Kaveesha Gimsara)</p>
+              </div>
+
+              <div className="credit-section" style={{ "--delay": "2" } as React.CSSProperties}>
+                <h2 className="section-title">Produced By</h2>
+                <p className="credit-name">Marksy Development Team</p>
+              </div>
+
+              <div className="credit-section" style={{ "--delay": "3" } as React.CSSProperties}>
+                <h2 className="section-title">Executive Producer</h2>
+                <p className="credit-name">Educational Excellence Initiative</p>
+              </div>
+
+              <div className="credit-section" style={{ "--delay": "4" } as React.CSSProperties}>
+                <h2 className="section-title">Development Team</h2>
+                <p className="credit-name">Lead Developer: KGX</p>
+                <p className="credit-name">Front-End Developer: Geekyedu Team</p>
+                <p className="credit-name">Back-End Developer: IQUP Team</p>
+                <p className="credit-name">DevOps Engineer: IQUP Team</p>
+              </div>
+
+              <div className="credit-section" style={{ "--delay": "5" } as React.CSSProperties}>
+                <h2 className="section-title">Design & Creative</h2>
+                <p className="credit-name">Creative Director: KGX</p>
+                <p className="credit-name">UI/UX Design: Lovable Design Studio</p>
+                <p className="credit-name">Graphic Illustrator: KGX</p>
+              </div>
+              
+              <div className="credit-section" style={{ "--delay": "6" } as React.CSSProperties}>
+                <h2 className="section-title">AI Support</h2>
+                <div className="ai-support">
+                  <div className="ai-item">
+                    <span className="ai-icon copilot">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 mr-2">
+                        <path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16"/>
+                        <path d="M9 22V12h12"/>
+                        <path d="M16 12V2"/>
+                      </svg>
+                    </span>
+                    <span>GitHub Copilot</span>
+                  </div>
+                  <div className="ai-item">
+                    <span className="ai-icon deepseek">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 mr-2">
+                        <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/>
+                        <path d="M12 8v8"/>
+                        <path d="M8 12h8"/>
+                      </svg>
+                    </span>
+                    <span>DeepSeek</span>
+                  </div>
+                  <div className="ai-item">
+                    <span className="ai-icon chatgpt">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 mr-2">
+                        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+                      </svg>
+                    </span>
+                    <span>ChatGPT</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="credit-section" style={{ "--delay": "7" } as React.CSSProperties}>
+                <h2 className="section-title">Quality Assurance</h2>
+                <p className="credit-name">Lead Tester: KGX</p>
+                <p className="credit-name">Testing Team: Beta Users & Community</p>
+              </div>
+
+              <div className="credit-section" style={{ "--delay": "8" } as React.CSSProperties}>
+                <h2 className="section-title">Special Thanks</h2>
+                <p className="credit-name">Udeesha Abeynayaka</p>
+                <p className="credit-name">Liang Wenfeng</p>
+                <p className="credit-name">Sam Altman</p>
+                <p className="credit-name">Anthropic Team</p>
+                <p className="credit-name">OpenAI Community</p>
+              </div>
+
+              <div className="credit-section" style={{ "--delay": "9" } as React.CSSProperties}>
+                <h2 className="section-title">Technology Stack</h2>
+                <p className="credit-name">Hosted On: Vercel</p>
+                <p className="credit-name">Built With: React.js & TypeScript</p>
+                <p className="credit-name">Styled With: Tailwind CSS</p>
+                <p className="credit-name">Deployed Via: GitHub Actions</p>
+                <p className="credit-name">Designed In: VS Code</p>
+                <p className="credit-name">Database: PostgreSQL</p>
+                <p className="credit-name">Authentication: Auth0</p>
+              </div>
+
+              <div className="partner-logos">
+                <div className="logo-item">
+                  <div className="logo-img">
+                    <div className="flex items-center justify-center w-full h-full bg-black text-white">
+                      IQUP
+                    </div>
+                  </div>
+                  <p className="logo-label">IQUP Team</p>
+                </div>
+                <div className="logo-item">
+                  <div className="logo-img">
+                    <div className="flex items-center justify-center w-full h-full bg-black text-white rounded-full">
+                      GeekyEdu
+                    </div>
+                  </div>
+                  <p className="logo-label">GeekyEdu Team</p>
+                </div>
+              </div>
+
+              <div className="credit-section final-section" style={{ "--delay": "10" } as React.CSSProperties}>
+                <h2 className="section-title">Made with <span className="heart">❤️</span></h2>
+                <p className="credit-name">For Educational Excellence</p>
+                <p className="credit-subtitle">Thank you for using Marksy</p>
+                <p className="credit-subtitle">© 2025 Marksy. All rights reserved.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Controls */}
+        <div className="controls my-4 flex justify-center gap-4">
+          <button 
+            className="btn bg-background/80 border border-border/50 hover:bg-primary/10 hover:text-primary text-foreground px-4 py-2 rounded-full flex items-center gap-2 transition-all duration-300"
+            onClick={restartAnimation}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+              <path d="M21 3v5h-5"/>
+              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+              <path d="M8 16H3v5"/>
+            </svg>
+            Restart
+          </button>
+          <button 
+            className="btn bg-background/80 border border-border/50 hover:bg-primary/10 hover:text-primary text-foreground px-4 py-2 rounded-full flex items-center gap-2 transition-all duration-300"
+            onClick={pauseAnimation}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+              <path d="M6 4h4v16H6z"/>
+              <path d="M14 4h4v16h-4z"/>
+            </svg>
+            Pause
+          </button>
+          <button 
+            className="btn bg-background/80 border border-border/50 hover:bg-primary/10 hover:text-primary text-foreground px-4 py-2 rounded-full flex items-center gap-2 transition-all duration-300"
+            onClick={resumeAnimation}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            Resume
+          </button>
+        </div>
+
+        {/* Footer Section */}
+        <footer className="relative z-20 bg-background/80 backdrop-blur-sm border-t border-border/30">
+          <div className="max-w-6xl mx-auto px-4 py-6">
+            {/* Support Section */}
+            <div className="text-center mb-6">
+              <h3 className="text-xl font-bold text-foreground mb-4">Support Our Work</h3>
+              <div className="flex justify-center gap-4 flex-wrap">
+                <Card className="bg-card/80 border-border/50 hover:border-warning transition-colors cursor-pointer">
+                  <CardContent className="p-4 text-center">
+                    <DollarSign className="h-6 w-6 text-warning mx-auto mb-2" />
+                    <p className="text-sm text-foreground font-medium">PayPal</p>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-card/80 border-border/50 hover:border-secondary transition-colors cursor-pointer">
+                  <CardContent className="p-4 text-center">
+                    <Coffee className="h-6 w-6 text-secondary mx-auto mb-2" />
+                    <p className="text-sm text-foreground font-medium">Buy a Coffee</p>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-card/80 border-border/50 hover:border-primary transition-colors cursor-pointer">
+                  <CardContent className="p-4 text-center">
+                    <Gift className="h-6 w-6 text-primary mx-auto mb-2" />
+                    <p className="text-sm text-foreground font-medium">Donate</p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* Additional Info */}
+            <div className="flex justify-center gap-6 mb-4 flex-wrap">
+              <div className="text-center">
+                <p className="text-muted-foreground text-sm">Visit Site</p>
+                <p className="text-secondary text-sm font-medium">marksy.edu</p>
+              </div>
+              <div className="text-center">
+                <p className="text-muted-foreground text-sm">Version</p>
+                <p className="text-accent text-sm font-medium">1.0.0</p>
+              </div>
+              <div className="text-center">
+                <p className="text-muted-foreground text-sm">Release</p>
+                <p className="text-primary text-sm font-medium">Sept 2025</p>
+              </div>
+            </div>
+
+            {/* Copyright */}
+            <div className="text-center border-t border-border/30 pt-4">
+              <p className="text-muted-foreground text-sm">© 2025 Marksy. Made with ❤️ for Educational Excellence.</p>
+            </div>
+          </div>
+        </footer>
+        <style jsx>{`
+        .credits-content {
+          position: absolute;
+          top: 0;
+          width: 100%;
+          animation: scroll 40s linear infinite;
+          padding: 1rem;
+          text-align: center;
+        }
+        
+        @keyframes scroll {
+          0% { transform: translateY(100%); }
+          100% { transform: translateY(-200%); }
+        }
+        
+        .perspective-500 {
+          perspective: 500px;
+        }
+        
+        .credit-section {
+          margin-bottom: 2.5rem;
+          opacity: 0;
+          transform: translateY(20px);
+          animation: fadeInUp 1s ease-out forwards;
+          animation-delay: calc(var(--delay) * 0.5s);
+        }
+        
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .section-title {
+          font-size: 1.5rem;
+          color: hsl(var(--primary));
+          margin-bottom: 1rem;
+          text-transform: uppercase;
+          letter-spacing: 2px;
+          text-shadow: 0 0 10px hsla(var(--primary), 0.3);
+        }
+        
+        .credit-name {
+          font-size: 1.1rem;
+          color: hsl(var(--foreground));
+          margin: 0.5rem 0;
+          font-weight: 500;
+        }
+        
+        .credit-subtitle {
+          font-size: 0.9rem;
+          color: hsl(var(--muted-foreground));
+          font-style: italic;
+          margin-top: 0.5rem;
+        }
+        
+        .ai-support {
+          display: flex;
+          justify-content: center;
+          flex-wrap: wrap;
+          gap: 1.5rem;
+          margin-top: 1.5rem;
+        }
+        
+        .ai-item {
+          display: flex;
+          align-items: center;
+          background: hsla(var(--background), 0.8);
+          padding: 0.8rem 1.5rem;
+          border-radius: 50px;
+          transition: transform 0.3s, background 0.3s;
+          border: 1px solid hsla(var(--border), 0.5);
+        }
+        
+        .ai-item:hover {
+          transform: translateY(-5px);
+          background: hsla(var(--primary), 0.1);
+        }
+        
+        .copilot { color: hsl(var(--secondary)); }
+        .deepseek { color: hsl(var(--primary)); }
+        .chatgpt { color: hsl(var(--accent)); }
+        
+        .partner-logos {
+          display: flex;
+          justify-content: center;
+          gap: 3rem;
+          margin: 3rem 0;
+          flex-wrap: wrap;
+        }
+        
+        .logo-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        
+        .logo-img {
+          width: 100px;
+          height: 100px;
+          background: white;
+          border-radius: 12px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-bottom: 1rem;
+          padding: 15px;
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .logo-label {
+          color: hsl(var(--muted-foreground));
+          font-size: 0.9rem;
+        }
+        
+        .heart {
+          color: #ff4d4d;
+          animation: heartbeat 2s infinite;
+        }
+        
+        @keyframes heartbeat {
+          0% { transform: scale(1); }
+          5% { transform: scale(1.2); }
+          10% { transform: scale(1.1); }
+          15% { transform: scale(1.3); }
+          50% { transform: scale(1); }
+          100% { transform: scale(1); }
+        }
+        
+        /* Background Symbols */
+        .symbol {
+          position: absolute;
+          opacity: 0.7;
+        }
+        
+        .symbol-circle {
+          width: 300px;
+          height: 300px;
+          border-radius: 50%;
+          border: 2px solid hsla(var(--primary), 0.3);
+          top: 15%;
+          left: 10%;
+          animation: float 15s ease-in-out infinite;
+        }
+        
+        .symbol-square {
+          width: 200px;
+          height: 200px;
+          border: 2px solid hsla(var(--secondary), 0.3);
+          bottom: 20%;
+          right: 15%;
+          transform: rotate(45deg);
+          animation: pulse 12s ease-in-out infinite;
+        }
+        
+        .symbol-triangle {
+          width: 0;
+          height: 0;
+          border-left: 150px solid transparent;
+          border-right: 150px solid transparent;
+          border-bottom: 250px solid hsla(var(--accent), 0.1);
+          top: 30%;
+          right: 10%;
+          animation: rotate 20s linear infinite;
+        }
+        
+        .symbol-hexagon {
+          width: 220px;
+          height: 127px;
+          background: hsla(var(--secondary), 0.1);
+          position: absolute;
+          bottom: 10%;
+          left: 15%;
+          animation: float 18s ease-in-out infinite;
+        }
+        
+        .symbol-hexagon:before,
+        .symbol-hexagon:after {
+          content: "";
+          position: absolute;
+          width: 0;
+          border-left: 110px solid transparent;
+          border-right: 110px solid transparent;
+        }
+        
+        .symbol-hexagon:before {
+          bottom: 100%;
+          border-bottom: 63.5px solid hsla(var(--secondary), 0.1);
+        }
+        
+        .symbol-hexagon:after {
+          top: 100%;
+          border-top: 63.5px solid hsla(var(--secondary), 0.1);
+        }
+        
+        .symbol-dots {
+          display: grid;
+          grid-template-columns: repeat(5, 1fr);
+          gap: 20px;
+          top: 65%;
+          left: 5%;
+          position: absolute;
+          animation: pulse 10s ease-in-out infinite;
+        }
+        
+        .dot {
+          width: 12px;
+          height: 12px;
+          background: hsla(var(--primary), 0.3);
+          border-radius: 50%;
+        }
+        
+        .symbol-lines {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+        }
+        
+        .line {
+          position: absolute;
+          background: linear-gradient(to right, transparent, hsla(var(--primary), 0.1), transparent);
+          height: 1px;
+          animation: lineMove 25s linear infinite;
+        }
+        
+        .line:nth-child(1) { top: 20%; width: 30%; animation-delay: 0s; }
+        .line:nth-child(2) { top: 40%; width: 50%; animation-delay: -5s; }
+        .line:nth-child(3) { top: 60%; width: 40%; animation-delay: -10s; }
+        .line:nth-child(4) { top: 80%; width: 60%; animation-delay: -15s; }
+        .line:nth-child(5) { top: 90%; width: 20%; animation-delay: -20s; }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0) rotate(0deg); }
+          50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        
+        @keyframes pulse {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 0.8; }
+        }
+        
+        @keyframes rotate {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes lineMove {
+          0% { left: -30%; }
+          100% { left: 130%; }
+        }
+        
+        /* Remove any red decorative elements */
+        .min-h-screen,
+        .min-h-screen * {
+          border-bottom: none !important;
+          border-image: none !important;
+        }
+        
+        /* Override any global wave or decoration styles */
+        .wave-footer,
+        .wave-footer::before,
+        .wave-footer::after {
+          display: none !important;
+        }
+      `}</style>
+      </div>
+  );
+};
+
+export default CreditsPage;

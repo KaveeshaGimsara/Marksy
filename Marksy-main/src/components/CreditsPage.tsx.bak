@@ -1,0 +1,314 @@
+import React, { useRef, useState, useEffect } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useTheme } from '@/contexts/ThemeContext'      {/* Animation styles */}
+      <style>{`
+      @keyframes scrollCredits {
+        0% { top: 100%; }
+        100% { top: -200%; }
+      }
+      
+      @keyframes float {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        25% { transform: translateY(-15px) rotate(2deg); }
+        50% { transform: translateY(0px) rotate(0deg); }
+        75% { transform: translateY(15px) rotate(-2deg); }
+      }
+      
+      /* Custom scrollbar styles */
+      .scrollbar-thin::-webkit-scrollbar {
+        width: 6px;
+      }
+      
+      .scrollbar-thumb-rounded::-webkit-scrollbar-thumb {
+        border-radius: 3px;
+      }
+      
+      .scrollbar-thumb-slate-600::-webkit-scrollbar-thumb {
+        background-color: rgba(71, 85, 105, 0.8);
+      }
+      
+      .scrollbar-track-slate-800\/40::-webkit-scrollbar-track {
+        background-color: rgba(30, 41, 59, 0.4);
+      }
+      
+      .scrollbar-thumb-blue-300::-webkit-scrollbar-thumb {
+        background-color: rgba(147, 197, 253, 0.8);
+      }
+      
+      .scrollbar-track-blue-100\/40::-webkit-scrollbar-track {
+        background-color: rgba(219, 234, 254, 0.4);
+      }ffee, DollarSign, Gift, RefreshCw, Play, Pause, Home, Info, HelpCircle, BarChart4, Plus, CreditCard } from 'lucide-react';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+
+const CreditsPage = () => {
+  const { t } = useLanguage();
+  const { theme } = useTheme();
+  const creditsRef = useRef<HTMLDivElement>(null);
+  const [isPaused, setIsPaused] = useState(false);
+  const [activeSection, setActiveSection] = useState("credits");
+  
+  // Navigation handled by the Header component
+  
+  // Animation control functions
+  const restartAnimation = () => {
+    if (creditsRef.current) {
+      creditsRef.current.style.animation = "none";
+      // Trigger reflow
+      void creditsRef.current.offsetWidth;
+      // Using faster animation (45s instead of 90s)
+      creditsRef.current.style.animation = "scrollCredits 45s linear forwards";
+      setIsPaused(false);
+    }
+  };
+  
+  const togglePause = () => {
+    if (creditsRef.current) {
+      if (isPaused) {
+        creditsRef.current.style.animationPlayState = "running";
+      } else {
+        creditsRef.current.style.animationPlayState = "paused";
+      }
+      setIsPaused(!isPaused);
+    }
+  };
+  
+  // Space bar control
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.code === "Space") {
+        togglePause();
+        e.preventDefault();
+      }
+    };
+    
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [isPaused]);
+  
+  // Handle section change (for header navigation)
+  const handleSectionChange = (section: string) => {
+    setActiveSection(section);
+    // You could add navigation here if needed
+  };
+  
+  const isDark = theme === 'dark';
+  
+  return (
+    <div className={`min-h-screen flex flex-col ${isDark ? 'bg-slate-900' : 'bg-blue-50'}`}>
+      <main className="flex-grow container mx-auto px-4 py-4">
+      <Card className={`shadow-xl mb-6 ${isDark ? 'border-slate-700 bg-slate-800/80' : 'border-blue-200 bg-white/90'} backdrop-blur-md`}>
+        <CardContent className="p-6">
+        {/* Controls */}
+        <div className="flex justify-center gap-4 mb-6">
+          <button
+          onClick={restartAnimation}
+          className={`flex items-center gap-2 px-4 py-2 rounded-md border ${
+            isDark 
+            ? 'border-blue-700 bg-blue-900/20 hover:bg-blue-800/30 text-blue-200' 
+            : 'border-blue-300 bg-blue-50 hover:bg-blue-100 text-blue-700'
+          } transition-colors`}
+          >
+          <RefreshCw className="h-4 w-4" />
+          {t("credits.restart")}
+          </button>
+          
+          <button
+          onClick={togglePause}
+          className={`flex items-center gap-2 px-4 py-2 rounded-md border ${
+            isDark 
+            ? 'border-purple-700 bg-purple-900/20 hover:bg-purple-800/30 text-purple-200' 
+            : 'border-purple-300 bg-purple-50 hover:bg-purple-100 text-purple-700'
+          } transition-colors`}
+          >
+          {isPaused ? (
+            <>
+            <Play className="h-4 w-4" />
+            {t("credits.resume")}
+            </>
+          ) : (
+            <>
+            <Pause className="h-4 w-4" />
+            {t("credits.pause")}
+            </>
+          )}
+          </button>
+        </div>
+        
+        {/* Credits container */}
+        <div className={`relative h-[60vh] overflow-auto rounded-lg ${
+          isDark ? 'bg-black/40 border-indigo-900/30' : 'bg-blue-100/50 border-blue-300/50'} border`}>
+          {/* Floating symbols background */}
+          <div className="absolute inset-0">
+          {["×", "+", "−", "÷", "=", "%", "<", ">", "{", "}", "∑", "∫", "π", "≠", "≈", "∏", "√", "∞", "∆"].map((symbol, i) => (
+            <div
+            key={i}
+            className={`absolute ${isDark ? 'text-indigo-500/15' : 'text-blue-700/15'}`}
+            style={{
+              left: `${Math.random() * 95}%`,
+              top: `${Math.random() * 95}%`,
+              fontSize: `${Math.random() * 24 + 18}px`,
+              fontWeight: 'bold',
+              animation: `float ${Math.random() * 15 + 10}s ease-in-out infinite`,
+              animationDelay: `${Math.random() * 5}s`,
+              opacity: Math.random() * 0.2 + 0.05
+            }}
+            >
+            {symbol}
+            </div>
+          ))}
+          </div>
+          
+          {/* Scrolling credits */}
+          <div 
+          ref={creditsRef}
+          className="absolute w-full text-center"
+          style={{
+            animation: "scrollCredits 45s linear forwards",
+            animationPlayState: isPaused ? "paused" : "running"
+          }}
+          >
+          <div className="py-4"></div>
+          
+          <div className="credits-section py-4">
+            <h2 className="text-2xl font-bold text-gradient bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">Marksy Development Team</h2>
+          </div>
+          
+          <div className="credits-section py-4">
+            <h2 className={`text-xl font-bold ${isDark ? 'text-indigo-400' : 'text-blue-700'} mb-3`}>{t("credits.developmentTeam")}</h2>
+            <p className={`text-lg mb-1 ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>Lead Developer: KGX</p>
+            <p className={`text-lg mb-1 ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>Front-End: Geekyedu Team</p>
+            <p className={`text-lg mb-1 ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>Back-End: IQUP Team</p>
+            <p className={`text-lg mb-3 ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>DevOps: IQUP Team</p>
+          </div>
+          
+          <div className="credits-section py-4">
+            <h2 className={`text-xl font-bold ${isDark ? 'text-indigo-400' : 'text-blue-700'} mb-3`}>{t("credits.design")}</h2>
+            <p className={`text-lg mb-1 ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>Creative Director: KGX</p>
+            <p className={`text-lg mb-1 ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>UI/UX Design: Lovable Design Studio</p>
+            <p className={`text-lg mb-3 ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>Graphic Designer: KGX</p>
+          </div>
+          
+          <div className="credits-section py-4">
+            <h2 className={`text-xl font-bold ${isDark ? 'text-indigo-400' : 'text-blue-700'} mb-3`}>{t("credits.aiSupport")}</h2>
+            <div className="flex justify-center gap-4 flex-wrap mb-3">
+            <div className={`px-4 py-2 border rounded-full ${isDark ? 'border-purple-500/30 text-zinc-200 bg-purple-900/20' : 'border-purple-300 text-purple-800 bg-purple-50'}`}>GitHub Copilot</div>
+            <div className={`px-4 py-2 border rounded-full ${isDark ? 'border-blue-500/30 text-zinc-200 bg-blue-900/20' : 'border-blue-300 text-blue-800 bg-blue-50'}`}>DeepSeek</div>
+            <div className={`px-4 py-2 border rounded-full ${isDark ? 'border-green-500/30 text-zinc-200 bg-green-900/20' : 'border-green-300 text-green-800 bg-green-50'}`}>ChatGPT</div>
+            </div>
+          </div>
+          
+          <div className="credits-section py-4">
+            <h2 className={`text-xl font-bold ${isDark ? 'text-indigo-400' : 'text-blue-700'} mb-3`}>{t("credits.specialThanks")}</h2>
+            <p className={`text-lg mb-1 ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>Udeesha Abeynayaka</p>
+            <p className={`text-lg mb-1 ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>Liang Wenfeng</p>
+            <p className={`text-lg mb-1 ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>Sam Altman</p>
+            <p className={`text-lg mb-1 ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>Anthropic Team</p>
+            <p className={`text-lg mb-3 ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>OpenAI Community</p>
+          </div>
+          
+          <div className="credits-section py-4">
+            <h2 className={`text-xl font-bold ${isDark ? 'text-indigo-400' : 'text-blue-700'} mb-3`}>{t("credits.techStack")}</h2>
+            <p className={`text-lg mb-1 ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>Hosted On: Vercel</p>
+            <p className={`text-lg mb-1 ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>Built With: React.js & TypeScript</p>
+            <p className={`text-lg mb-1 ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>Styled With: Tailwind CSS</p>
+            <p className={`text-lg mb-3 ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>Database: PostgreSQL</p>
+          </div>
+          
+          <div className="credits-section py-4">
+            <h2 className={`text-xl font-bold ${isDark ? 'text-indigo-400' : 'text-blue-700'} mb-2`}>{t("credits.madeWith")} ❤️</h2>
+            <p className={`text-lg mb-1 ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>{t("credits.forEducation")}</p>
+            <p className={`text-lg mb-1 ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>{t("credits.thankYou")}</p>
+            <p className={`text-lg mb-3 ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>© {new Date().getFullYear()} Marksy</p>
+          </div>
+          
+          {/* Extra space at the end to allow scrolling */}
+          <div className="h-[100vh]"></div>
+          </div>
+        </div>
+        </CardContent>
+      </Card>
+      
+      {/* Support section */}
+      <div className="text-center mb-4">
+        <h3 className="text-2xl font-bold mb-4 text-gradient bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">{t("credits.supportUs")}</h3>
+        <div className="flex justify-center gap-4 flex-wrap">
+        <Card className={`${isDark ? 'bg-slate-800/70 border-slate-700' : 'bg-white border-blue-200'} hover:border-yellow-500 transition-colors cursor-pointer`}>
+          <CardContent className="p-4 text-center">
+          <DollarSign className={`h-6 w-6 ${isDark ? 'text-yellow-400' : 'text-yellow-500'} mx-auto mb-2`} />
+          <p className={`text-sm font-medium ${isDark ? 'text-yellow-100' : 'text-yellow-700'}`}>PayPal</p>
+          </CardContent>
+        </Card>
+        
+        <Card className={`${isDark ? 'bg-slate-800/70 border-slate-700' : 'bg-white border-blue-200'} hover:border-purple-500 transition-colors cursor-pointer`}>
+          <CardContent className="p-4 text-center">
+          <Coffee className={`h-6 w-6 ${isDark ? 'text-purple-400' : 'text-purple-500'} mx-auto mb-2`} />
+          <p className={`text-sm font-medium ${isDark ? 'text-purple-100' : 'text-purple-700'}`}>{t("credits.buyMeACoffee")}</p>
+          </CardContent>
+        </Card>
+        
+        <Card className={`${isDark ? 'bg-slate-800/70 border-slate-700' : 'bg-white border-blue-200'} hover:border-pink-500 transition-colors cursor-pointer`}>
+          <CardContent className="p-4 text-center">
+          <Gift className={`h-6 w-6 ${isDark ? 'text-pink-400' : 'text-pink-500'} mx-auto mb-2`} />
+          <p className={`text-sm font-medium ${isDark ? 'text-pink-100' : 'text-pink-700'}`}>{t("credits.donate")}</p>
+          </CardContent>
+        </Card>
+        </div>
+      </div>
+      </main>
+      
+      
+      {/* Animation styles */}
+      <style>{`
+      @keyframes scrollCredits {
+        0% { top: 50%; }
+        100% { top: -200%; }
+      }
+      
+      @keyframes float {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        25% { transform: translateY(-15px) rotate(2deg); }
+        50% { transform: translateY(0px) rotate(0deg); }
+        75% { transform: translateY(15px) rotate(-2deg); }
+      }
+      
+      .credits-section {
+        opacity: 0;
+        animation: fadeIn 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        animation-delay: 0.5s;
+      }
+      
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      /* Subtle glow effect for elements */
+      .credits-section h2 {
+        text-shadow: ${theme === 'dark' ? '0 0 15px rgba(129, 140, 248, 0.5)' : '0 0 10px rgba(59, 130, 246, 0.3)'};
+      }
+      
+      .credits-section {
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      /* Make animation feel more cinematic */
+      @media (prefers-reduced-motion: no-preference) {
+        .credits-section:nth-child(odd) {
+        animation-delay: 0.5s;
+        transform: translateX(-5px);
+        }
+        .credits-section:nth-child(even) {
+        animation-delay: 0.7s;
+        transform: translateX(5px);
+        }
+      }
+      `}</style>
+    </div>
+  );
+};
+
+export default CreditsPage;

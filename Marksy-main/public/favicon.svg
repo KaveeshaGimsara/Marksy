@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" fill="white" rx="12"/>
+  <g transform="scale(0.13) translate(10, 10)">
+    <path d="M250 50 L150 100 L150 200 L250 250 L350 200 L350 100 Z" fill="none" stroke="black" stroke-width="20"/>
+    <path d="M250 250 L250 400" fill="none" stroke="black" stroke-width="20"/>
+    <path d="M150 200 L100 175 L100 275 L150 300" fill="none" stroke="black" stroke-width="20"/>
+    <path d="M350 200 L400 175 L400 275 L350 300" fill="none" stroke="black" stroke-width="20"/>
+    <path d="M150 300 L250 350 L350 300" fill="none" stroke="black" stroke-width="20"/>
+    <path d="M175 125 L250 150 L325 125" fill="none" stroke="black" stroke-width="20"/>
+    <path d="M250 150 L250 200" fill="none" stroke="black" stroke-width="20"/>
+  </g>
+</svg>

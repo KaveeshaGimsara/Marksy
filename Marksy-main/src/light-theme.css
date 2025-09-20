@@ -1,0 +1,126 @@
+/* (deleted) */
+html.light, :root.light {
+  color-scheme: light;
+  --background: 210 40% 99%;
+  --foreground: 222.2 47% 12%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 47% 12%;
+  --primary: 221 83% 53%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 215 32% 92%;
+  --secondary-foreground: 222.2 47% 15%;
+  --accent: 210 33% 96%;
+  --accent-foreground: 222.2 47% 20%;
+  --muted: 210 30% 97%;
+  --muted-foreground: 220 15% 45%;
+  --destructive: 0 72% 55%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 214 28% 88%;
+  --input: 214 28% 88%;
+  --ring: 221 83% 53%;
+  --radius: 0.75rem;
+  --shadow-soft: 0 1px 2px rgba(0,0,0,0.04), 0 2px 4px -2px rgba(0,0,0,0.05);
+  --shadow-hover: 0 2px 6px rgba(0,0,0,0.06);
+  /* Optional subtle gradient reuse */
+  --gradient: linear-gradient(135deg, hsl(var(--primary) / 0.15), hsl(var(--secondary) / 0.3));
+}
+
+html.light body {
+  background:
+    radial-gradient(at 18% 15%, hsla(var(--primary)/0.10), transparent 55%),
+    radial-gradient(at 82% 8%, hsla(var(--secondary)/0.18), transparent 60%),
+    linear-gradient(180deg,#f9fafc 0%, #f3f6fa 55%, #eef2f7 100%);
+  color: hsl(var(--foreground));
+  -webkit-font-smoothing: antialiased;
+}
+
+html.light .academic-card {
+  background: linear-gradient(145deg,#ffffff 0%, #f5f8fb 100%);
+  border: 1px solid hsl(var(--border));
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(10px);
+  transition: background .35s ease, box-shadow .35s ease, border-color .35s ease;
+}
+
+html.light .academic-card:hover {
+  background: linear-gradient(145deg,#ffffff 0%, #eef3f9 100%);
+  box-shadow: var(--shadow-hover);
+}
+
+/* Subject cards (previously dark) */
+html.light .subject-card {
+  background: linear-gradient(135deg,#ffffff 0%, #eef2f6 100%);
+  border: 1px solid hsl(var(--border));
+  box-shadow: none;
+  color: hsl(var(--foreground));
+  transition: background .35s ease, border-color .35s ease, transform .35s ease;
+}
+
+html.light .subject-card:hover {
+  background: linear-gradient(135deg,#ffffff 0%, #e7edf3 100%);
+}
+
+html.light .subject-card.selected {
+  background: linear-gradient(135deg,#e8f1ff 0%, #d9e8ff 100%);
+  border-color: hsla(var(--primary)/0.55);
+  box-shadow: 0 0 0 2px hsla(var(--primary)/0.20);
+}
+
+html.light .subject-card .text-muted-foreground,
+html.light .academic-card .text-muted-foreground {
+  color: hsl(var(--muted-foreground));
+}
+
+/* Achievement badges */
+html.light .achievement-badge {
+  background: linear-gradient(140deg, hsla(var(--primary)/0.10), hsla(var(--secondary)/0.12));
+  border: 1px solid hsl(var(--border));
+  box-shadow: none;
+  transition: background .35s ease, transform .3s ease;
+}
+
+html.light .achievement-badge:hover {
+  background: linear-gradient(140deg, hsla(var(--primary)/0.18), hsla(var(--secondary)/0.18));
+  transform: translateY(-2px);
+}
+
+/* Generic muted containers */
+html.light .bg-muted,
+html.light .bg-muted\/50,
+html.light .bg-muted\/30 {
+  background-color: hsl(var(--muted)) !important;
+}
+
+html.light .text-gradient {
+  background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--foreground)));
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+html.light .academic-button-primary {
+  box-shadow: var(--shadow-soft);
+}
+
+html.light .academic-button-primary:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+/* Remove any leftover dark shadows */
+html.light .shadow,
+html.light .shadow-lg,
+html.light .shadow-xl {
+  box-shadow: var(--shadow-soft) !important;
+}
+
+/* Inputs / fields */
+html.light input,
+html.light select,
+html.light textarea {
+  background-color: #ffffff;
+  border-color: hsl(var(--border));
+}
+
+/* Smooth transition for theme swap */
+html.light, html.dark {
+  transition: background-color .45s ease, color .45s ease;
+}

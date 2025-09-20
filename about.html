@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>About - Marksy</title>
+<link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+<header class="app-header">
+  <div class="logo-area">
+    <span class="logo-circle">M</span>
+    <h1 class="site-title">About</h1>
+  </div>
+  <nav class="main-actions">
+    <a href="index.html" class="icon-btn" title="Home"><span class="ico-home"></span></a>
+    <button id="quickAccessBtn" class="icon-btn" title="Quick Access"><span class="ico-grid"></span></button>
+  </nav>
+</header>
+<main class="container">
+  <section class="card">
+    <h3>What is Marksy?</h3>
+    <p>Simple marks tracking + motivation tool. ඉගෙනීමට chill vibe එකක් add කරන්නට.</p>
+  </section>
+  <section class="card">
+    <h3>Features</h3>
+    <ul>
+      <li>Marks track + stats</li>
+      <li>Motivational Sinhala quotes</li>
+      <li>Exam countdowns</li>
+      <li>Responsive UI</li>
+    </ul>
+  </section>
+</main>
+<footer class="app-footer">
+  <div class="footer-links">
+    <a href="about.html" class="footer-link">About</a>
+    <a href="help.html" class="footer-link">Help & FAQ</a>
+    <button id="quickAccessFooter" class="footer-link">All Pages</button>
+  </div>
+  <div class="copy">© <span id="year"></span> Marksy</div>
+</footer>
+<div id="quickAccessPanel" class="overlay hidden">
+  <div class="overlay-content">
+    <button class="close-overlay" id="closeQuick">&times;</button>
+    <h3>Quick Access</h3>
+    <div class="quick-grid">
+      <a href="index.html" class="quick-item"><span class="ico-home"></span><span>Home</span></a>
+      <a href="add-marks.html" class="quick-item"><span class="ico-plus"></span><span>Add Marks</span></a>
+      <a href="analyze.html" class="quick-item"><span class="ico-chart"></span><span>Analyze</span></a>
+      <a href="about.html" class="quick-item"><span class="ico-info"></span><span>About</span></a>
+      <a href="help.html" class="quick-item"><span class="ico-help"></span><span>Help & FAQ</span></a>
+    </div>
+  </div>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+/* Loading Animation Styles */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: linear-gradient(135deg, #312e81, #581c87, #1e40af);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.loading-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.loading-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-container {
+  position: relative;
+  text-align: center;
+}
+
+.books-container {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.book-wrapper {
+  perspective: 1000px;
+}
+
+.book {
+  width: 60px;
+  height: 80px;
+  position: relative;
+  transform-style: preserve-3d;
+  transform-origin: left center;
+  border-radius: 4px 8px 8px 4px;
+  box-shadow: 
+    0 0 20px rgba(79, 70, 229, 0.3),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.book-1 {
+  background: linear-gradient(to right, #3b82f6, #4f46e5);
+  height: 75px;
+  animation: bookAnimation1 2s ease-in-out infinite;
+}
+
+.book-2 {
+  background: linear-gradient(to right, #8b5cf6, #7c3aed);
+  height: 85px;
+  animation: bookAnimation2 2s ease-in-out infinite 0.3s;
+}
+
+.book-3 {
+  background: linear-gradient(to right, #4f46e5, #2563eb);
+  height: 70px;
+  animation: bookAnimation3 2s ease-in-out infinite 0.6s;
+}
+
+.book-spine {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 8px;
+  height: 100%;
+  border-radius: 4px 0 0 4px;
+}
+
+.book-1 .book-spine {
+  background: linear-gradient(to bottom, #2563eb, #4f46e5);
+}
+
+.book-2 .book-spine {
+  background: linear-gradient(to bottom, #7c3aed, #6d28d9);
+}
+
+.book-3 .book-spine {
+  background: linear-gradient(to bottom, #4f46e5, #2563eb);
+}
+
+.book-letter {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  z-index: 10;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  font-family: 'Arial', sans-serif;
+}
+
+.loading-text {
+  margin-top: 2rem;
+}
+
+.main-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+  animation: fadeIn 1s ease-out 0.5s both;
+}
+
+.sub-title {
+  color: #93c5fd;
+  font-size: 1.125rem;
+  margin: 0.5rem 0 0 0;
+  animation: fadeIn 1s ease-out 0.8s both;
+}
+
+.loading-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-top: 1.5rem;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(45deg, #60a5fa, #a78bfa);
+  border-radius: 50%;
+  animation: dotPulse 1.5s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.dot-2 {
+  animation-delay: 0.2s;
+}
+
+.dot-3 {
+  animation-delay: 0.4s;
+}
+
+/* Animations */
+@keyframes bookAnimation1 {
+  0%, 100% {
+    transform: scale(1) rotateY(0deg);
+  }
+  50% {
+    transform: scale(1.15) rotateY(-5deg);
+  }
+}
+
+@keyframes bookAnimation2 {
+  0%, 100% {
+    transform: scale(1) rotateY(0deg);
+  }
+  50% {
+    transform: scale(1.2) rotateY(5deg);
+  }
+}
+
+@keyframes bookAnimation3 {
+  0%, 100% {
+    transform: scale(1) rotateY(0deg);
+  }
+  50% {
+    transform: scale(1.1) rotateY(-3deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dotPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
