@@ -14,7 +14,8 @@
     "sourceMap": true,
     "outDir": "dist",
     "rootDir": "src",
-    "composite": true
+    "incremental": true,
+    "declarationDir": "dist/types"
   },
   "include": [
     "src/**/*"
