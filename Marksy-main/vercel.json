@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "buildCommand": "node build.js",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "installCommand": "npm install",
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ],
+  "env": {
+    "NODE_OPTIONS": "--max_old_space_size=4096"
+  }
+}
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}
