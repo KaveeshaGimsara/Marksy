@@ -1,51 +1,113 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Student Dashboard - Track your academic progress, view marks, and stay updated with notices and events" />
-    <meta name="keywords" content="student dashboard, academic progress, marks tracking, notices" />
-    <title>Student Dashboard - Academic Progress Tracker</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <script type="module" crossorigin src="/assets/index-DOPhpWcB.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-CWCicu07.css">
-  </head>
-  <body>
-    <div id="root"></div>
+<html lang="si">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Student Dashboard - Track your academic progress, view marks, and stay updated with notices and events" />
+  <title>Marksy - Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" crossorigin href="/assets/index-BGOMeTi-.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="logo-area">
+      <span class="logo-circle">M</span>
+      <h1 class="site-title">Marksy</h1>
+    </div>
+    <nav class="main-actions">
+      <button id="quickAccessBtn" class="icon-btn" title="Quick Access"><span class="ico-grid"></span></button>
+    </nav>
+  </header>
 
-    <!-- CDN React (optional, can be removed if unused) -->
-    <script
-      crossorigin
-      src="https://unpkg.com/react@18/umd/react.development.js"
-    ></script>
-    <script
-      crossorigin
-      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
-    ></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-    <!-- Main App: corrected path for Vite build -->
-
-    <noscript>
-      <div class="noscript-fallback">
-        <h1>Student Dashboard</h1>
-        <p>
-          This application requires JavaScript to be enabled for full
-          functionality.
-        </p>
-        <div class="basic-content">
-          <h2>Welcome to Your Academic Dashboard</h2>
-          <p>
-            Track your progress, view marks, and stay updated with important
-            notices.
-          </p>
-        </div>
+  <main class="container">
+    <section class="card greet-card">
+      <div class="greet-top">
+        <h2 id="greeting" class="hidden"></h2>
+        <button id="setNameBtn" class="pill-btn small hidden">Set Your Name</button>
       </div>
-    </noscript>
-  </body>
+      <form id="nameForm" class="inline-form hidden">
+        <input id="studentNameInput" maxlength="40" placeholder="Enter your name" required />
+        <button type="submit" class="pill-btn">Save</button>
+      </form>
+      <div class="date-time">
+        <span id="liveDate"></span>
+        <span id="liveTime"></span>
+      </div>
+    </section>
+
+    <section class="stats-grid card">
+      <h3>Marks Stats</h3>
+      <div class="stats-items">
+        <div><span class="label">අවසන් Paper:</span> <span id="lastMark">-</span></div>
+        <div><span class="label">Avg %:</span> <span id="avgMark">-</span></div>
+        <div><span class="label">Highest %:</span> <span id="highMark">-</span></div>
+        <div><span class="label">Subjects:</span> <span id="subCount">0</span></div>
+      </div>
+      <a class="mini-link" href="add-marks.html">+ Add Marks</a>
+    </section>
+
+    <section class="notice-board card">
+      <div class="section-head">
+        <h3>Notice Board</h3>
+        <small class="muted">(Admin edit code only)</small>
+      </div>
+      <ul id="noticeList" class="notices"></ul>
+    </section>
+
+    <section class="events card">
+      <div class="section-head">
+        <h3>Upcoming Events / Exams</h3>
+        <small class="muted">(Code managed)</small>
+      </div>
+      <div id="eventsContainer" class="events-wrap"></div>
+    </section>
+
+    <section class="quotes card">
+      <h3>Random Motivation</h3>
+      <blockquote id="quoteBox"></blockquote>
+      <button id="newQuoteBtn" class="pill-btn">New Quote</button>
+    </section>
+
+    <section class="ad-contact card">
+      <h3>Advertisement?</h3>
+      <p>ඔයාට මෙහි Ad දාගන්න ඕනෙනම් - click below.</p>
+      <a href="mailto:contact@example.com?subject=Advertisement%20Inquiry" class="pill-btn accent">Contact Me</a>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-links">
+      <a href="about.html" class="footer-link">About</a>
+      <a href="help.html" class="footer-link">Help & FAQ</a>
+      <button id="quickAccessFooter" class="footer-link">All Pages</button>
+    </div>
+    <div class="copy">© <span id="year"></span> Marksy</div>
+  </footer>
+
+  <div id="quickAccessPanel" class="overlay hidden">
+    <div class="overlay-content">
+      <button class="close-overlay" id="closeQuick">&times;</button>
+      <h3>Quick Access</h3>
+      <div class="quick-grid">
+        <a href="index.html" class="quick-item"><span class="ico-home"></span><span>Home</span></a>
+        <a href="add-marks.html" class="quick-item"><span class="ico-plus"></span><span>Add Marks</span></a>
+        <a href="analyze.html" class="quick-item"><span class="ico-chart"></span><span>Analyze</span></a>
+        <a href="about.html" class="quick-item"><span class="ico-info"></span><span>About</span></a>
+        <a href="help.html" class="quick-item"><span class="ico-help"></span><span>Help & FAQ</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main App script -->
+  <script src="assets/app.js"></script>
+
+  <noscript>
+    <div class="noscript-fallback">
+      <h1>Student Dashboard</h1>
+      <p>This application requires JavaScript to be enabled for full functionality.</p>
+    </div>
+  </noscript>
+</body>
 </html>
