@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --primary: theme('colors.blue.500');
+  --secondary: theme('colors.purple.500');
+  --accent: theme('colors.pink.500');
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
 /* Marksy - Dark Academic Theme with Purple & Blue */
 
 @layer base {

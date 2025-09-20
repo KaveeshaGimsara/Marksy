@@ -1,6 +1,7 @@
+import React from 'react';
 import { MessageSquare, Github, Heart } from "lucide-react";
 
-const Footer = () => {
+const Footer: React.FC = () => {
   return (
     <footer className="wave-footer text-white py-12 mt-16">
       <div className="container mx-auto px-4 relative z-10">
@@ -33,6 +34,11 @@ const Footer = () => {
               <span className="text-sm">by Kaveesha Gimsara</span>
             </div>
           </div>
+        </div>
+      </div>
+      <div className="py-4 mt-auto">
+        <div className="container mx-auto px-4 text-center">
+          <p>© {new Date().getFullYear()} Marksy. All rights reserved.</p>
         </div>
       </div>
     </footer>

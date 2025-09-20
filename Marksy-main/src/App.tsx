@@ -7,10 +7,12 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import Index from "./pages/Index";
 import StandaloneHomePage from "./pages/StandaloneHome";
 import NotFound from "./pages/NotFound";
+import React from "react";
+import CreditsPage from "./components/CreditsPage";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App: React.FC = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <TooltipProvider>
@@ -25,6 +27,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+        <CreditsPage />
       </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>
