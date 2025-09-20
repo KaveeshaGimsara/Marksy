@@ -1,5 +1,3 @@
-const { execSync } = require('child_process');
-
 console.log('Starting simplified build process...');
 
 try {
@@ -9,6 +7,8 @@ try {
   console.log('Build completed successfully!');
 } catch (error) {
   console.error('Build failed:', error);
+  process.exit(1);
+}
   process.exit(1);
 }
   }
