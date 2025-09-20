@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "CommonJS",
+    "module": "ESNext",
     "moduleResolution": "Node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -15,7 +15,9 @@
     "outDir": "dist",
     "rootDir": "src",
     "incremental": true,
-    "declarationDir": "dist/types"
+    "declarationDir": "dist/types",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "types": ["node"]
   },
   "include": [
     "src/**/*"
