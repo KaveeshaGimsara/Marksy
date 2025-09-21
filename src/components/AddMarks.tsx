@@ -361,7 +361,7 @@ const AddMarks = ({ language }: AddMarksProps) => {
                         const normalized = searchTerm.trim().toLowerCase();
                         const allMatches = availableSubjects
                           .filter(subject => subject.toLowerCase().includes(normalized))
-                          .slice(0, 10);
+                          .slice(0, 25); // show more to help discovery
                         if (allMatches.length === 0) {
                           return (
                             <div className="text-center text-xs text-muted-foreground py-4">
@@ -371,34 +371,52 @@ const AddMarks = ({ language }: AddMarksProps) => {
                             </div>
                           );
                         }
-                        return allMatches.map((subject) => {
-                          const already = !!subjects.find(s=>s.name===subject);
+                        return allMatches.map((subject, idx) => {
+                          const existing = subjects.find(s=>s.name===subject);
+                          const isActive = idx === searchActiveIndex; // keyboard highlight for addable or existing
                           const start = normalized ? subject.toLowerCase().indexOf(normalized) : -1;
                           const end = start + normalized.length;
                           const before = start >=0 ? subject.slice(0,start) : subject;
                           const match = start >=0 ? subject.slice(start,end) : '';
                           const after = start >=0 ? subject.slice(end) : '';
                           return (
-                            <button
+                            <div
                               key={subject}
-                              type="button"
-                              disabled={already}
-                              onClick={() => { if(!already) addSubject(subject); }}
-                              className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors ${already ? 'opacity-60 cursor-not-allowed' : 'hover:bg-muted'} disabled:opacity-60`}
+                              className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors ${isActive ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}`}
                             >
-                              <span className="truncate text-left">
+                              <button
+                                type="button"
+                                onClick={() => { if(!existing) { addSubject(subject); } else { toggleFavorite(subject); } }}
+                                className="flex-1 text-left truncate"
+                              >
                                 {start >= 0 ? (<>
                                   {before}
                                   <span className="font-semibold underline decoration-dotted">{match}</span>
                                   {after}
                                 </>) : subject}
-                              </span>
-                              {already ? (
-                                <span className="flex items-center text-xs font-medium text-muted-foreground"><Check className="h-4 w-4 mr-1" />{language==='en' ? 'Added' : 'එකතු වී ඇත'}</span>
-                              ) : (
-                                <Plus className="h-4 w-4" />
-                              )}
-                            </button>
+                              </button>
+                              <div className="flex items-center gap-2">
+                                {existing ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => toggleFavorite(subject)}
+                                    className="h-6 w-6 flex items-center justify-center rounded hover:bg-muted/50"
+                                    aria-label={language==='en' ? 'Toggle favorite' : 'තරුව වෙනස් කරන්න'}
+                                  >
+                                    <Star className={`h-4 w-4 ${existing.isFavorite ? 'text-yellow-500 fill-yellow-500' : 'text-muted-foreground'}`} />
+                                  </button>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => addSubject(subject)}
+                                    className="h-6 w-6 flex items-center justify-center rounded hover:bg-muted/50"
+                                    aria-label={language==='en' ? 'Add subject' : 'විෂය එකතු කරන්න'}
+                                  >
+                                    <Plus className="h-4 w-4" />
+                                  </button>
+                                )}
+                              </div>
+                            </div>
                           );
                         });
                       })()}
