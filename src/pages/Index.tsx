@@ -23,14 +23,22 @@ const Index = () => {
   const [showAdmin, setShowAdmin] = useState(false);
   const { toast } = useToast();
 
-  // Load theme preference
+  // Load theme preference - default to light mode
   useEffect(() => {
     const savedTheme = localStorage.getItem("marksy-theme");
     const savedLanguage = localStorage.getItem("marksy-language");
     
+    // Default to light mode - only switch to dark if explicitly saved
     if (savedTheme === "dark") {
       setIsDarkMode(true);
       document.documentElement.classList.add("dark");
+    } else {
+      // Ensure light mode is active by default
+      setIsDarkMode(false);
+      document.documentElement.classList.remove("dark");
+      if (!savedTheme) {
+        localStorage.setItem("marksy-theme", "light");
+      }
     }
     
     if (savedLanguage && (savedLanguage === "en" || savedLanguage === "si")) {
