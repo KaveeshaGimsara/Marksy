@@ -1,5 +1,33 @@
 [
   {
+    "version": "v1.9.1",
+    "date": "2025-09-21",
+    "type": "patch",
+    "features": [
+      "Baseline core subjects (Biology, Chemistry, Physics) always visible in Add Marks"
+    ],
+    "bugfixes": [
+      "Search dialog now lists core subjects when not yet favorited"
+    ],
+    "improvements": [
+      "Unified subject search placeholder",
+      "Alphabetical ordering after favorites for clarity"
+    ]
+  },
+  {
+    "version": "v1.9.1",
+    "date": "2025-09-21",
+    "type": "patch",
+    "features": [
+      "Version page commit history panel"
+    ],
+    "bugfixes": [],
+    "improvements": [
+      "Added pre-release v0.0.1 entry",
+      "Structured semantic commit listing"
+    ]
+  },
+  {
     "version": "v1.9.0",
     "date": "2025-09-21",
     "type": "minor",
@@ -268,6 +296,21 @@
       "Established project foundation",
       "Set up development environment",
       "Created basic application structure"
+    ]
+  },
+  {
+    "version": "v0.0.1",
+    "date": "2025-07-30",
+    "type": "patch",
+    "features": [
+      "Project scaffolding (Vite + React + TypeScript)",
+      "Initial folder structure and config files",
+      "Basic Tailwind & shadcn/ui setup"
+    ],
+    "bugfixes": [],
+    "improvements": [
+      "Repository initialization",
+      "Base dependency installation"
     ]
   }
 ]

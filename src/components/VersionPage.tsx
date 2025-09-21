@@ -1,5 +1,6 @@
 import { useState } from "react";
 import versionsData from "@/versioning/versions.json";
+import commitsData from "@/versioning/commits.json";
 import { Code, Calendar, Star, Zap, Bug, Shield, Sparkles, ArrowRight } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,10 +19,17 @@ interface VersionInfo {
   improvements: string[];
 }
 
+interface CommitInfo {
+  hash: string;
+  date: string;
+  message: string;
+}
+
 const VersionPage = ({ language }: VersionPageProps) => {
   const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
 
   const versions: VersionInfo[] = versionsData as VersionInfo[];
+  const commits: CommitInfo[] = commitsData as CommitInfo[];
 
   const getVersionTypeColor = (type: string) => {
     switch (type) {
@@ -56,7 +64,7 @@ const VersionPage = ({ language }: VersionPageProps) => {
       </div>
 
       <div className="space-y-6 max-w-4xl mx-auto">
-        {versions.map((version, index) => {
+  {versions.map((version, index) => {
           const Icon = getVersionTypeIcon(version.type);
           const isExpanded = selectedVersion === version.version;
           
@@ -74,6 +82,11 @@ const VersionPage = ({ language }: VersionPageProps) => {
                         <Badge variant={version.type === "major" ? "destructive" : version.type === "minor" ? "default" : "secondary"}>
                           {version.type}
                         </Badge>
+                        {index === 0 && (
+                          <span className="relative inline-flex items-center px-2 py-0.5 text-[10px] font-semibold rounded-full bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow animate-pulse">
+                            LIVE
+                          </span>
+                        )}
                       </CardTitle>
                       <CardDescription className="flex items-center space-x-2">
                         <Calendar className="h-4 w-4" />
@@ -148,6 +161,32 @@ const VersionPage = ({ language }: VersionPageProps) => {
             </Card>
           );
         })}
+
+        {/* Commit History */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Code className="h-5 w-5" />
+              <span>{language === 'en' ? 'Commit History' : 'කමිට් ඉතිහාසය'}</span>
+            </CardTitle>
+            <CardDescription>
+              {language === 'en' ? 'Recent repository changes (newest last here)' : 'මෑත ගබඩා වෙනස්කම් (අලුත්ම අන්තිමේ)'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="max-h-80 overflow-y-auto space-y-2 font-mono text-xs">
+              {commits.map(c => (
+                <div key={c.hash} className="flex items-start justify-between gap-4 p-2 bg-muted/40 rounded hover:bg-muted/70 transition-colors">
+                  <div className="truncate flex-1">
+                    <span className="text-primary font-semibold mr-2">{c.hash}</span>
+                    <span>{c.message}</span>
+                  </div>
+                  <span className="text-muted-foreground whitespace-nowrap">{new Date(c.date).toLocaleDateString()}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
