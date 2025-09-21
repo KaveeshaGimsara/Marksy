@@ -1,0 +1,32 @@
+[
+  {
+    "hash": "efb62a5",
+    "date": "2025-09-21",
+    "message": "Version 02: Complete AL Progress Wizard application with React, TypeScript, and modern UI components"
+  },
+  {
+    "hash": "43a1987",
+    "date": "2025-09-21",
+    "message": "Fix dark theme and set light mode as default"
+  },
+  {
+    "hash": "64aaa9d",
+    "date": "2025-09-21",
+    "message": "feat: Major updates - Subject Performance reorganization, enhanced filtering, and footer improvements"
+  },
+  {
+    "hash": "82aa466",
+    "date": "2025-09-21",
+    "message": "feat(about): move developer profile to About page with enhanced A/L Sri Lanka focus and parchment letter"
+  },
+  {
+    "hash": "6d78bbd",
+    "date": "2025-09-21",
+    "message": "docs: add MIT LICENSE and rewrite README; feat: add 2025 A/L exam event; chore: unify support links and licensing"
+  },
+  {
+    "hash": "f1da1a1",
+    "date": "2025-09-21",
+    "message": "chore: bump version to v1.9.0 (license nav + attribution fixes)"
+  }
+]
