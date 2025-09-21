@@ -59,26 +59,52 @@ const Header = ({
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <div className="flex items-center space-x-3">
-            <HeartLogo size={36} withText className="hover:scale-[1.02] transition-transform" />
-            <span className="sr-only">Marksy – {language === "en" ? "Academic Excellence Tracker" : "ශාස්ත්‍රීය විශිෂ්ටතා ට්‍රැකර්"}</span>
+    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm supports-[backdrop-filter]:bg-background/70">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4">
+        <div className="flex items-center justify-between h-14 sm:h-16">
+          {/* Left: Logo + (Mobile) Nav Toggle Group */}
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="flex items-center">
+              <HeartLogo size={32} withText className="hidden xs:flex hover:scale-[1.02] transition-transform" />
+              <HeartLogo size={28} className="xs:hidden" />
+              <span className="sr-only">Marksy – {language === "en" ? "Academic Excellence Tracker" : "ශාස්ත්‍රීය විශිෂ්ටතා ට්‍රැකර්"}</span>
+            </div>
+
+            {/* Mobile Inline Nav (scrollable) */}
+            <nav className="flex md:hidden overflow-x-auto no-scrollbar ml-1" aria-label="Main navigation">
+              <div className="flex items-center gap-1 pr-2">
+                {navItems.map(item => {
+                  const Icon = item.icon; const isActive = activeSection === item.id;
+                  return (
+                    <Button
+                      key={item.id}
+                      variant={isActive ? "default" : "ghost"}
+                      size="icon"
+                      aria-label={item.label}
+                      aria-current={isActive ? "page" : undefined}
+                      onClick={() => setActiveSection(item.id)}
+                      className={`${isActive ? "bg-primary text-primary-foreground" : "hover:bg-muted/70"} h-10 w-10 flex-shrink-0`}
+                    >
+                      <Icon className="h-5 w-5" />
+                    </Button>
+                  );
+                })}
+              </div>
+            </nav>
           </div>
 
           {/* Desktop Navigation - Icons Only with Hover Text */}
-          <nav className="hidden md:flex items-center space-x-1">
+          <nav className="hidden md:flex items-center space-x-1" aria-label="Main navigation">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeSection === item.id;
-              
               return (
                 <div key={item.id} className="relative group">
                   <Button
                     variant={isActive ? "default" : "ghost"}
                     size="icon"
+                    aria-label={item.label}
+                    aria-current={isActive ? "page" : undefined}
                     onClick={() => setActiveSection(item.id)}
                     className={`relative ${
                       isActive 
@@ -88,8 +114,6 @@ const Header = ({
                   >
                     <Icon className="h-5 w-5" />
                   </Button>
-                  
-                  {/* Hover Tooltip */}
                   <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 bg-popover text-popover-foreground text-xs rounded-md border shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
                     {item.label}
                     <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-popover rotate-45 border-l border-t"></div>
@@ -99,68 +123,61 @@ const Header = ({
             })}
           </nav>
 
-          {/* Actions */}
-          <div className="flex items-center space-x-2">
+          {/* Right side actions */}
+          <div className="flex items-center gap-1 sm:gap-2">
+            {/* Language Toggle (mobile hidden label) */}
+            <div className="relative group">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleLanguage}
+                aria-label={language === "en" ? "Switch to Sinhala" : "Switch to English"}
+                className="hover:bg-muted/80 transition-all duration-200 h-9 w-9"
+              >
+                <Languages className="h-4 w-4" />
+              </Button>
+              <div className="hidden md:block absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 bg-popover text-popover-foreground text-xs rounded-md border shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                {language === "en" ? "සිංහල" : "English"}
+                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-popover rotate-45 border-l border-t" />
+              </div>
+            </div>
+
             {/* Theme Toggle */}
             <div className="relative group">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={toggleDarkMode}
-                className="hover:bg-muted/80 transition-all duration-200"
+                aria-label={isDarkMode ? (language === "en" ? "Switch to light mode" : "ආලෝක මාදිලියට") : (language === "en" ? "Switch to dark mode" : "අඳුරු මාදිලියට")}
+                className="hover:bg-muted/80 transition-all duration-200 h-9 w-9"
               >
-                {isDarkMode ? (
-                  <Sun className="h-4 w-4 text-warning" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
+                {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
-              <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 bg-popover text-popover-foreground text-xs rounded-md border shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                {isDarkMode ? (language === "en" ? "Light Mode" : "ආලෝක මාදිලිය") : (language === "en" ? "Dark Mode" : "අඳුරු මාදිලිය")}
-                <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-popover rotate-45 border-l border-t"></div>
+              <div className="hidden md:block absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 bg-popover text-popover-foreground text-xs rounded-md border shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                {isDarkMode ? (language === "en" ? "Light Mode" : "ආලෝක") : (language === "en" ? "Dark Mode" : "අඳුරු")}
+                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-popover rotate-45 border-l border-t" />
               </div>
             </div>
 
-            {/* Language Toggle */}
-            <div className="relative group">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleLanguage}
-                className="hover:bg-muted/80 transition-all duration-200"
-              >
-                <Languages className="h-4 w-4" />
-              </Button>
-              <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 bg-popover text-popover-foreground text-xs rounded-md border shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                {language === "en" ? "සිංහල" : "English"}
-                <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-popover rotate-45 border-l border-t"></div>
-              </div>
-            </div>
-
-
-            {/* Mobile Menu */}
+            {/* Fallback mobile sheet for future extended actions */}
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden">
-                  <Menu className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="md:hidden h-9 w-9" aria-label="Open menu">
+                  <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-64">
-                <div className="py-4">
-                  <h2 className="text-lg font-semibold mb-4">Navigation</h2>
-                  <nav className="space-y-2">
-                    {navItems.map((item) => {
-                      const Icon = item.icon;
-                      const isActive = activeSection === item.id;
-                      
+              <SheetContent side="right" className="w-72 sm:w-80" aria-label="Mobile navigation drawer">
+                <div className="py-4 flex flex-col h-full">
+                  <h2 className="text-sm font-semibold mb-4 tracking-wide text-muted-foreground">{language === "en" ? "Navigation" : "යාත්‍රා"}</h2>
+                  <nav className="space-y-1 flex-1">
+                    {navItems.map(item => {
+                      const Icon = item.icon; const isActive = activeSection === item.id;
                       return (
                         <Button
                           key={item.id}
                           variant={isActive ? "default" : "ghost"}
-                          onClick={() => {
-                            setActiveSection(item.id);
-                            setIsMobileMenuOpen(false);
-                          }}
+                          onClick={() => { setActiveSection(item.id); setIsMobileMenuOpen(false); }}
+                          aria-current={isActive ? "page" : undefined}
                           className="w-full justify-start"
                         >
                           <Icon className="h-4 w-4 mr-2" />
@@ -169,6 +186,10 @@ const Header = ({
                       );
                     })}
                   </nav>
+                  <div className="mt-4 grid grid-cols-2 gap-2">
+                    <Button variant="outline" onClick={toggleLanguage} className="text-xs" aria-label="Toggle language">{language === "en" ? "සිංහල" : "English"}</Button>
+                    <Button variant="outline" onClick={toggleDarkMode} className="text-xs" aria-label="Toggle theme">{isDarkMode ? (language === "en" ? "Light" : "ආලෝක") : (language === "en" ? "Dark" : "අඳුරු")}</Button>
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>

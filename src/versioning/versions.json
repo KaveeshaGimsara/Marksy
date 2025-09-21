@@ -1,5 +1,40 @@
 [
   {
+    "version": "v1.9.8",
+    "date": "2025-09-22",
+    "type": "patch",
+    "features": [
+      "Responsive header overhaul: compact mobile icon bar with horizontal scroll",
+      "Footer mobile redesign with stacked sections and accessible quick links"
+    ],
+    "bugfixes": [
+      "Removed wave background on very small screens to prevent layout overflow"
+    ],
+    "improvements": [
+      "ARIA labels and aria-current states for navigation buttons",
+      "Reduced header vertical height on small devices (h-14)",
+      "Consistent action button sizing (h-9 w-9) improving tap targets",
+      "Footer performance optimization with conditional decorative SVG"
+    ]
+  },
+  {
+    "version": "v1.9.7",
+    "date": "2025-09-22",
+    "type": "patch",
+    "features": [
+      "Dialog search now lists ALL matching subjects including already added ones",
+      "Inline star/unstar toggle directly inside search results",
+      "Expanded result window (up to 25 matches)"
+    ],
+    "bugfixes": [
+      "Previously added core subjects (e.g., Physics, Biology) hidden from dialog search"
+    ],
+    "improvements": [
+      "Single interaction surface: add or favorite from same list",
+      "Keyboard active row styling works for both new and existing subjects"
+    ]
+  },
+  {
     "version": "v1.9.6",
     "date": "2025-09-22",
     "type": "patch",
