@@ -97,145 +97,23 @@ const AddMarks = ({ language }: AddMarksProps) => {
     }
   };
 
-  // Available subjects for search (500+ subjects)
+  // Curated Sri Lanka G.C.E. A/L subject list (core + popular electives only)
   const availableSubjects = [
-    // Science Stream - Core A/L Subjects
-    "Biology", "Chemistry", "Physics", "Combined Mathematics", "Agricultural Science", 
-    
-    // Commerce Stream
-    "Accounting", "Business Studies", "Economics", "Business Statistics",
-    
-    // Arts Stream - Languages
-    "Sinhala", "Tamil", "English", "Pali", "Sanskrit", "Arabic", "Japanese", "Hindi", 
-    "French", "German",
-    
-    // Arts Stream - Social Sciences & Humanities  
-    "Geography", "History", "Political Science", "Logic & Scientific Method", 
-    "Sociology", "Communication & Media Studies",
-    
-    // Arts Stream - Creative Arts
-    "Art", "Dancing", "Music", "Drama & Theatre", "Home Economics",
-    
+    // Science Stream Core
+    "Biology","Chemistry","Physics","Combined Mathematics","Agricultural Science",
+    // Commerce Stream Core
+    "Accounting","Business Studies","Economics",
+    // Arts / Languages
+    "Sinhala","Tamil","English","French","German","Japanese","Arabic","Pali","Sanskrit",
+    // Arts / Humanities & Social Sciences
+    "Geography","History","Political Science","Logic & Scientific Method","Buddhist Civilization","Christian Civilization","Hindu Civilization","Drama & Theatre","Music","Art","Dancing","Home Economics",
     // Technology Stream
-    "Engineering Technology", "Bio-systems Technology", "Science for Technology",
-    
-    // ICT (Available in all streams)
-    "Information and Communication Technology (ICT)",
-    
-    // Arts Stream - Civilizations  
-    "Buddhist Civilization", "Hindu Civilization", "Christian Civilization",
-    
-    // Compulsory Subjects for All Streams
-    "General English", "Common General Test",
-    
-    // Additional Popular/Extended Subjects
-"Accounting", "Actuarial Science", "Administrative Law", "Advanced Chemistry", 
-  "Advanced Mathematics", "Advanced Physics", "Aeronautics", "African Studies", 
-  "Agricultural Engineering", "Agricultural Science", "Agriculture", "Alternative Medicine", 
-  "American Studies", "Ancient History", "Animal Science", "Anthropology", 
-  "Applied Linguistics", "Applied Mathematics", "Applied Physics", "Aquaculture", 
-  "Archaeology", "Architectural Engineering", "Architecture", "Art (Aesthetics)", 
-  "Artificial Intelligence", "Asian Studies", "Astronomy", "Astrophysics", 
-  "Atmospheric Science", "Automation Engineering", "Aviation Management", 
-  "Biblical Studies", "Behavioral Science", "Bio-System Technology", "Bioengineering", 
-  "Bioinformatics", "Biochemistry", "Biology", "Biomedical Engineering", 
-  "Biostatistics", "Biotechnology", "Botany", "Broadcasting", "Building Technology", 
-  "Business Intelligence", "Business Statistics", "Business Studies", "Buddhism", 
-  "Buddhist Civilization", "Cancer Research", "Cardiology", "Cartography", 
-  "Cell Biology", "Chemical Engineering", "Chemical Technology", "Chemistry", 
-  "Christian Civilization", "Christianity", "Civil Engineering", "Civil Technology", 
-  "Classical Studies", "Climate Science", "Clinical Psychology", "Cognitive Science", 
-  "Combined Mathematics", "Communication & Media Studies", "Comparative Literature", 
-  "Computer Engineering", "Computer Graphics", "Computer Science", "Computational Biology", 
-  "Conservation Biology", "Constitutional Law", "Consumer Science", "Construction Management", 
-  "Corporate Law", "Counseling Psychology", "Creative Writing", "Criminology", 
-  "Critical Care", "Cultural Anthropology", "Cultural Studies", "Dancing (Bharata Natyam)", 
-  "Dancing (Kandyan)", "Dancing (Low Country)", "Database Management", "Decision Science", 
-  "Dental Hygiene", "Design Technology", "Developmental Biology", "Digital Marketing", 
-  "Disaster Management", "Documentary Production", "Drama & Theatre", "E-commerce", 
-  "Early Childhood Education", "Earth Science", "Economics", "Economic Development", 
-  "Educational Psychology", "Educational Technology", "Elder Care", "Electrical Engineering", 
-  "Electrical Technology", "Electronic Technology", "Elementary Education", "Emergency Management", 
-  "Emergency Medicine", "Energy Engineering", "Energy Studies", "Engineering Technology", 
-  "English", "Environmental Chemistry", "Environmental Engineering", "Environmental Law", 
-  "Environmental Management", "Environmental Science", "Entomology", "Entrepreneurship", 
-  "Epidemiology", "Ethics", "Ethnomusicology", "European History", "European Studies", 
-  "Event Management", "Exercise Science", "Family Studies", "Fashion Design", 
-  "Fashion Marketing", "Fiber Arts", "Film Production", "Film Studies", "Fine Arts", 
-  "Financial Mathematics", "Financial Planning", "Fire Science", "Fitness Management", 
-  "Flight Technology", "Food Marketing", "Food Science", "Food Technology", 
-  "Forestry Science", "French", "Fraud Investigation", "Functional Medicine", 
-  "Game Design", "Game Development", "Gastronomy", "Gender Studies", 
-  "Genetic Counseling", "Genetics", "Geochemistry", "Geographic Analysis", 
-  "Geographic Information Systems", "Geography", "Geological Engineering", 
-  "Geology", "Geophysics", "German", "Global Studies", "Government Relations", 
-  "Graphic Design", "Greek & Roman Civilization", "Green Technology", 
-  "Health Economics", "Health Informatics", "Health Policy", "Health Science", 
-  "Healthcare Administration", "Heritage Studies", "History", "Home Economics", 
-  "Horticulture", "Hospital Administration", "Hotel Management", "Human Development", 
-  "Human Geography", "Human Resources", "Humanitarian Studies", "Hydrology", 
-  "Immigration Law", "Industrial Design", "Industrial Psychology", 
-  "Information & Communication Technology (ICT)", "Information Technology", 
-  "Infectious Diseases", "Innovation Management", "Instructional Design", 
-  "Insurance Studies", "Integrated Sciences", "Intellectual Property Law", 
-  "Intelligence Analysis", "Interior Design", "International Business", 
-  "International Law", "International Relations", "Investment Management", 
-  "Islam", "Islamic Civilization", "Islamic Studies", "Japanese", "Jazz Studies", 
-  "Journalism", "Judicial Studies", "Kinesiology", "Knowledge Management", 
-  "Labor Studies", "Land Management", "Landscape Architecture", "Language Technology", 
-  "Latin American Studies", "Law", "Leadership Studies", "Legal Studies", 
-  "Leisure Studies", "Life Sciences", "Linguistics", "Literature", "Logic & Scientific Method", 
-  "Logistics Management", "Machine Learning", "Manufacturing Engineering", 
-  "Marine Biology", "Maritime Studies", "Mass Communication", "Materials Science", 
-  "Mathematical Modeling", "Mathematical Physics", "Mathematics", "Measurement Science", 
-  "Mechanical Engineering", "Mechanical Technology", "Media Studies", "Medical Ethics", 
-  "Medical Imaging", "Medical Technology", "Mental Health", "Meteorology", 
-  "Middle Eastern Studies", "Military Science", "Mining Engineering", 
-  "Mobile Development", "Modern Languages", "Molecular Biology", "Molecular Medicine", 
-  "Museum Studies", "Music Technology", "Natural Resources", "Naval Architecture", 
-  "Network Security", "Nonprofit Management", "Nuclear Engineering", "Nuclear Medicine", 
-  "Nursing Science", "Nutrition", "Occupational Health", "Occupational Therapy", 
-  "Ocean Engineering", "Oceanography", "Operations Research", "Optical Engineering", 
-  "Oriental Music", "Organic Chemistry", "Organizational Development", 
-  "Organizational Psychology", "Ornithology", "Pali", "Packaging Science", 
-  "Pain Management", "Parasitology", "Patent Law", "Pathology", "Peace Studies", 
-  "Pediatrics", "Performance Studies", "Personal Finance", "Petroleum Engineering", 
-  "Pharmaceutical Sciences", "Philosophy", "Physical Chemistry", "Physical Education", 
-  "Physical Geography", "Physical Therapy", "Physics", "Physiology", 
-  "Planetary Science", "Plant Biology", "Plant Pathology", "Plasma Physics", 
-  "Political Economy", "Political Science", "Population Studies", "Psychiatric Nursing", 
-  "Psychology", "Public Administration", "Public Health", "Public Policy", 
-  "Publishing", "Pulmonary Medicine", "Pure Mathematics", "Quality Assurance", 
-  "Quantum Computing", "Quantum Physics", "Radio Broadcasting", "Railway Engineering", 
-  "Range Management", "Reading Education", "Recreation Therapy", "Refugee Studies", 
-  "Regional Planning", "Rehabilitation Science", "Religious Studies", 
-  "Remote Sensing", "Renewable Energy", "Reproductive Health", "Research Methods", 
-  "Resource Management", "Respiratory Therapy", "Retail Management", 
-  "Risk Management", "Russian", "Rural Development", "Safety Engineering", 
-  "Sanskrit", "School Psychology", "Science Communication", "Scientific Computing", 
-  "Scientific Writing", "Sculpture Arts", "Secondary Education", "Security Studies", 
-  "Seismology", "Semiconductor Physics", "Service Management", "Sinhala", 
-  "Signal Processing", "Social Enterprise", "Social Media", "Social Psychology", 
-  "Social Work", "Sociology", "Software Engineering", "Software Testing", 
-  "Soil Science", "Solar Energy", "Sound Engineering", "Space Science", 
-  "Special Education", "Speech Therapy", "Sports Management", "Sports Medicine", 
-  "Sports Science", "Sri Lankan Civilization", "Statistics", "Stem Cell Research", 
-  "Strategic Management", "Strategic Planning", "Structural Engineering", 
-  "Student Affairs", "Surgical Technology", "Sustainability Science", 
-  "Sustainable Development", "Systems Analysis", "Systems Engineering", 
-  "Tax Law", "Teacher Education", "Technical Communication", "Technical Writing", 
-  "Technology Management", "Telecommunications", "Textile Design", 
-  "Textile Technology", "Theater Arts", "Theoretical Physics", "Thermal Engineering", 
-  "Tissue Engineering", "Tourism Management", "Trade Studies", "Training Development", 
-  "Translational Medicine", "Transportation Engineering", "Transportation Planning", 
-  "Trauma Studies", "Travel Management", "Tropical Medicine", "Underground Engineering", 
-  "Urban Design", "Urban Planning", "User Experience Design", "Vaccine Development", 
-  "Venture Capital", "Video Production", "Virtual Reality", "Virology", 
-  "Visual Arts", "Visual Communication", "Vocational Rehabilitation", 
-  "Waste Management", "Water Resources", "Weather Forecasting", "Web Design", 
-  "Wellness Studies", "Western Music", "Wildlife Biology", "Wind Energy", 
-  "Wine Studies", "Women's Studies", "Zoology"
-];
+    "Engineering Technology","Science for Technology","Bio-systems Technology",
+    // Common / Cross Stream
+    "Information and Communication Technology (ICT)","General English","Common General Test",
+    // Popular Supporting / Extension (limited set – no speculative research fields)
+    "Statistics","Pure Mathematics","Applied Mathematics","Environmental Science","Computer Science","Software Engineering","Psychology","Sociology"
+  ];
 
   // Load subjects from localStorage on component mount
   useEffect(() => {
@@ -293,13 +171,12 @@ const AddMarks = ({ language }: AddMarksProps) => {
       }];
       setSubjects(newSubjects);
       localStorage.setItem("alSubjects", JSON.stringify(newSubjects));
-      setSelectedSubject(subjectName.trim()); // Auto-select the new subject
       setShowSubjectDialog(false);
       setSearchTerm("");
       toast.success(
         language === "en" 
-          ? `${subjectName} added, starred and selected` 
-          : `${subjectName} එකතු කර, තරු කර තෝරන ලදී`
+          ? `${subjectName} added & starred` 
+          : `${subjectName} එකතු කර තරු කරන ලදී`
       );
     }
   };
@@ -541,6 +418,7 @@ const AddMarks = ({ language }: AddMarksProps) => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {sortedSubjects
                 .filter(subject => subjectSearchTerm === "" || subject.name.toLowerCase().includes(subjectSearchTerm.toLowerCase()))
+                .slice(0,6)
                 .map((subject) => (
                 <Card 
                   key={subject.name}

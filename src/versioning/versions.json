@@ -1,5 +1,22 @@
 [
   {
+    "version": "v1.9.2",
+    "date": "2025-09-21",
+    "type": "patch",
+    "features": [
+      "Subject selection grid limited to 6 items for focus",
+      "Curated authentic Sri Lanka A/L subject list (removed oversized global academic list)"
+    ],
+    "bugfixes": [
+      "Stopped automatic opening of Add Marks form after adding subject",
+      "Ensured add-subject dialog no longer hides core subjects after addition"
+    ],
+    "improvements": [
+      "Clearer add-subject toast message",
+      "Consistent search placeholder wording"
+    ]
+  },
+  {
     "version": "v1.9.1",
     "date": "2025-09-21",
     "type": "patch",
