@@ -1,5 +1,21 @@
 [
   {
+    "version": "v1.9.3",
+    "date": "2025-09-21",
+    "type": "patch",
+    "features": [
+      "Enhanced Add Subject search: keyboard navigation and Enter-to-add",
+      "Match highlighting in search results"
+    ],
+    "bugfixes": [
+      "Resolved empty state confusion when search term trimmed to nothing"
+    ],
+    "improvements": [
+      "No-results and start-typing helper messages",
+      "Accessible focus styling for active search result"
+    ]
+  },
+  {
     "version": "v1.9.2",
     "date": "2025-09-21",
     "type": "patch",

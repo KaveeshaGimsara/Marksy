@@ -47,6 +47,7 @@ const AddMarks = ({ language }: AddMarksProps) => {
   });
   
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchActiveIndex, setSearchActiveIndex] = useState<number>(-1);
   const [showSubjectDialog, setShowSubjectDialog] = useState(false);
   
   // Recent Marks filter states
@@ -312,27 +313,68 @@ const AddMarks = ({ language }: AddMarksProps) => {
                     <Input
                       placeholder={language === "en" ? "Search subjects..." : "විෂය සොයන්න..."}
                       value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onChange={(e) => { setSearchTerm(e.target.value); setSearchActiveIndex(-1); }}
+                      onKeyDown={(e) => {
+                        const filtered = availableSubjects.filter(sub => sub.toLowerCase().includes(searchTerm.trim().toLowerCase()) && !subjects.find(s=>s.name===sub)).slice(0,10);
+                        if (e.key === 'ArrowDown') {
+                          e.preventDefault();
+                          setSearchActiveIndex(prev => (prev + 1) % Math.max(filtered.length,1));
+                        } else if (e.key === 'ArrowUp') {
+                          e.preventDefault();
+                          setSearchActiveIndex(prev => (prev - 1 + Math.max(filtered.length,1)) % Math.max(filtered.length,1));
+                        } else if (e.key === 'Enter') {
+                          if (searchActiveIndex >= 0 && filtered[searchActiveIndex]) {
+                            addSubject(filtered[searchActiveIndex]);
+                          } else if (filtered.length === 1) {
+                            addSubject(filtered[0]);
+                          }
+                        } else if (e.key === 'Escape') {
+                          setShowSubjectDialog(false);
+                        }
+                      }}
                       className="w-full"
                     />
-                    <div className="max-h-60 overflow-y-auto space-y-2">
-                      {availableSubjects
-                        .filter(subject => 
-                          subject.toLowerCase().includes(searchTerm.toLowerCase()) &&
-                          !subjects.find(s => s.name === subject)
-                        )
-                        .slice(0, 10)
-                        .map(subject => (
-                          <Button
-                            key={subject}
-                            variant="ghost"
-                            className="w-full justify-between"
-                            onClick={() => addSubject(subject)}
-                          >
-                            <span>{subject}</span>
-                            <Plus className="h-4 w-4" />
-                          </Button>
-                        ))}
+                    <div className="max-h-60 overflow-y-auto space-y-1 rounded-md border border-muted/40">
+                      {(() => {
+                        const normalized = searchTerm.trim().toLowerCase();
+                        const filtered = availableSubjects
+                          .filter(subject => subject.toLowerCase().includes(normalized) && !subjects.find(s => s.name === subject))
+                          .slice(0, 10);
+                        if (filtered.length === 0) {
+                          return (
+                            <div className="text-center text-xs text-muted-foreground py-4">
+                              {normalized === ''
+                                ? (language === 'en' ? 'Start typing to search subjects' : 'සොයීමට ටයිප් කරන්න')
+                                : (language === 'en' ? 'No matching subjects' : 'ගැලපෙන විෂයයන් නොමැත')}
+                            </div>
+                          );
+                        }
+                        return filtered.map((subject, idx) => {
+                          const start = subject.toLowerCase().indexOf(normalized);
+                          const end = start + normalized.length;
+                          const before = subject.slice(0,start);
+                          const match = subject.slice(start,end);
+                          const after = subject.slice(end);
+                          const active = idx === searchActiveIndex;
+                          return (
+                            <button
+                              key={subject}
+                              type="button"
+                              onClick={() => addSubject(subject)}
+                              className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors ${active ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}`}
+                            >
+                              <span className="truncate text-left">
+                                {start >= 0 ? (<>
+                                  {before}
+                                  <span className="font-semibold underline decoration-dotted">{match}</span>
+                                  {after}
+                                </>) : subject}
+                              </span>
+                              <Plus className="h-4 w-4" />
+                            </button>
+                          );
+                        });
+                      })()}
                     </div>
                   </div>
                 </DialogContent>
