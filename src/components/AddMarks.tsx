@@ -55,7 +55,8 @@ const AddMarks = ({ language }: AddMarksProps) => {
   const [recentMarksSearch, setRecentMarksSearch] = useState("");
   const [selectedSubjectFilter, setSelectedSubjectFilter] = useState("all");
   const [displayCount, setDisplayCount] = useState("10");
-  const [subjectSearchTerm, setSubjectSearchTerm] = useState(""); // Search for main subject list
+  // Removed inline subject search bar (was cluttering UI) – selection now relies on curated favorites & Add Subject dialog
+  const [subjectSearchTerm] = useState(""); // kept for backward compatibility (unused)
 
   // Delete mark function
   const deleteMark = (markIndex: number) => {
@@ -251,7 +252,6 @@ const AddMarks = ({ language }: AddMarksProps) => {
 
   // Sort subjects with favorites first, then alphabetical
   const sortedSubjects = mergedSubjects
-    .filter(subject => subject.name.toLowerCase().includes(subjectSearchTerm.toLowerCase()))
     .sort((a, b) => {
       if (a.isFavorite && !b.isFavorite) return -1;
       if (!a.isFavorite && b.isFavorite) return 1;
@@ -327,6 +327,35 @@ const AddMarks = ({ language }: AddMarksProps) => {
                       }}
                       className="w-full"
                     />
+                    <div className="flex justify-end -mt-2">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs"
+                        onClick={() => {
+                          const remaining = availableSubjects.filter(sub => !subjects.find(s=>s.name===sub));
+                          if (remaining.length === 0) {
+                            toast.info(language === 'en' ? 'All subjects already added' : 'සියලු විෂය එකතු කර ඇත');
+                            return;
+                          }
+                          // Respect favorite cap – star only until 6, rest unstarred
+                          const currentFavs = subjects.filter(s=>s.isFavorite).length;
+                          const additions = remaining.map((name, idx) => ({
+                            name,
+                            isFavorite: currentFavs + idx < 6
+                          }));
+                          const newSubjects = [...subjects, ...additions];
+                          setSubjects(newSubjects);
+                          localStorage.setItem('alSubjects', JSON.stringify(newSubjects));
+                          toast.success(language === 'en' ? 'All subjects added' : 'සියළු විෂය එකතු කරන ලදී');
+                          setShowSubjectDialog(false);
+                          setSearchTerm('');
+                        }}
+                      >
+                        {language === 'en' ? 'Add All Subjects' : 'සියලු විෂය එකතු කරන්න'}
+                      </Button>
+                    </div>
                     <div className="max-h-60 overflow-y-auto space-y-1 rounded-md border border-muted/40">
                       {(() => {
                         const normalized = searchTerm.trim().toLowerCase();
@@ -386,18 +415,7 @@ const AddMarks = ({ language }: AddMarksProps) => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {/* Search input for subjects */}
-            <div className="mb-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                <Input
-                  placeholder={language === "en" ? "Search subjects..." : "විෂයන් සොයන්න..."}
-                  value={subjectSearchTerm}
-                  onChange={(e) => setSubjectSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
+            {/* Removed redundant inline search bar to reduce visual noise; users now use dialog search */}
             
             {/* Show message if no starred subjects */}
             {sortedSubjects.filter(s => s.isFavorite).length === 0 && subjects.filter(s=>s.isFavorite).length === 0 && (
@@ -457,7 +475,6 @@ const AddMarks = ({ language }: AddMarksProps) => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {sortedSubjects
-                .filter(subject => subjectSearchTerm === "" || subject.name.toLowerCase().includes(subjectSearchTerm.toLowerCase()))
                 .slice(0,6)
                 .map((subject) => (
                 <Card 

@@ -1,5 +1,19 @@
 [
   {
+    "version": "v1.9.6",
+    "date": "2025-09-22",
+    "type": "patch",
+    "features": [
+      "Add-All Subjects bulk action in Add Subject dialog (respects 6 favorite cap)",
+      "Disabled state & messaging when all subjects already added"
+    ],
+    "bugfixes": [],
+    "improvements": [
+      "Removed redundant inline subject search bar from Add Marks (less clutter)",
+      "Dialog-centric subject management for clearer workflow"
+    ]
+  },
+  {
     "version": "v1.9.5",
     "date": "2025-09-22",
     "type": "patch",
