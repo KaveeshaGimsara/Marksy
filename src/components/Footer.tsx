@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { HelpCircle, Star, Settings, Heart, ExternalLink, Code } from "lucide-react";
+import versionsData from "@/versioning/versions.json";
+import { HelpCircle, Star, Settings, Heart, ExternalLink, Code, Coffee } from "lucide-react";
+import HeartLogo from "@/components/HeartLogo";
+import BuyMeCoffee from "@/components/BuyMeCoffee";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +17,8 @@ interface FooterProps {
 
 const Footer = ({ activeSection, setActiveSection, showAdmin, setShowAdmin, language }: FooterProps) => {
   const [showAdDialog, setShowAdDialog] = useState(false);
+
+  const currentVersion = (versionsData as any[])[0]?.version || "v0.0.0";
 
   return (
     <footer className="relative border-t bg-card/50 backdrop-blur-sm mt-auto">
@@ -34,17 +39,7 @@ const Footer = ({ activeSection, setActiveSection, showAdmin, setShowAdmin, lang
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           {/* Left side - Branding */}
           <div className="flex items-center space-x-3">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-academic rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">M</span>
-              </div>
-              <div>
-                <h3 className="font-semibold text-sm">Marksy</h3>
-                <p className="text-xs text-muted-foreground">
-                  {language === "en" ? "Academic Progress Tracker" : "අධ්‍යාපනික ප්‍රගති ට්‍රැකර්"}
-                </p>
-              </div>
-            </div>
+            <HeartLogo size={32} withText />
           </div>
 
           {/* Center - Quick Actions */}
@@ -53,20 +48,33 @@ const Footer = ({ activeSection, setActiveSection, showAdmin, setShowAdmin, lang
               variant="ghost"
               size="sm"
               onClick={() => setActiveSection("about")}
-              className="flex items-center space-x-1 hover:bg-primary/10 transition-colors"
+              className={`text-xs transition-colors ${
+                activeSection === "about" ? "bg-primary/20 text-primary" : "hover:bg-primary/10"
+              }`}
             >
-              <HelpCircle className="h-4 w-4" />
-              <span className="text-xs">{language === "en" ? "About" : "පිළිබඳ"}</span>
+              About
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.open('/license', '_blank')}
+              className="text-xs hover:bg-primary/10 transition-colors"
+            >
+              <Code className="h-3 w-3 mr-1" />
+              License
             </Button>
             
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setActiveSection("help")}
-              className="flex items-center space-x-1 hover:bg-primary/10 transition-colors"
+              className={`text-xs transition-colors ${
+                activeSection === "help" ? "bg-primary/20 text-primary" : "hover:bg-primary/10"
+              }`}
             >
-              <HelpCircle className="h-4 w-4" />
-              <span className="text-xs">{language === "en" ? "Help" : "උදව්"}</span>
+              <HelpCircle className="h-3 w-3 mr-1" />
+              Help
             </Button>
             
             <Button
@@ -78,6 +86,32 @@ const Footer = ({ activeSection, setActiveSection, showAdmin, setShowAdmin, lang
               <Star className="h-4 w-4" />
               <span className="text-xs">{language === "en" ? "Credits" : "කෘතිත්ව"}</span>
             </Button>
+
+            {/* Buy Me Coffee Button */}
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center space-x-1 hover:bg-orange-50 text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:bg-orange-900/30 dark:hover:text-orange-300 transition-colors"
+                >
+                  <Coffee className="h-4 w-4" />
+                  <span className="text-xs">{language === "en" ? "Support" : "සහාය"}</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Coffee className="h-5 w-5 text-orange-600" />
+                    Support Our Mission
+                  </DialogTitle>
+                  <DialogDescription>
+                    Help us keep this tool free and improve it for A/L students
+                  </DialogDescription>
+                </DialogHeader>
+                <BuyMeCoffee variant="inline" />
+              </DialogContent>
+            </Dialog>
           </div>
 
           {/* Right side - Version & Copyright */}
@@ -88,7 +122,7 @@ const Footer = ({ activeSection, setActiveSection, showAdmin, setShowAdmin, lang
               onClick={() => setActiveSection("version")}
               className="text-xs text-muted-foreground hover:bg-primary/10 transition-colors"
             >
-              <span className="bg-primary/10 px-2 py-1 rounded font-mono hover:bg-primary/20 transition-colors">v1.1.0</span>
+              <span className="bg-primary/10 px-2 py-1 rounded font-mono hover:bg-primary/20 transition-colors">{currentVersion}</span>
             </Button>
             
             <div className="text-xs text-muted-foreground">

@@ -32,14 +32,18 @@ const SubjectAnalysis = ({ language }: SubjectAnalysisProps) => {
   }, []);
 
   const getGradeDistribution = () => {
-    const grades = { A: 0, B: 0, C: 0, S: 0, F: 0 };
+    const grades = { A: 0, B: 0, C: 0, S: 0, W: 0, F: 0 };
     
     marksData.forEach(paper => {
-      const percentage = (paper.total / 300) * 100; // Assuming max 300 marks
+      // Use actual max marks if available, otherwise assume 100
+      const maxMarks = paper.maxMarks || 100;
+      const percentage = (paper.total / maxMarks) * 100;
+      
       if (percentage >= 75) grades.A++;
       else if (percentage >= 65) grades.B++;
-      else if (percentage >= 50) grades.C++;
-      else if (percentage >= 40) grades.S++;
+      else if (percentage >= 55) grades.C++;
+      else if (percentage >= 35) grades.S++;
+      else if (percentage >= 30) grades.W++;
       else grades.F++;
     });
 
@@ -47,7 +51,7 @@ const SubjectAnalysis = ({ language }: SubjectAnalysisProps) => {
   };
 
   const getSubjectStats = () => {
-    const subjects = ["biology", "physics", "chemistry", "english", "mathematics"];
+    const subjects = ["Biology", "Physics", "Chemistry", "English", "Mathematics"];
     return subjects.map(subject => {
       const subjectPapers = marksData.filter(paper => paper.subject === subject);
       const totalPapers = subjectPapers.length;
@@ -129,10 +133,10 @@ const SubjectAnalysis = ({ language }: SubjectAnalysisProps) => {
         <Card className="academic-card">
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <BookOpen className="h-5 w-5 text-primary" />
+              <BookOpen className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               <div>
                 <p className="text-sm text-muted-foreground">Total Papers</p>
-                <p className="text-xl font-bold">{marksData.length}</p>
+                <p className="text-xl font-bold text-foreground">{marksData.length}</p>
               </div>
             </div>
           </CardContent>
@@ -141,10 +145,10 @@ const SubjectAnalysis = ({ language }: SubjectAnalysisProps) => {
         <Card className="academic-card">
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <Target className="h-5 w-5 text-accent" />
+              <Target className="h-5 w-5 text-green-600 dark:text-green-400" />
               <div>
                 <p className="text-sm text-muted-foreground">Total Marks</p>
-                <p className="text-xl font-bold">{marksData.reduce((sum, p) => sum + p.total, 0)}</p>
+                <p className="text-xl font-bold text-foreground">{marksData.reduce((sum, p) => sum + p.total, 0)}</p>
               </div>
             </div>
           </CardContent>
@@ -153,10 +157,10 @@ const SubjectAnalysis = ({ language }: SubjectAnalysisProps) => {
         <Card className="academic-card">
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <Trophy className="h-5 w-5 text-warning" />
+              <Trophy className="h-5 w-5 text-orange-600 dark:text-orange-400" />
               <div>
                 <p className="text-sm text-muted-foreground">A Grades</p>
-                <p className="text-xl font-bold">{gradeDistribution.A}</p>
+                <p className="text-xl font-bold text-foreground">{gradeDistribution.A}</p>
               </div>
             </div>
           </CardContent>
@@ -223,14 +227,14 @@ const SubjectAnalysis = ({ language }: SubjectAnalysisProps) => {
                         </div>
                         
                         <div className="grid grid-cols-2 gap-4">
-                          <div className="text-center p-3 bg-primary/10 rounded-lg">
-                            <div className="text-2xl font-bold text-primary">{totalPapers}</div>
+                          <div className="text-center p-3 bg-blue-500/10 dark:bg-blue-400/10 rounded-lg">
+                            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{totalPapers}</div>
                             <div className="text-xs text-muted-foreground">
                               {language === "en" ? "Papers" : "ප්‍රශ්නපත්‍ර"}
                             </div>
                           </div>
-                          <div className="text-center p-3 bg-secondary/10 rounded-lg">
-                            <div className="text-2xl font-bold text-secondary">{avgMarks}</div>
+                          <div className="text-center p-3 bg-green-500/10 dark:bg-green-400/10 rounded-lg">
+                            <div className="text-2xl font-bold text-green-600 dark:text-green-400">{avgMarks}</div>
                             <div className="text-xs text-muted-foreground">
                               {language === "en" ? "Average" : "සාමාන්‍ය"}
                             </div>

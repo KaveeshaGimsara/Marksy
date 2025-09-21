@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useToast } from "@/hooks/use-toast";
 import { ProfilePageProps } from "@/types";
 import * as XLSX from 'xlsx';
+import SupportButton from "@/components/SupportButton";
 
 interface ProfileData {
   name: string;
@@ -53,11 +54,38 @@ const ProfilePage = ({ language }: ProfilePageProps) => {
     { id: "high_achiever", name: "High Achiever", description: "Average above 85%", condition: "average >= 85", icon: "🌟", unlocked: false },
     { id: "consistent", name: "Consistent Performer", description: "Submit marks for 7 consecutive days", condition: "consecutive_days >= 7", icon: "📅", unlocked: false },
     { id: "subject_master", name: "Subject Master", description: "Complete all paper types for one subject", condition: "subject_complete", icon: "🎓", unlocked: false },
-    { id: "all_subjects", name: "Renaissance Student", description: "Add marks for all 6 default subjects", condition: "all_subjects", icon: "🌈", unlocked: false },
+    { id: "all_subjects", name: "Science Stream Champion", description: "Add marks for all 6 core science subjects", condition: "science_subjects", icon: "🧪", unlocked: false },
     { id: "early_bird", name: "Early Bird", description: "Use the app before 8 AM", condition: "early_usage", icon: "🐦", unlocked: false }
   ]);
 
-  const availableSubjects = ["Biology", "Chemistry", "Physics", "Mathematics", "ICT", "English"];
+  const availableSubjects = [
+    // Science Stream (Default Watch - Main Science Subjects)
+    "Biology", "Chemistry", "Physics", "Combined Mathematics", "Agricultural Science", 
+    "Information and Communication Technology (ICT)",
+    
+    // Commerce Stream  
+    "Accounting", "Business Studies", "Economics", "Business Statistics",
+    
+    // Arts Stream - Languages
+    "Sinhala", "Tamil", "English", "Pali", "Sanskrit", "Arabic", "Japanese", "Hindi", 
+    "French", "German",
+    
+    // Arts Stream - Social Sciences & Humanities
+    "Geography", "History", "Political Science", "Logic & Scientific Method", 
+    "Sociology", "Communication & Media Studies",
+    
+    // Arts Stream - Creative Arts
+    "Art", "Dancing", "Music", "Drama & Theatre", "Home Economics",
+    
+    // Arts Stream - Civilizations
+    "Buddhist Civilization", "Hindu Civilization", "Christian Civilization",
+    
+    // Technology Stream
+    "Engineering Technology", "Bio-systems Technology", "Science for Technology",
+    
+    // Compulsory Subjects for All Streams
+    "General English", "Common General Test"
+  ];
 
   useEffect(() => {
     // Load profile data
@@ -98,7 +126,8 @@ const ProfilePage = ({ language }: ProfilePageProps) => {
           break;
         case "all_subjects":
           const uniqueSubjects = [...new Set(marksData.map((mark: any) => mark.subject))];
-          unlocked = availableSubjects.every(subject => uniqueSubjects.includes(subject.toLowerCase()));
+          const coreSciences = ["Biology", "Chemistry", "Physics", "Combined Mathematics", "Agricultural Science", "Information and Communication Technology (ICT)"];
+          unlocked = coreSciences.every(subject => uniqueSubjects.includes(subject));
           break;
         case "early_bird":
           const currentHour = new Date().getHours();
@@ -744,19 +773,19 @@ const ProfilePage = ({ language }: ProfilePageProps) => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
-              <div className="text-3xl font-bold text-primary">
+              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
                 {JSON.parse(localStorage.getItem("alMarksData") || "[]").length}
               </div>
               <p className="text-sm text-muted-foreground">Total Papers</p>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-secondary">
+              <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
                 {unlockedBadgesCount}
               </div>
               <p className="text-sm text-muted-foreground">Badges Earned</p>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-accent">
+              <div className="text-3xl font-bold text-green-600 dark:text-green-400">
                 {Math.round((unlockedBadgesCount / 50) * 100)}%
               </div>
               <p className="text-sm text-muted-foreground">Achievement Progress</p>
@@ -900,6 +929,9 @@ const ProfilePage = ({ language }: ProfilePageProps) => {
           </div>
         </CardContent>
       </Card>
+      </div>
+      <div className="mt-10 flex justify-center">
+        <SupportButton />
       </div>
     </div>
   );

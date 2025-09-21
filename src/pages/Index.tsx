@@ -14,6 +14,7 @@ import HelpPage from "@/components/HelpPage";
 import CreditsPage from "@/components/CreditsPage";
 import VersionPage from "@/components/VersionPage";
 import Footer from "@/components/Footer";
+import BuyMeCoffee from "@/components/BuyMeCoffee";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 

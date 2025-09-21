@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, BookOpen, Star, Search, ArrowLeft, Calculator } from "lucide-react";
+import { Plus, BookOpen, Star, Search, ArrowLeft, Calculator, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -55,27 +55,177 @@ const AddMarks = ({ language }: AddMarksProps) => {
   const [displayCount, setDisplayCount] = useState("10");
   const [subjectSearchTerm, setSubjectSearchTerm] = useState(""); // Search for main subject list
 
-  // Available subjects for search (100 subjects)
+  // Delete mark function
+  const deleteMark = (markIndex: number) => {
+    const marksData = JSON.parse(localStorage.getItem("alMarksData") || "[]");
+    
+    // Remove the mark at the specified index
+    marksData.splice(markIndex, 1);
+    
+    // Save back to localStorage
+    localStorage.setItem("alMarksData", JSON.stringify(marksData));
+    
+    // Show success message
+    toast.success(language === "en" ? "Mark deleted successfully!" : "ලකුණු සාර්ථකව මකන ලදී!");
+    
+    // Force re-render by updating a state (this will cause the component to re-render)
+    setMarks({...marks});
+  };
+
+  // Calculate grade based on percentage
+  const calculateGrade = (marks: number, maxMarks: number = 100): string => {
+    const percentage = (marks / maxMarks) * 100;
+    
+    if (percentage >= 75) return 'A';
+    else if (percentage >= 65) return 'B';
+    else if (percentage >= 55) return 'C';
+    else if (percentage >= 35) return 'S';
+    else if (percentage >= 30) return 'W';
+    else return 'F';
+  };
+
+  // Get grade color for display
+  const getGradeColor = (grade: string): string => {
+    switch (grade) {
+      case 'A': return 'text-green-600 dark:text-green-400';
+      case 'B': return 'text-blue-600 dark:text-blue-400';
+      case 'C': return 'text-yellow-600 dark:text-yellow-400';
+      case 'S': return 'text-orange-600 dark:text-orange-400';
+      case 'W': return 'text-red-500 dark:text-red-400';
+      case 'F': return 'text-red-700 dark:text-red-500';
+      default: return 'text-gray-600 dark:text-gray-400';
+    }
+  };
+
+  // Available subjects for search (500+ subjects)
   const availableSubjects = [
-    "Accounting", "Agriculture", "Applied Mathematics", "Art", "Astronomy", "Biochemistry",
-    "Biology", "Botany", "Business Studies", "Chemistry", "Chinese", "Civics", "Commerce",
-    "Computer Science", "Dance", "Drama", "Economics", "Engineering Technology", "English",
-    "Environmental Science", "Ethics", "Food Technology", "French", "Geography", "Geology",
-    "German", "Greek", "Hindi", "History", "Home Economics", "ICT", "Italian", "Japanese",
-    "Korean", "Latin", "Law", "Logic", "Mathematics", "Media Studies", "Microbiology",
-    "Music", "Painting", "Philosophy", "Photography", "Physical Education", "Physics",
-    "Political Science", "Psychology", "Religion", "Russian", "Science for Technology",
-    "Sculpture", "Sinhala", "Social Studies", "Sociology", "Spanish", "Statistics",
-    "Tamil", "Technology", "Textile Technology", "Theatre", "Zoology", "Arabic",
-    "Anthropology", "Architecture", "Banking", "Bioethics", "Biotechnology", "Cartography",
-    "Ceramics", "Classical Studies", "Communication", "Criminology", "Cybersecurity",
-    "Data Science", "Dermatology", "Digital Arts", "Ecology", "Electronics", "Fashion Design",
-    "Film Studies", "Finance", "Forensics", "Genetics", "Health Science", "Immunology",
-    "Industrial Arts", "Information Systems", "International Relations", "Journalism",
-    "Library Science", "Linguistics", "Marine Biology", "Marketing", "Meteorology",
-    "Nanotechnology", "Neuroscience", "Nutrition", "Oceanography", "Paleontology",
-    "Pharmacology", "Physiology", "Robotics", "Social Work", "Software Engineering",
-    "Sports Science", "Urban Planning", "Veterinary Science", "Web Development"
+    // Science Stream - Core A/L Subjects
+    "Biology", "Chemistry", "Physics", "Combined Mathematics", "Agricultural Science", 
+    
+    // Commerce Stream
+    "Accounting", "Business Studies", "Economics", "Business Statistics",
+    
+    // Arts Stream - Languages
+    "Sinhala", "Tamil", "English", "Pali", "Sanskrit", "Arabic", "Japanese", "Hindi", 
+    "French", "German",
+    
+    // Arts Stream - Social Sciences & Humanities  
+    "Geography", "History", "Political Science", "Logic & Scientific Method", 
+    "Sociology", "Communication & Media Studies",
+    
+    // Arts Stream - Creative Arts
+    "Art", "Dancing", "Music", "Drama & Theatre", "Home Economics",
+    
+    // Technology Stream
+    "Engineering Technology", "Bio-systems Technology", "Science for Technology",
+    
+    // ICT (Available in all streams)
+    "Information and Communication Technology (ICT)",
+    
+    // Arts Stream - Civilizations  
+    "Buddhist Civilization", "Hindu Civilization", "Christian Civilization",
+    
+    // Compulsory Subjects for All Streams
+    "General English", "Common General Test",
+    
+    // Additional Popular/Extended Subjects
+    "Applied Mathematics", "Pure Mathematics", "Statistics", "Advanced Mathematics",
+    "Computer Science", "Software Engineering", "Environmental Science", "Botany", "Zoology",
+    "Geology", "Astronomy", "Biotechnology", "Biochemistry", "Microbiology", "Genetics",
+    "Psychology", "Philosophy", "Anthropology", "Archaeology", "Linguistics", "Literature",
+    "Classical Studies", "Religious Studies", "Ethics", "Law", "Constitutional Law",
+    "International Relations", "Public Administration", "Social Work", "Criminology",
+    "Journalism", "Mass Communication", "Broadcasting", "Photography", "Film Studies",
+    "Theater Arts", "Fine Arts", "Graphic Design", "Fashion Design", "Interior Design",
+    "Architecture", "Urban Planning", "Landscape Architecture", "Industrial Design",
+    "Textile Technology", "Food Technology", "Chemical Technology", "Mechanical Technology",
+    "Electrical Technology", "Electronic Technology", "Civil Technology", "Agricultural Technology",
+    "Marine Biology", "Oceanography", "Meteorology", "Climate Science", "Earth Science",
+    "Physical Geography", "Human Geography", "Cartography", "Hydrology",
+    "Sports Science", "Physical Education", "Health Science", "Nutrition", "Physiology",
+    "Aerospace Engineering", "Agricultural Science", "Artificial Intelligence", "Astrophysics",
+    "Behavioral Science", "Bioinformatics", "Biomedical Engineering", "Cell Biology",
+    "Chemical Engineering", "Civil Engineering", "Climate Science", "Cognitive Science",
+    "Computational Biology", "Conservation Biology", "Constitutional Law", "Creative Writing",
+    "Cultural Studies", "Developmental Biology", "Earth Science", "Educational Psychology",
+    "Electrical Engineering", "Emergency Medicine", "Energy Studies", "Entomology",
+    "Epidemiology", "European Studies", "Exercise Science", "Film Production",
+    "Financial Mathematics", "Fire Science", "Food Science", "Game Design",
+    "Gender Studies", "Geographic Information Systems", "Geophysics", "Graphic Design",
+    "Healthcare Administration", "Human Resources", "Hydrology", "Industrial Design",
+    "Information Technology", "Intellectual Property Law", "Interior Design", "Kinesiology",
+    "Labor Studies", "Landscape Architecture", "Machine Learning", "Materials Science",
+    "Mathematical Physics", "Mechanical Engineering", "Medical Technology", "Molecular Biology",
+    "Network Security", "Nuclear Engineering", "Operations Research", "Organizational Psychology",
+    "Peace Studies", "Petroleum Engineering", "Plant Biology", "Policy Studies",
+    "Project Management", "Public Administration", "Public Health", "Quality Assurance",
+    "Quantum Physics", "Real Estate", "Recreation Therapy", "Renewable Energy",
+    "Risk Management", "Safety Engineering", "Scientific Computing", "Security Studies",
+    "Seismology", "Signal Processing", "Social Psychology", "Software Testing",
+    "Space Science", "Strategic Management", "Supply Chain Management", "Sustainable Development",
+    "Systems Engineering", "Technical Writing", "Telecommunications", "Tourism Management",
+    "Transportation Engineering", "User Experience Design", "Visual Arts", "Water Resources",
+    "Wildlife Biology", "Women's Studies", "Actuarial Science", "Administrative Law",
+    "Advanced Chemistry", "Advanced Mathematics", "Advanced Physics", "Aeronautics",
+    "African Studies", "Agricultural Engineering", "Alternative Medicine", "American Studies",
+    "Ancient History", "Animal Science", "Applied Linguistics", "Applied Physics",
+    "Aquaculture", "Archaeology", "Architectural Engineering", "Asian Studies",
+    "Atmospheric Science", "Automation Engineering", "Aviation Management", "Biblical Studies",
+    "Bioengineering", "Biostatistics", "Building Technology", "Business Intelligence",
+    "Cancer Research", "Cardiology", "Chemical Technology", "Clinical Psychology",
+    "Coastal Engineering", "Comparative Literature", "Computer Engineering", "Computer Graphics",
+    "Conflict Resolution", "Construction Management", "Consumer Science", "Copyright Law",
+    "Corporate Law", "Counseling Psychology", "Criminal Justice", "Critical Care",
+    "Cultural Anthropology", "Database Management", "Decision Science", "Dental Hygiene",
+    "Design Technology", "Digital Marketing", "Disaster Management", "Documentary Production",
+    "E-commerce", "Early Childhood Education", "Economic Development", "Educational Technology",
+    "Elder Care", "Emergency Management", "Energy Engineering", "Environmental Chemistry",
+    "Environmental Engineering", "Environmental Law", "Environmental Management", "Ergonomics",
+    "Ethnomusicology", "European History", "Event Management", "Evolutionary Biology",
+    "Family Studies", "Fashion Marketing", "Fiber Arts", "Financial Planning",
+    "Fitness Management", "Flight Technology", "Food Marketing", "Foreign Policy",
+    "Forestry Science", "Fraud Investigation", "Functional Medicine", "Game Development",
+    "Gastronomy", "Genetic Counseling", "Geochemistry", "Geographic Analysis", "Geological Engineering",
+    "Gerontology", "Global Studies", "Government Relations", "Green Technology", "Health Economics",
+    "Health Informatics", "Health Policy", "Heritage Studies", "Horticulture", "Hospital Administration",
+    "Hotel Management", "Human Development", "Human Geography", "Humanitarian Studies", "Immigration Law",
+    "Industrial Psychology", "Infectious Diseases", "Innovation Management", "Instructional Design",
+    "Insurance Studies", "Integrated Sciences", "Intelligence Analysis", "Interactive Media",
+    "International Business", "International Law", "Investment Management", "Islamic Studies",
+    "Jazz Studies", "Judicial Studies", "Knowledge Management", "Laboratory Science",
+    "Language Technology", "Latin American Studies", "Leadership Studies", "Legal Studies",
+    "Leisure Studies", "Life Sciences", "Literary Studies", "Logistics Management",
+    "Manufacturing Engineering", "Maritime Studies", "Mass Communication", "Mathematical Modeling",
+    "Measurement Science", "Medical Ethics", "Medical Imaging", "Mental Health",
+    "Middle Eastern Studies", "Military Science", "Mining Engineering", "Mobile Development",
+    "Modern Languages", "Molecular Medicine", "Museum Studies", "Music Technology",
+    "Natural Resources", "Naval Architecture", "Nonprofit Management", "Nuclear Medicine",
+    "Nursing Science", "Occupational Health", "Occupational Therapy", "Ocean Engineering",
+    "Online Education", "Optical Engineering", "Organic Chemistry", "Organizational Development",
+    "Ornithology", "Packaging Science", "Pain Management", "Parasitology", "Patent Law",
+    "Pathology", "Pediatrics", "Performance Studies", "Personal Finance", "Pharmaceutical Sciences",
+    "Physical Chemistry", "Physical Therapy", "Planetary Science", "Plant Pathology",
+    "Plasma Physics", "Political Economy", "Population Studies", "Precision Medicine",
+    "Prevention Science", "Process Engineering", "Product Design", "Professional Writing",
+    "Psychiatric Nursing", "Public Policy", "Publishing", "Pulmonary Medicine",
+    "Quantum Computing", "Radiation Therapy", "Radio Broadcasting", "Railway Engineering",
+    "Range Management", "Reading Education", "Recreational Therapy", "Refugee Studies",
+    "Regional Planning", "Rehabilitation Science", "Remote Sensing", "Reproductive Health",
+    "Research Methods", "Resource Management", "Respiratory Therapy", "Retail Management",
+    "Rural Development", "School Psychology", "Science Communication", "Scientific Writing",
+    "Sculpture Arts", "Secondary Education", "Sedimentology", "Semiconductor Physics",
+    "Service Management", "Social Enterprise", "Social Media", "Soil Science",
+    "Solar Energy", "Sound Engineering", "Special Education", "Speech Therapy",
+    "Sports Management", "Sports Medicine", "Statistical Analysis", "Stem Cell Research",
+    "Strategic Planning", "Structural Engineering", "Student Affairs", "Surgical Technology",
+    "Sustainability Science", "Systems Analysis", "Tax Law", "Teacher Education",
+    "Technical Communication", "Technology Management", "Textile Design", "Theoretical Physics",
+    "Thermal Engineering", "Tissue Engineering", "Trade Studies", "Training Development",
+    "Translational Medicine", "Transportation Planning", "Trauma Studies", "Travel Management",
+    "Tropical Medicine", "Underground Engineering", "Urban Design", "Vaccine Development",
+    "Venture Capital", "Video Production", "Virtual Reality", "Virology",
+    "Visual Communication", "Vocational Rehabilitation", "Waste Management", "Weather Forecasting",
+    "Web Design", "Wellness Studies", "Wind Energy", "Wine Studies",
   ];
 
   // Load subjects from localStorage on component mount
@@ -509,7 +659,7 @@ const AddMarks = ({ language }: AddMarksProps) => {
                 <span className="text-lg font-medium">
                   {language === "en" ? "Total Marks:" : "මුළු ලකුණු:"}
                 </span>
-                <span className="text-2xl font-bold text-primary animate-pulse">
+                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 animate-pulse">
                   {marks.total}
                 </span>
               </div>
@@ -614,26 +764,55 @@ const AddMarks = ({ language }: AddMarksProps) => {
                         );
                       }
                       
-                      return displayedMarks.map((mark: any, index: number) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors">
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-2 mb-1">
-                              <Badge variant="outline">{mark.subject}</Badge>
-                              <span className="font-medium">{mark.paperName}</span>
+                      return displayedMarks.map((mark: any, index: number) => {
+                        // Calculate the original index in the full marksData array
+                        const originalIndex = marksData.findIndex((originalMark: any) => 
+                          originalMark.timestamp === mark.timestamp && 
+                          originalMark.subject === mark.subject &&
+                          originalMark.paperName === mark.paperName
+                        );
+                        
+                        return (
+                          <div key={`${mark.timestamp}-${index}`} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2 mb-1">
+                                <Badge variant="outline">{mark.subject}</Badge>
+                                <span className="font-medium">{mark.paperName}</span>
+                                {(() => {
+                                  // Calculate max marks (assuming standard 100 marks if not specified)
+                                  const maxMarks = mark.maxMarks || 100;
+                                  const grade = calculateGrade(mark.total, maxMarks);
+                                  return (
+                                    <Badge className={`${getGradeColor(grade)} bg-transparent border`}>
+                                      {grade}
+                                    </Badge>
+                                  );
+                                })()}
+                              </div>
+                              <div className="text-sm text-muted-foreground">
+                                {new Date(mark.timestamp).toLocaleDateString()} • 
+                                MCQ: {mark.mcq || 0} • SEQ: {mark.seq || 0} • Essay: {mark.essay || 0}
+                              </div>
                             </div>
-                            <div className="text-sm text-muted-foreground">
-                              {new Date(mark.timestamp).toLocaleDateString()} • 
-                              MCQ: {mark.mcq || 0} • SEQ: {mark.seq || 0} • Essay: {mark.essay || 0}
+                            <div className="flex items-center space-x-2">
+                              <div className="text-right">
+                                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{mark.total || 0}</div>
+                                <div className="text-xs text-muted-foreground">
+                                  {language === "en" ? "Total" : "මුළු"}
+                                </div>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => deleteMark(originalIndex)}
+                                className="opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-primary">{mark.total || 0}</div>
-                            <div className="text-xs text-muted-foreground">
-                              {language === "en" ? "Total" : "මුළු"}
-                            </div>
-                          </div>
-                        </div>
-                      ));
+                        );
+                      });
                     })()}
                   </div>
                 </div>

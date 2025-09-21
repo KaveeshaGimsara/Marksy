@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { 
+import {
   Clock, Calendar, TrendingUp, Award, Target, Brain,
   ChevronRight, Sparkles, BookOpen, Users, Zap, Download,
-  Timer, Bell, GraduationCap, BarChart, Plus, Eye, Settings, Code
+  Timer, Bell, GraduationCap, BarChart, Plus, Eye, Settings, Code,
+  Heart, Github, Coffee
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -73,9 +74,7 @@ const Homepage = ({ language, onNavigate }: HomepageProps) => {
     totalMarks: 0,
     papersCompleted: 0,
     averageScore: 0,
-    streak: 0,
-    studyHours: 0,
-    targetProgress: 0
+    streak: 0
   });
 
   useEffect(() => {
@@ -96,20 +95,11 @@ const Homepage = ({ language, onNavigate }: HomepageProps) => {
         const daysSinceLastEntry = Math.floor((Date.now() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
         const streak = Math.max(0, 7 - daysSinceLastEntry); // Simple streak calculation
         
-        // Study hours (calculation based on papers completed)
-        const studyHours = Math.round(papersCompleted * 2.5);
-        
-        // Target progress (based on papers completed vs expected)
-        const targetPapers = 50; // Target for the year
-        const targetProgress = targetPapers > 0 ? Math.min(100, Math.round((papersCompleted / targetPapers) * 100)) : 0;
-        
         setStats({
           totalMarks,
           papersCompleted,
           averageScore,
-          streak,
-          studyHours,
-          targetProgress
+          streak
         });
       } catch (error) {
         console.error("Error calculating stats:", error);
@@ -124,26 +114,26 @@ const Homepage = ({ language, onNavigate }: HomepageProps) => {
     return () => clearInterval(statsTimer);
   }, []);
 
-  // Mock data - in real app this would come from localStorage
-  // const stats = {
-  //   totalMarks: 2847,
-  //   papersCompleted: 34,
-  //   averageScore: 78.5,
-  //   streak: 12
-  // };
-
+  // Upcoming events (only confirmed/officially published items included)
+  // Added 2025 A/L examination commencement date (provided by user). 2026 date pending exact day confirmation.
   const upcomingEvents = language === "en" ? [
-    { date: "2025-11-11", event: "A/L Examination 2025", type: "exam", priority: "high", icon: GraduationCap },
-    { date: "2025-10-20", event: "Final Revision Period", type: "study", priority: "medium", icon: BookOpen },
-    { date: "2025-09-30", event: "Practice Test Series", type: "practice", priority: "medium", icon: Target },
-    { date: "2025-01-15", event: "Biology Model Paper", type: "practice", priority: "low", icon: BookOpen },
-    { date: "2025-01-20", event: "Chemistry Revision", type: "study", priority: "low", icon: Brain }
+    {
+      event: "2025 G.C.E. A/L Examination Commences",
+      date: "2025-11-10",
+      type: "exam",
+      priority: "high",
+      icon: GraduationCap,
+      description: "Official commencement date for the 2025 Advanced Level examinations. Focus your final revisions." 
+    }
   ] : [
-    { date: "2025-11-11", event: "උ.පො.ස. පරීක්ෂණ 2025", type: "exam", priority: "high", icon: GraduationCap },
-    { date: "2025-10-20", event: "අවසාන සමාලෝචන කාලය", type: "study", priority: "medium", icon: BookOpen },
-    { date: "2025-09-30", event: "පුහුණු පරීක්ෂා මාලාව", type: "practice", priority: "medium", icon: Target },
-    { date: "2025-01-15", event: "ජීව විද්‍යා ආදර්ශ ප්‍රශ්න පත්‍රය", type: "practice", priority: "low", icon: BookOpen },
-    { date: "2025-01-20", event: "රසායන විද්‍යා සමාලෝචනය", type: "study", priority: "low", icon: Brain }
+    {
+      event: "2025 උ.පො.ස. උසස් පෙළ විභාගය ආරම්භ වේ",
+      date: "2025-11-10",
+      type: "exam",
+      priority: "high",
+      icon: GraduationCap,
+      description: "2025 A/L විභාගයේ නිල ආරම්භක දිනය. අවසාන ආවර්තන වල යෙදෙන්න." 
+    }
   ];
 
   const quickActions = language === "en" ? [
@@ -217,11 +207,11 @@ const Homepage = ({ language, onNavigate }: HomepageProps) => {
       </div>
 
       {/* Enhanced Quick Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
         <Card className="academic-card hover-scale group stats-card">
           <CardContent className="p-4 text-center space-y-2">
-            <BookOpen className="h-8 w-8 text-primary mx-auto group-hover:scale-110 transition-transform" />
-            <div className="text-2xl font-bold text-primary">{stats.totalMarks}</div>
+            <BookOpen className="h-8 w-8 text-blue-600 dark:text-blue-400 mx-auto group-hover:scale-110 transition-transform" />
+            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.totalMarks}</div>
             <div className="text-sm text-muted-foreground">
               {language === "en" ? "Total Marks" : "මුළු ලකුණු"}
             </div>
@@ -229,8 +219,8 @@ const Homepage = ({ language, onNavigate }: HomepageProps) => {
         </Card>
         <Card className="academic-card hover-scale group stats-card">
           <CardContent className="p-4 text-center space-y-2">
-            <Award className="h-8 w-8 text-secondary mx-auto group-hover:scale-110 transition-transform" />
-            <div className="text-2xl font-bold text-secondary">{stats.papersCompleted}</div>
+            <Award className="h-8 w-8 text-purple-600 dark:text-purple-400 mx-auto group-hover:scale-110 transition-transform" />
+            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.papersCompleted}</div>
             <div className="text-sm text-muted-foreground">
               {language === "en" ? "Papers Done" : "කළ ප්‍රශ්න"}
             </div>
@@ -238,8 +228,8 @@ const Homepage = ({ language, onNavigate }: HomepageProps) => {
         </Card>
         <Card className="academic-card hover-scale group stats-card">
           <CardContent className="p-4 text-center space-y-2">
-            <TrendingUp className="h-8 w-8 text-accent mx-auto group-hover:scale-110 transition-transform" />
-            <div className="text-2xl font-bold text-accent">{stats.averageScore}%</div>
+            <TrendingUp className="h-8 w-8 text-green-600 dark:text-green-400 mx-auto group-hover:scale-110 transition-transform" />
+            <div className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.averageScore}%</div>
             <div className="text-sm text-muted-foreground">
               {language === "en" ? "Average" : "සාමාන්‍ය"}
             </div>
@@ -247,28 +237,10 @@ const Homepage = ({ language, onNavigate }: HomepageProps) => {
         </Card>
         <Card className="academic-card hover-scale group stats-card">
           <CardContent className="p-4 text-center space-y-2">
-            <Target className="h-8 w-8 text-warning mx-auto group-hover:scale-110 transition-transform" />
-            <div className="text-2xl font-bold text-warning">{stats.streak}</div>
+            <Target className="h-8 w-8 text-orange-600 dark:text-orange-400 mx-auto group-hover:scale-110 transition-transform" />
+            <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{stats.streak}</div>
             <div className="text-sm text-muted-foreground">
               {language === "en" ? "Day Streak" : "දින අඛණ්ඩව"}
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="academic-card hover-scale group stats-card">
-          <CardContent className="p-4 text-center space-y-2">
-            <Clock className="h-8 w-8 text-blue-600 mx-auto group-hover:scale-110 transition-transform" />
-            <div className="text-2xl font-bold text-blue-600">{stats.studyHours}</div>
-            <div className="text-sm text-muted-foreground">
-              {language === "en" ? "Study Hours" : "අධ්‍යයන පැය"}
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="academic-card hover-scale group stats-card">
-          <CardContent className="p-4 text-center space-y-2">
-            <GraduationCap className="h-8 w-8 text-green-600 mx-auto group-hover:scale-110 transition-transform" />
-            <div className="text-2xl font-bold text-green-600">{stats.targetProgress}%</div>
-            <div className="text-sm text-muted-foreground">
-              {language === "en" ? "Exam Ready" : "පරීක්ෂණ සූදානම"}
             </div>
           </CardContent>
         </Card>
@@ -333,23 +305,23 @@ const Homepage = ({ language, onNavigate }: HomepageProps) => {
         <CardContent>
           <div className="space-y-3">
             {upcomingEvents.map((event, index) => (
-              <div key={index} className={`flex items-center justify-between p-4 rounded-lg border transition-all hover:shadow-md ${
+              <div key={index} className={`flex items-start justify-between p-4 rounded-lg border transition-all hover:shadow-md ${
                 event.priority === "high" ? "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20" :
                 event.priority === "medium" ? "border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950/20" :
                 "border-border bg-muted/20"
               }`}>
-                <div className="flex items-center space-x-3">
-                  <event.icon className={`h-5 w-5 ${
+                <div className="flex items-start space-x-3 flex-1">
+                  <event.icon className={`h-5 w-5 mt-1 ${
                     event.priority === "high" ? "text-red-600" :
                     event.priority === "medium" ? "text-yellow-600" :
                     "text-primary"
                   }`} />
-                  <div>
+                  <div className="flex-1">
                     <div className="font-medium flex items-center space-x-2">
                       <span>{event.event}</span>
                       {event.priority === "high" && <Bell className="h-4 w-4 text-red-500 animate-pulse" />}
                     </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-muted-foreground mt-1">
                       {new Date(event.date).toLocaleDateString(language === "en" ? "en-US" : "si-LK", {
                         weekday: 'long',
                         year: 'numeric',
@@ -357,20 +329,26 @@ const Homepage = ({ language, onNavigate }: HomepageProps) => {
                         day: 'numeric'
                       })}
                     </div>
+                    {event.description && (
+                      <div className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                        {event.description}
+                      </div>
+                    )}
                   </div>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex flex-col items-end space-y-1 ml-4">
                   <Badge variant={
                     event.type === "exam" ? "destructive" : 
+                    event.type === "deadline" ? "destructive" :
                     event.type === "study" ? "secondary" : 
                     "default"
                   }>
                     {event.type}
                   </Badge>
                   <Badge variant="outline" className={
-                    event.priority === "high" ? "border-red-300 text-red-700" :
-                    event.priority === "medium" ? "border-yellow-300 text-yellow-700" :
-                    "border-gray-300 text-gray-700"
+                    event.priority === "high" ? "border-red-300 text-red-700 dark:border-red-700 dark:text-red-300" :
+                    event.priority === "medium" ? "border-yellow-300 text-yellow-700 dark:border-yellow-700 dark:text-yellow-300" :
+                    "border-gray-300 text-gray-700 dark:border-gray-600 dark:text-gray-300"
                   }>
                     {event.priority}
                   </Badge>
@@ -391,86 +369,65 @@ const Homepage = ({ language, onNavigate }: HomepageProps) => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {/* AL Exam Timetable Notice - Pinned */}
-            <div className="p-4 rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 relative">
+            {/* Developer Pinned Message */}
+            <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800 relative">
               <div className="absolute top-2 right-2">
-                <Badge variant="destructive" className="text-xs">
-                  {language === "en" ? "PINNED" : "ඇමිණූ"}
+                <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300">
+                  {language === "en" ? "DEVELOPER" : "සංවර්ධක"}
                 </Badge>
               </div>
-              <div className="flex items-start space-x-3 pr-16">
-                <GraduationCap className="flex-shrink-0 w-6 h-6 text-red-600 mt-1" />
+              <div className="flex items-start space-x-3 pr-20">
+                <Heart className="flex-shrink-0 w-6 h-6 text-purple-600 mt-1" />
                 <div className="space-y-3">
                   <div>
-                    <h4 className="font-bold text-red-700 dark:text-red-300 text-lg">
-                      {language === "en" ? "🚨 A/L Examination 2025 - Time Table Released!" : "🚨 උ.පො.ස. පරීක්ෂණ 2025 - කාල සටහන නිකුත් කර ඇත!"}
+                    <h4 className="font-bold text-purple-700 dark:text-purple-300 text-lg">
+                      {language === "en" ? "💜 Message from KGX (Kaveesha Gimsara)" : "💜 KGX (කවීෂ ගිම්සර) ගෙන් පණිවිඩයක්"}
                     </h4>
-                    <p className="text-sm text-red-600 dark:text-red-400 mt-2">
+                    <p className="text-sm text-purple-600 dark:text-purple-400 mt-2">
                       {language === "en" 
-                        ? "The official A/L examination timetable for 2025 has been released. Download the PDF to check your exam dates and plan your study schedule accordingly."
-                        : "2025 සඳහා නිල උ.පො.ස. පරීක්ෂණ කාල සටහන නිකුත් කර ඇත. ඔබේ පරීක්ෂණ දිනයන් පරීක්ෂා කර ඒ අනුව ඔබේ අධ්‍යයන කාලසටහන සැලසුම් කිරීමට PDF බාගන්න."
+                        ? "Thank you for using Marksy! This tool was built with love for Sri Lankan A/L students. Your success is our motivation. Keep studying hard and chase your dreams! 🌟"
+                        : "Marksy භාවිතා කිරීම සඳහා ස්තූතියි! මෙම මෙවලම ශ්‍රී ලාංකික උ.පො.ස. සිසුන් සඳහා ආදරයෙන් සාදන ලදී. ඔබේ සාර්ථකත්වය අපේ උත්සාහයයි. වෙහෙස මහන්සි වී ඉගෙන ගෙන ඔබේ සිහින පසුපස හඹා යන්න! 🌟"
                       }
                     </p>
                   </div>
                   <div className="flex flex-col sm:flex-row gap-2">
                     <Button 
                       size="sm" 
-                      className="bg-red-600 hover:bg-red-700 text-white flex items-center space-x-2"
-                      onClick={() => window.open("https://www.doenets.lk/images/resources/NEWS/AL%20Time%20Table%202025_1755235159873.pdf", "_blank")}
+                      className="bg-purple-600 hover:bg-purple-700 dark:hover:bg-purple-500 text-white flex items-center space-x-2"
+                      onClick={() => window.open("https://github.com/kaveeshagimsara/", "_blank")}
                     >
-                      <Download className="h-4 w-4" />
-                      <span>{language === "en" ? "Download Timetable" : "කාල සටහන බාගන්න"}</span>
+                      <Github className="h-4 w-4" />
+                      <span>{language === "en" ? "Visit GitHub" : "GitHub වෙත යන්න"}</span>
                     </Button>
                     <Button 
                       size="sm" 
                       variant="outline" 
-                      className="border-red-300 text-red-700 hover:bg-red-50"
-                      onClick={() => window.open("https://www.doenets.lk/", "_blank")}
+                      className="border-purple-300 text-purple-700 hover:bg-purple-50 dark:border-purple-700 dark:text-purple-300 dark:hover:bg-purple-900/40"
+                      onClick={() => window.open("https://buymeacoffee.com/geekyedu", "_blank")}
                     >
-                      <span>{language === "en" ? "Visit Official Site" : "නිල වෙබ් අඩවියට යන්න"}</span>
+                      <Coffee className="h-4 w-4 mr-1" />
+                      <span>{language === "en" ? "Support Development" : "සංවර්ධනයට සහාය වන්න"}</span>
                     </Button>
                   </div>
-                  <div className="text-xs text-red-500 dark:text-red-400">
-                    {language === "en" ? "📅 Exam starts: November 11, 2025" : "📅 පරීක්ෂණ ආරම්භය: 2025 නොවැම්බර් 11"}
-                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Other System Updates */}
-            <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+            {/* Auto-Generated Version Update Notice */}
+            <div className="p-4 rounded-lg bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800">
               <div className="flex items-start space-x-3">
-                <div className="flex-shrink-0 w-2 h-2 rounded-full bg-primary mt-2"></div>
-                <div>
-                  <h4 className="font-medium text-foreground">
-                    {language === "en" ? "✨ New Features Added" : "✨ නව විශේෂාංග එකතු කර ඇත"}
+                <div className="flex-shrink-0 w-2 h-2 rounded-full bg-green-600 mt-2"></div>
+                <div className="flex-1">
+                  <h4 className="font-medium text-green-700 dark:text-green-300">
+                    {language === "en" ? "🚀 Version 1.5.0 Update" : "🚀 සංස්කරණ 1.5.0 යාවත්කාලීනය"}
                   </h4>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <p className="text-sm text-green-600 dark:text-green-400 mt-1">
                     {language === "en" 
-                      ? "Real-time countdown to A/L exams, improved statistics dashboard, and enhanced mobile experience!"
-                      : "උ.පො.ස. පරීක්ෂණ සඳහා තත්‍ය කාලීන ගණනය, වැඩිදියුණු කළ සංඛ්‍යාලේඛන උපකරණ පුවරුව, සහ වැඩිදියුණු කළ ජංගම අත්දැකීම!"
+                      ? "Latest features: Heartbeat loading animation, Z-score statistics, enhanced progress charts, and improved UI/UX."
+                      : "නවතම විශේෂාංග: හෘද ස්පන්දන පැටවුම් සජීවිකරණය, Z-ලකුණු සංඛ්‍යාලේඛන, වැඩිදියුණු කළ ප්‍රගති ප්‍රස්ථාර, සහ වැඩිදියුණු කළ UI/UX."
                     }
                   </p>
-                  <div className="text-xs text-muted-foreground mt-2">
-                    {language === "en" ? "📱 Better mobile support • 📊 Real-time stats • ⏰ Live countdown" : "📱 වඩා හොඳ ජංගම සහාය • 📊 තත්‍ය කාලීන සංඛ්‍යාලේඛන • ⏰ සජීව ගණනය"}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800">
-              <div className="flex items-start space-x-3">
-                <div className="flex-shrink-0 w-2 h-2 rounded-full bg-blue-600 mt-2"></div>
-                <div>
-                  <h4 className="font-medium text-blue-700 dark:text-blue-300">
-                    {language === "en" ? "💡 Study Tips" : "💡 අධ්‍යයන උපදෙස්"}
-                  </h4>
-                  <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
-                    {language === "en" 
-                      ? "Create a study schedule, practice past papers regularly, and track your progress using Marksy!"
-                      : "අධ්‍යයන කාලසටහනක් සාදන්න, පසුගිය ප්‍රශ්න නිතිපතා පුහුණු කරන්න, සහ Marksy භාවිතා කරමින් ඔබේ ප්‍රගතිය සොයන්න!"
-                    }
-                  </p>
+                  {/* Removed changelog and repository buttons per user request */}
                 </div>
               </div>
             </div>

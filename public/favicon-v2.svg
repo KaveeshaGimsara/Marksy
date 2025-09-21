@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="g" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3B82F6"/>  <!-- blue -->
+      <stop offset="35%" stop-color="#8B5CF6"/> <!-- purple -->
+      <stop offset="55%" stop-color="#EC4899"/> <!-- pink -->
+      <stop offset="72%" stop-color="#F97316"/> <!-- orange -->
+      <stop offset="88%" stop-color="#EAB308"/> <!-- amber -->
+      <stop offset="100%" stop-color="#22C55E"/> <!-- green -->
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <!-- Rounded square background for better contrast on light/dark themes -->
+  <rect x="4" y="4" width="56" height="56" rx="14" fill="url(#g)"/>
+  <!-- Stylized M (academic feel) carved out (knockout) -->
+  <path fill="#ffffff" fill-opacity="0.92" d="M20 44V20h4.8l7.2 12.4L39.2 20H44v24h-4V28.8l-8 13.2h-.4l-8-13.2V44h-4Z" filter="url(#shadow)"/>
+  <!-- Subtle heart overlay to reflect brand compassion -->
+  <path d="M46 23.5c0-2.2-1.8-4-4-4-1.5 0-2.9.84-3.6 2.05C37.7 20.34 36.3 19.5 34.8 19.5c-2.2 0-4 1.8-4 4 0 5.2 6.4 8.3 9.6 11.5 3.2-3.2 9.6-6.3 9.6-11.5Z" fill="#ffffff" fill-opacity="0.15"/>
+</svg>

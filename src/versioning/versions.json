@@ -1,0 +1,238 @@
+[
+  {
+    "version": "v1.5.0",
+    "date": "2025-01-01",
+    "type": "major",
+    "features": [
+      "🎨 Complete heart-themed branding with rainbow gradient heart logo",
+      "⚡ Heartbeat loading animation with motivational A/L student captions",
+      "📊 Z-Score statistics with performance analytics and standard deviation",
+      "☕ Buy Me Coffee integration for supporting development",
+      "📈 Enhanced progress charts with gradient animations and subject performance bars",
+      "🎯 Comprehensive A/L subject system organized by streams (Science, Commerce, Arts, Technology)",
+      "🎪 Clean UI improvements with removal of unnecessary Subject Management button"
+    ],
+    "bugfixes": [
+      "🔧 Fixed corrupted favicon.svg with clean heart design",
+      "🧹 Cleaned up Dashboard component removing unused imports and functions",
+      "📱 Fixed loading screen integration with proper state management",
+      "🎨 Enhanced Tailwind animations with heartbeat, twinkle, and fadeInUp effects"
+    ],
+    "improvements": [
+      "🚀 Performance optimization with cleaner code structure",
+      "💖 Consistent heart branding across all components (Header, Footer, About)",
+      "📊 Advanced statistical analysis with Z-Score calculations",
+      "🎭 Better user experience with animated loading screens",
+      "🌈 Rainbow gradient themes throughout the application",
+      "📱 Improved responsive design for all screen sizes"
+    ]
+  },
+  {
+    "version": "v1.1.0",
+    "date": "2025-09-21",
+    "type": "minor",
+    "features": [
+      "Real-time data visualization with interactive charts",
+      "Subject Performance section in Add Marks page",
+      "Dynamic subject filtering in Dashboard",
+      "Enhanced export/import system with Excel support",
+      "Starred subjects with 6-subject limit",
+      "Data migration system for localStorage consistency",
+      "Responsive progress charts with tooltips"
+    ],
+    "bugfixes": [
+      "Fixed localStorage key mismatch between AddMarks and Dashboard",
+      "Fixed footer spacing issues in Add Marks page",
+      "Fixed subject persistence after page refresh",
+      "Fixed Progress Chart displaying 'Coming Soon' placeholder",
+      "Fixed AboutPage, HelpPage, and CreditsPage layout issues"
+    ],
+    "improvements": [
+      "Unified data storage using consistent localStorage keys",
+      "Better error handling for data import/export",
+      "Improved chart performance and responsiveness",
+      "Enhanced subject management across components",
+      "Better mobile responsive design"
+    ]
+  },
+  {
+    "version": "v1.0.8",
+    "date": "2025-09-15",
+    "type": "patch",
+    "features": [
+      "Complete profile data management system",
+      "Import/export functionality for backup",
+      "Comprehensive badge achievement system"
+    ],
+    "bugfixes": [
+      "Fixed profile data persistence",
+      "Fixed badge unlock conditions",
+      "Fixed export file naming"
+    ],
+    "improvements": [
+      "Better profile form validation",
+      "Improved export file structure",
+      "Enhanced badge display"
+    ]
+  },
+  {
+    "version": "v1.0.7",
+    "date": "2025-09-10",
+    "type": "patch",
+    "features": [
+      "Subject analysis with detailed statistics",
+      "Advanced todo management system",
+      "Performance tracking per subject"
+    ],
+    "bugfixes": [
+      "Fixed todo deletion functionality",
+      "Fixed subject statistics calculation",
+      "Fixed date filtering in analysis"
+    ],
+    "improvements": [
+      "Better todo organization",
+      "Improved analysis visualizations",
+      "Enhanced subject performance metrics"
+    ]
+  },
+  {
+    "version": "v1.0.6",
+    "date": "2025-09-05",
+    "type": "patch",
+    "features": [
+      "Enhanced dashboard with data filtering",
+      "Recent papers display",
+      "Statistics cards with real-time updates"
+    ],
+    "bugfixes": [
+      "Fixed dashboard data loading",
+      "Fixed filter functionality",
+      "Fixed statistics calculation errors"
+    ],
+    "improvements": [
+      "Better dashboard performance",
+      "Improved data filtering",
+      "Enhanced visual design"
+    ]
+  },
+  {
+    "version": "v1.0.5",
+    "date": "2025-08-30",
+    "type": "patch",
+    "features": [
+      "Add Marks page with subject management",
+      "Search functionality for subjects",
+      "Auto-calculation of total marks"
+    ],
+    "bugfixes": [
+      "Fixed marks saving issues",
+      "Fixed subject search functionality",
+      "Fixed total calculation errors"
+    ],
+    "improvements": [
+      "Better form validation",
+      "Improved subject search",
+      "Enhanced user feedback"
+    ]
+  },
+  {
+    "version": "v1.0.4",
+    "date": "2025-08-25",
+    "type": "patch",
+    "features": [
+      "Help page with comprehensive FAQ",
+      "About page with feature overview",
+      "Credits page with contributor information"
+    ],
+    "bugfixes": [
+      "Fixed navigation issues",
+      "Fixed responsive design problems",
+      "Fixed text overflow issues"
+    ],
+    "improvements": [
+      "Better help content organization",
+      "Improved page layouts",
+      "Enhanced readability"
+    ]
+  },
+  {
+    "version": "v1.0.3",
+    "date": "2025-08-20",
+    "type": "patch",
+    "features": [
+      "Theme switching (Light/Dark mode)",
+      "Language support (English/Sinhala)",
+      "Local storage data persistence"
+    ],
+    "bugfixes": [
+      "Fixed theme persistence",
+      "Fixed language switching",
+      "Fixed data saving issues"
+    ],
+    "improvements": [
+      "Better theme consistency",
+      "Improved language coverage",
+      "Enhanced data reliability"
+    ]
+  },
+  {
+    "version": "v1.0.2",
+    "date": "2025-08-15",
+    "type": "patch",
+    "features": [
+      "Homepage with live statistics",
+      "Quick actions navigation",
+      "Motivational quotes system"
+    ],
+    "bugfixes": [
+      "Fixed homepage loading issues",
+      "Fixed navigation problems",
+      "Fixed quote rotation"
+    ],
+    "improvements": [
+      "Better homepage design",
+      "Improved navigation flow",
+      "Enhanced user experience"
+    ]
+  },
+  {
+    "version": "v1.0.1",
+    "date": "2025-08-10",
+    "type": "patch",
+    "features": [
+      "Header navigation with responsive design",
+      "Footer with essential links",
+      "Basic routing system"
+    ],
+    "bugfixes": [
+      "Fixed mobile navigation",
+      "Fixed footer positioning",
+      "Fixed routing issues"
+    ],
+    "improvements": [
+      "Better mobile responsiveness",
+      "Improved navigation structure",
+      "Enhanced visual consistency"
+    ]
+  },
+  {
+    "version": "v1.0.0",
+    "date": "2025-08-05",
+    "type": "major",
+    "features": [
+      "Initial release of Marksy",
+      "Basic marks tracking system",
+      "Subject management",
+      "Simple dashboard",
+      "Core UI components with shadcn/ui",
+      "Tailwind CSS styling",
+      "TypeScript implementation"
+    ],
+    "bugfixes": [],
+    "improvements": [
+      "Established project foundation",
+      "Set up development environment",
+      "Created basic application structure"
+    ]
+  }
+]

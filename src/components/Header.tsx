@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { 
   Home, BookOpen, BarChart3, Trophy, User, 
-  Moon, Sun, Languages, Settings, Menu, X 
+  Moon, Sun, Languages, Settings, Menu, X, Plus 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import HeartLogo from "@/components/HeartLogo";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 interface HeaderProps {
@@ -42,7 +43,7 @@ const Header = ({
     },
     { 
       id: "marks", 
-      icon: BookOpen, 
+      icon: Plus, 
       label: language === "en" ? "Marks" : "ලකුණු" 
     },
     { 
@@ -63,19 +64,8 @@ const Header = ({
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-gradient-academic rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
-              <div className="h-6 w-6 bg-white rounded flex items-center justify-center">
-                <span className="text-primary font-bold text-sm">M</span>
-              </div>
-            </div>
-            <div className="hidden sm:block">
-              <h1 className="text-xl font-bold text-gradient animate-fade-in">
-                Marksy
-              </h1>
-              <p className="text-xs text-muted-foreground">
-                {language === "en" ? "Academic Excellence Tracker" : "ශාස්ත්‍රීය විශිෂ්ටතා ට්‍රැකර්"}
-              </p>
-            </div>
+            <HeartLogo size={36} withText className="hover:scale-[1.02] transition-transform" />
+            <span className="sr-only">Marksy – {language === "en" ? "Academic Excellence Tracker" : "ශාස්ත්‍රීය විශිෂ්ටතා ට්‍රැකර්"}</span>
           </div>
 
           {/* Desktop Navigation - Icons Only with Hover Text */}

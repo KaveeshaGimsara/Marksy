@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { HelpPageProps } from "@/types";
+import SupportButton from "@/components/SupportButton";
 
 const HelpPage = ({ language: initialLanguage }: HelpPageProps) => {
   const [language] = useState<"en" | "si">(initialLanguage || "en");
@@ -248,6 +249,9 @@ const HelpPage = ({ language: initialLanguage }: HelpPageProps) => {
           </div>
         </CardContent>
       </Card>
+      </div>
+      <div className="mt-8 flex justify-center">
+        <SupportButton variant="subtle" />
       </div>
     </div>
   );
