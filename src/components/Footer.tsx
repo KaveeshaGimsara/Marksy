@@ -58,11 +58,13 @@ const Footer = ({ activeSection, setActiveSection, showAdmin, setShowAdmin, lang
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => window.open('/license', '_blank')}
-              className="text-xs hover:bg-primary/10 transition-colors"
+              onClick={() => setActiveSection("license")}
+              className={`text-xs transition-colors ${
+                activeSection === "license" ? "bg-primary/20 text-primary" : "hover:bg-primary/10"
+              }`}
             >
               <Code className="h-3 w-3 mr-1" />
-              License
+              {language === 'en' ? 'License' : 'බලපත්‍රය'}
             </Button>
             
             <Button

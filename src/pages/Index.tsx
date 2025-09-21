@@ -13,6 +13,7 @@ import AboutPage from "@/components/AboutPage";
 import HelpPage from "@/components/HelpPage";
 import CreditsPage from "@/components/CreditsPage";
 import VersionPage from "@/components/VersionPage";
+import LicensePage from "@/components/LicensePage";
 import Footer from "@/components/Footer";
 import BuyMeCoffee from "@/components/BuyMeCoffee";
 import { Button } from "@/components/ui/button";
@@ -85,6 +86,7 @@ const Index = () => {
     { id: "about", label: language === "en" ? "About" : "පිළිබඳව", icon: User },
     { id: "help", label: language === "en" ? "Help" : "උදව්", icon: HelpCircle },
     { id: "credits", label: language === "en" ? "Credits" : "ගෞරවය", icon: Star },
+    { id: "license", label: language === "en" ? "License" : "බලපත්‍රය", icon: Settings },
   ];
 
   const renderActiveSection = () => {
@@ -108,6 +110,8 @@ const Index = () => {
         return <CreditsPage />;
       case "version":
         return <VersionPage language={language} />;
+      case "license":
+        return <LicensePage />;
       default:
         return <Homepage language={language} onNavigate={setActiveSection} />;
     }

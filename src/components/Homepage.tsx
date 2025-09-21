@@ -88,12 +88,40 @@ const Homepage = ({ language, onNavigate }: HomepageProps) => {
         const totalMarks = marksData.reduce((sum: number, entry: any) => sum + (entry.total || 0), 0);
         const papersCompleted = marksData.length;
         const averageScore = papersCompleted > 0 ? Math.round((totalMarks / papersCompleted) * 10) / 10 : 0;
-        
-        // Calculate streak (simplified - based on recent activity)
-        const lastEntry = marksData[marksData.length - 1];
-        const lastDate = lastEntry ? new Date(lastEntry.date) : new Date();
-        const daysSinceLastEntry = Math.floor((Date.now() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
-        const streak = Math.max(0, 7 - daysSinceLastEntry); // Simple streak calculation
+
+        // Real consecutive day streak calculation:
+        // 1. Collect unique calendar dates that have at least one entry.
+        // 2. Sort descending.
+        // 3. Starting from today, count backwards while each prior day exists in the set.
+        const dateSet = new Set<string>();
+        for (const entry of marksData) {
+          if (entry.date) {
+            dateSet.add(entry.date.slice(0,10));
+          } else if (entry.timestamp) {
+            const d = new Date(entry.timestamp);
+            dateSet.add(d.toISOString().slice(0,10));
+          }
+        }
+        let streak = 0;
+        const today = new Date();
+        // Helper to format date as YYYY-MM-DD in local time
+        const fmt = (d: Date) => {
+          const year = d.getFullYear();
+          const month = String(d.getMonth() + 1).padStart(2, '0');
+          const day = String(d.getDate()).padStart(2, '0');
+          return `${year}-${month}-${day}`;
+        };
+        // Iterate backwards until a day without activity is found
+        while (true) {
+          const key = fmt(today);
+            if (dateSet.has(key)) {
+              streak += 1;
+              // Move one day back
+              today.setDate(today.getDate() - 1);
+            } else {
+              break;
+            }
+        }
         
         setStats({
           totalMarks,

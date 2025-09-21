@@ -216,7 +216,7 @@ const LicensePage: React.FC<LicensePageProps> = ({ onBack }) => {
               </div>
               <p className="text-gray-600 max-w-2xl mx-auto">
                 Empowering Sri Lankan A/L students with smart progress tracking and analysis tools. 
-                Built with ❤️ by KGX for the student community.
+                Built with ❤️ by Kaveesha Gimsara for the student community.
               </p>
               <div className="flex justify-center gap-4">
                 <Button 
