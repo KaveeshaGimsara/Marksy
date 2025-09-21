@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
-import { User, Camera, Edit3, Save, Trophy, Star, Upload } from "lucide-react";
+import { User, Camera, Edit3, Save, Trophy, Star, Upload, Download, FileText, FileSpreadsheet, Import } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { ProfilePageProps } from "@/types";
+import * as XLSX from 'xlsx';
 
 interface ProfileData {
   name: string;
@@ -31,6 +33,7 @@ interface BadgeData {
 const ProfilePage = ({ language }: ProfilePageProps) => {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
+  const [showExportDialog, setShowExportDialog] = useState(false);
   const [profileData, setProfileData] = useState<ProfileData>({
     name: "",
     age: "",
@@ -152,15 +155,372 @@ const ProfilePage = ({ language }: ProfilePageProps) => {
 
   const unlockedBadgesCount = badges.filter(badge => badge.unlocked).length;
 
+  // Comprehensive data collection function
+  const getAllAppData = () => {
+    const currentDate = new Date().toISOString();
+    const appVersion = "1.1.0";
+    
+    return {
+      metadata: {
+        exportDate: currentDate,
+        appVersion: appVersion,
+        deviceInfo: navigator.userAgent,
+        watermark: "Exported from AL Progress Wizard (Marksy) - Your Academic Journey, Simplified"
+      },
+      profile: profileData,
+      badges: badges,
+      alMarks: JSON.parse(localStorage.getItem("alMarksData") || "[]"),
+      subjects: JSON.parse(localStorage.getItem("alSubjects") || "[]"),
+      todos: JSON.parse(localStorage.getItem("alTodos") || "[]"),
+      theme: localStorage.getItem("theme") || "light",
+      language: localStorage.getItem("language") || "en",
+      settings: {
+        notifications: localStorage.getItem("notifications") || "enabled",
+        autoSave: localStorage.getItem("autoSave") || "enabled"
+      }
+    };
+  };
+
+  // JSON Export function
+  const exportToJSON = () => {
+    try {
+      const allData = getAllAppData();
+      const dataStr = JSON.stringify(allData, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `marksy-data-export-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      setShowExportDialog(false); // Close dialog after successful export
+      
+      toast({
+        title: "Export Successful",
+        description: "Your complete data has been exported as JSON file.",
+        variant: "default",
+      });
+    } catch (error) {
+      toast({
+        title: "Export Failed",
+        description: "There was an error exporting your data.",
+        variant: "destructive",
+      });
+      setShowExportDialog(false); // Close dialog even on error
+    }
+  };
+
+  // Excel Export function
+  const exportToExcel = () => {
+    try {
+      const allData = getAllAppData();
+      const workbook = XLSX.utils.book_new();
+
+      // Profile Sheet
+      const profileSheet = XLSX.utils.json_to_sheet([{
+        'Name': profileData.name,
+        'Age': profileData.age,
+        'School': profileData.school,
+        'Grade': profileData.grade,
+        'Subjects': profileData.subjects.join(', '),
+        'Unlocked Badges': unlockedBadgesCount,
+        'Export Date': allData.metadata.exportDate,
+        'Watermark': allData.metadata.watermark
+      }]);
+      XLSX.utils.book_append_sheet(workbook, profileSheet, 'Profile');
+
+      // Marks Sheet
+      if (allData.alMarks.length > 0) {
+        const marksSheet = XLSX.utils.json_to_sheet(allData.alMarks.map(mark => ({
+          'Subject': mark.subject,
+          'Paper Name': mark.paperName,
+          'Date': mark.date,
+          'MCQ': mark.mcq || 0,
+          'SEQ': mark.seq || 0,
+          'Essay': mark.essay || 0,
+          'Total': mark.total,
+          'Timestamp': new Date(mark.timestamp).toLocaleString()
+        })));
+        XLSX.utils.book_append_sheet(workbook, marksSheet, 'Marks');
+      }
+
+      // Subjects Sheet
+      if (allData.subjects.length > 0) {
+        const subjectsSheet = XLSX.utils.json_to_sheet(allData.subjects.map(subject => ({
+          'Subject Name': subject.name,
+          'Is Favorite': subject.isFavorite ? 'Yes' : 'No'
+        })));
+        XLSX.utils.book_append_sheet(workbook, subjectsSheet, 'Subjects');
+      }
+
+      // Todos Sheet
+      if (allData.todos.length > 0) {
+        const todosSheet = XLSX.utils.json_to_sheet(allData.todos.map(todo => ({
+          'Task': todo.task,
+          'Subject': todo.subject,
+          'Completed': todo.completed ? 'Yes' : 'No',
+          'Created Date': new Date(todo.createdAt).toLocaleDateString()
+        })));
+        XLSX.utils.book_append_sheet(workbook, todosSheet, 'Study Tasks');
+      }
+
+      // Badges Sheet
+      const badgesSheet = XLSX.utils.json_to_sheet(badges.map(badge => ({
+        'Badge Name': badge.name,
+        'Description': badge.description,
+        'Status': badge.unlocked ? 'Unlocked' : 'Locked',
+        'Icon': badge.icon
+      })));
+      XLSX.utils.book_append_sheet(workbook, badgesSheet, 'Badges');
+
+      // Settings Sheet
+      const settingsSheet = XLSX.utils.json_to_sheet([{
+        'Theme': allData.theme,
+        'Language': allData.language,
+        'Notifications': allData.settings.notifications,
+        'Auto Save': allData.settings.autoSave,
+        'App Version': allData.metadata.appVersion,
+        'Device Info': allData.metadata.deviceInfo,
+        'Watermark': allData.metadata.watermark
+      }]);
+      XLSX.utils.book_append_sheet(workbook, settingsSheet, 'Settings');
+
+      // Write file
+      XLSX.writeFile(workbook, `marksy-data-export-${new Date().toISOString().split('T')[0]}.xlsx`);
+      
+      setShowExportDialog(false); // Close dialog after successful export
+      
+      toast({
+        title: "Excel Export Successful",
+        description: "Your complete data has been exported as Excel file with multiple sheets.",
+        variant: "default",
+      });
+    } catch (error) {
+      toast({
+        title: "Excel Export Failed",
+        description: "There was an error exporting your data to Excel.",
+        variant: "destructive",
+      });
+      setShowExportDialog(false); // Close dialog even on error
+    }
+  };
+
+  // JSON Import function
+  const importFromJSON = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const importedData = JSON.parse(e.target?.result as string);
+        
+        // Validate data structure
+        if (!importedData.metadata || !importedData.metadata.watermark?.includes('AL Progress Wizard')) {
+          toast({
+            title: "Invalid File",
+            description: "This doesn't appear to be a valid Marksy export file.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        // Import profile data
+        if (importedData.profile) {
+          setProfileData(importedData.profile);
+          localStorage.setItem("marksy-profile", JSON.stringify(importedData.profile));
+        }
+
+        // Import marks data (consolidate both old and new formats)
+        let marksToImport = [];
+        if (importedData.marks) {
+          marksToImport = [...marksToImport, ...importedData.marks];
+        }
+        if (importedData.alMarks) {
+          marksToImport = [...marksToImport, ...importedData.alMarks];
+        }
+        if (marksToImport.length > 0) {
+          localStorage.setItem("alMarksData", JSON.stringify(marksToImport));
+        }
+
+        // Import subjects
+        if (importedData.subjects) {
+          localStorage.setItem("alSubjects", JSON.stringify(importedData.subjects));
+        }
+
+        // Import todos
+        if (importedData.todos) {
+          localStorage.setItem("alTodos", JSON.stringify(importedData.todos));
+        }
+
+        // Import settings
+        if (importedData.theme) {
+          localStorage.setItem("theme", importedData.theme);
+        }
+        if (importedData.language) {
+          localStorage.setItem("language", importedData.language);
+        }
+
+        // Import badges
+        if (importedData.badges) {
+          setBadges(importedData.badges);
+        }
+
+        toast({
+          title: "Import Successful",
+          description: `Data imported successfully! Please refresh the page to see all changes.`,
+          variant: "default",
+        });
+
+        // Trigger a page refresh after a delay
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+
+      } catch (error) {
+        toast({
+          title: "Import Failed",
+          description: "Failed to parse the imported file. Please check the file format.",
+          variant: "destructive",
+        });
+      }
+    };
+    reader.readAsText(file);
+    
+    // Reset input
+    event.target.value = '';
+  };
+
+  // Excel Import function
+  const importFromExcel = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = new Uint8Array(e.target?.result as ArrayBuffer);
+        const workbook = XLSX.read(data, { type: 'array' });
+        
+        let importedData: any = {};
+
+        // Read Profile sheet
+        if (workbook.SheetNames.includes('Profile')) {
+          const profileSheet = workbook.Sheets['Profile'];
+          const profileData = XLSX.utils.sheet_to_json(profileSheet)[0] as any;
+          
+          if (profileData && profileData['Watermark']?.includes('AL Progress Wizard')) {
+            importedData.profile = {
+              name: profileData['Name'] || '',
+              age: profileData['Age'] || '',
+              school: profileData['School'] || '',
+              grade: profileData['Grade'] || '',
+              subjects: profileData['Subjects'] ? profileData['Subjects'].split(', ') : [],
+              profilePicture: '',
+              unlockedBadges: []
+            };
+          } else {
+            toast({
+              title: "Invalid Excel File",
+              description: "This doesn't appear to be a valid Marksy export file.",
+              variant: "destructive",
+            });
+            return;
+          }
+        }
+
+        // Read Marks sheet
+        if (workbook.SheetNames.includes('Marks')) {
+          const marksSheet = workbook.Sheets['Marks'];
+          importedData.marks = XLSX.utils.sheet_to_json(marksSheet).map((row: any) => ({
+            subject: row['Subject'],
+            paperName: row['Paper Name'],
+            date: row['Date'],
+            mcq: row['MCQ'] || 0,
+            seq: row['SEQ'] || 0,
+            essay: row['Essay'] || 0,
+            total: row['Total'],
+            timestamp: new Date(row['Timestamp']).getTime()
+          }));
+        }
+
+        // Read Subjects sheet
+        if (workbook.SheetNames.includes('Subjects')) {
+          const subjectsSheet = workbook.Sheets['Subjects'];
+          importedData.subjects = XLSX.utils.sheet_to_json(subjectsSheet).map((row: any) => ({
+            name: row['Subject Name'],
+            isFavorite: row['Is Favorite'] === 'Yes'
+          }));
+        }
+
+        // Read Study Tasks sheet
+        if (workbook.SheetNames.includes('Study Tasks')) {
+          const todosSheet = workbook.Sheets['Study Tasks'];
+          importedData.todos = XLSX.utils.sheet_to_json(todosSheet).map((row: any, index: number) => ({
+            id: Date.now() + index,
+            task: row['Task'],
+            subject: row['Subject'],
+            completed: row['Completed'] === 'Yes',
+            createdAt: new Date(row['Created Date']).toISOString()
+          }));
+        }
+
+        // Import the data using the same logic as JSON import
+        if (importedData.profile) {
+          setProfileData(importedData.profile);
+          localStorage.setItem("marksy-profile", JSON.stringify(importedData.profile));
+        }
+
+        if (importedData.marks) {
+          localStorage.setItem("alMarksData", JSON.stringify(importedData.marks));
+        }
+
+        if (importedData.subjects) {
+          localStorage.setItem("alSubjects", JSON.stringify(importedData.subjects));
+        }
+
+        if (importedData.todos) {
+          localStorage.setItem("alTodos", JSON.stringify(importedData.todos));
+        }
+
+        toast({
+          title: "Excel Import Successful",
+          description: "Data imported successfully from Excel! Please refresh the page to see all changes.",
+          variant: "default",
+        });
+
+        // Trigger a page refresh after a delay
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+
+      } catch (error) {
+        toast({
+          title: "Excel Import Failed",
+          description: "Failed to parse the Excel file. Please check the file format.",
+          variant: "destructive",
+        });
+      }
+    };
+    reader.readAsArrayBuffer(file);
+    
+    // Reset input
+    event.target.value = '';
+  };
+
   return (
-    <div className="space-y-6 animate-slide-up">
-      <div className="text-center">
+    <div className="px-4 py-6">
+      <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-gradient mb-2">My Profile</h2>
         <p className="text-muted-foreground">Manage your academic profile and view achievements</p>
       </div>
 
-      {/* Profile Information Card */}
-      <Card className="academic-card">
+      <div className="space-y-6">
+        {/* Profile Information Card */}
+        <Card className="academic-card">
         <CardHeader>
           <div className="flex justify-between items-center">
             <CardTitle className="flex items-center space-x-2">
@@ -404,6 +764,143 @@ const ProfilePage = ({ language }: ProfilePageProps) => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Data Management Card */}
+      <Card className="academic-card">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Download className="h-5 w-5" />
+            <span>Data Management</span>
+          </CardTitle>
+          <CardDescription>
+            Export and import your complete academic data including marks, subjects, todos, badges, and settings
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            {/* Export Section */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+                <FileText className="h-5 w-5" />
+                <span>Export Data</span>
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Download your complete academic data with watermark. Works on any device and includes all your marks, subjects, study tasks, badges, and settings.
+              </p>
+              <div className="flex justify-center">
+                <Dialog open={showExportDialog} onOpenChange={setShowExportDialog}>
+                  <DialogTrigger asChild>
+                    <Button className="flex items-center space-x-2">
+                      <Download className="h-4 w-4" />
+                      <span>Export Data</span>
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle className="flex items-center space-x-2">
+                        <Download className="h-5 w-5" />
+                        <span>Choose Export Format</span>
+                      </DialogTitle>
+                      <DialogDescription>
+                        Select your preferred format to export your complete academic data.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                      <div className="grid grid-cols-1 gap-4">
+                        <Button 
+                          onClick={exportToJSON} 
+                          className="flex items-center justify-center space-x-2 h-14"
+                        >
+                          <FileText className="h-5 w-5" />
+                          <div className="text-left">
+                            <div className="font-medium">JSON Format</div>
+                            <div className="text-xs opacity-80">Universal format, smaller file size</div>
+                          </div>
+                        </Button>
+                        <Button 
+                          onClick={exportToExcel} 
+                          variant="outline" 
+                          className="flex items-center justify-center space-x-2 h-14"
+                        >
+                          <FileSpreadsheet className="h-5 w-5" />
+                          <div className="text-left">
+                            <div className="font-medium">Excel Format</div>
+                            <div className="text-xs opacity-80">Organized sheets, easy to view</div>
+                          </div>
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </div>
+
+            {/* Import Section */}
+            <div className="border-t pt-6">
+              <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+                <Import className="h-5 w-5" />
+                <span>Import Data</span>
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Import your previously exported data. This will merge with your current data. Page will refresh automatically after import.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <input
+                    type="file"
+                    id="json-import"
+                    accept=".json"
+                    onChange={importFromJSON}
+                    className="hidden"
+                  />
+                  <Button 
+                    onClick={() => document.getElementById('json-import')?.click()}
+                    variant="outline"
+                    className="w-full flex items-center space-x-2"
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span>Import JSON</span>
+                  </Button>
+                </div>
+                <div>
+                  <input
+                    type="file"
+                    id="excel-import"
+                    accept=".xlsx,.xls"
+                    onChange={importFromExcel}
+                    className="hidden"
+                  />
+                  <Button 
+                    onClick={() => document.getElementById('excel-import')?.click()}
+                    variant="outline"
+                    className="w-full flex items-center space-x-2"
+                  >
+                    <FileSpreadsheet className="h-4 w-4" />
+                    <span>Import Excel</span>
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Device Compatibility Info */}
+            <div className="bg-muted/50 p-4 rounded-lg">
+              <h4 className="font-medium mb-2 flex items-center space-x-2">
+                <Trophy className="h-4 w-4" />
+                <span>Quality Features</span>
+              </h4>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>✅ Works on all devices (Mobile, Tablet, Desktop)</li>
+                <li>✅ Includes watermark and metadata</li>
+                <li>✅ Complete data backup (Images, Todos, Marks, Charts, Badges)</li>
+                <li>✅ Secure JSON and Excel formats</li>
+                <li>✅ Easy data transfer between devices</li>
+                <li>✅ Automatic validation and error handling</li>
+              </ul>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      </div>
     </div>
   );
 };

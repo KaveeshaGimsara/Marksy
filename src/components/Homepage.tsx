@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { 
   Clock, Calendar, TrendingUp, Award, Target, Brain,
   ChevronRight, Sparkles, BookOpen, Users, Zap, Download,
-  Timer, Bell, GraduationCap, BarChart, Plus, Eye, Settings
+  Timer, Bell, GraduationCap, BarChart, Plus, Eye, Settings, Code
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,37 +11,22 @@ import { Progress } from "@/components/ui/progress";
 
 interface HomepageProps {
   language: string;
+  onNavigate?: (section: string) => void;
 }
 
-const Homepage = ({ language }: HomepageProps) => {
+const Homepage = ({ language, onNavigate }: HomepageProps) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [studentName, setStudentName] = useState("");
   const [currentQuote, setCurrentQuote] = useState(0);
-  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
-  // AL Exam Date: November 11, 2025
-  const alExamDate = new Date("2025-11-11T08:00:00");
-
-  // Update time and countdown every second
+  // Update time every second
   useEffect(() => {
     const timer = setInterval(() => {
-      const now = new Date();
-      setCurrentTime(now);
-      
-      // Calculate countdown to AL exam
-      const difference = alExamDate.getTime() - now.getTime();
-      if (difference > 0) {
-        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-        
-        setCountdown({ days, hours, minutes, seconds });
-      }
+      setCurrentTime(new Date());
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [alExamDate]);
+  }, []);
 
   // Load student name from localStorage
   useEffect(() => {
@@ -97,26 +82,26 @@ const Homepage = ({ language }: HomepageProps) => {
     // Calculate real stats from localStorage
     const calculateStats = () => {
       try {
-        const marksData = JSON.parse(localStorage.getItem("marksy-marks") || "[]");
+        // Use the correct localStorage key
+        const marksData = JSON.parse(localStorage.getItem("alMarksData") || "[]");
         const profileData = JSON.parse(localStorage.getItem("marksy-profile") || "{}");
         
-        const totalMarks = marksData.reduce((sum: number, entry: any) => sum + (entry.marks || 0), 0);
+        const totalMarks = marksData.reduce((sum: number, entry: any) => sum + (entry.total || 0), 0);
         const papersCompleted = marksData.length;
         const averageScore = papersCompleted > 0 ? Math.round((totalMarks / papersCompleted) * 10) / 10 : 0;
         
-        // Calculate streak (simplified - days since last entry)
+        // Calculate streak (simplified - based on recent activity)
         const lastEntry = marksData[marksData.length - 1];
         const lastDate = lastEntry ? new Date(lastEntry.date) : new Date();
         const daysSinceLastEntry = Math.floor((Date.now() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
         const streak = Math.max(0, 7 - daysSinceLastEntry); // Simple streak calculation
         
-        // Study hours (mock calculation based on papers completed)
+        // Study hours (calculation based on papers completed)
         const studyHours = Math.round(papersCompleted * 2.5);
         
-        // Target progress (based on AL exam preparation)
-        const daysUntilExam = Math.floor((alExamDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-        const totalDaysToExam = Math.floor((alExamDate.getTime() - new Date("2025-01-01").getTime()) / (1000 * 60 * 60 * 24));
-        const targetProgress = Math.min(100, Math.max(0, Math.round(((totalDaysToExam - daysUntilExam) / totalDaysToExam) * 100)));
+        // Target progress (based on papers completed vs expected)
+        const targetPapers = 50; // Target for the year
+        const targetProgress = targetPapers > 0 ? Math.min(100, Math.round((papersCompleted / targetPapers) * 100)) : 0;
         
         setStats({
           totalMarks,
@@ -137,7 +122,7 @@ const Homepage = ({ language }: HomepageProps) => {
     const statsTimer = setInterval(calculateStats, 60000);
     
     return () => clearInterval(statsTimer);
-  }, [alExamDate]);
+  }, []);
 
   // Mock data - in real app this would come from localStorage
   // const stats = {
@@ -162,19 +147,19 @@ const Homepage = ({ language }: HomepageProps) => {
   ];
 
   const quickActions = language === "en" ? [
-    { icon: Plus, label: "Add Marks", action: "marks", color: "bg-primary", description: "Record new test scores" },
+    { icon: Plus, label: "Add Marks", action: "addmarks", color: "bg-primary", description: "Record new test scores" },
     { icon: BarChart, label: "View Dashboard", action: "dashboard", color: "bg-secondary", description: "Check your progress" },
     { icon: Award, label: "Subject Analysis", action: "analysis", color: "bg-accent", description: "Analyze performance" },
     { icon: Target, label: "Set Goals", action: "goals", color: "bg-warning", description: "Plan your targets" },
     { icon: Eye, label: "Profile", action: "profile", color: "bg-destructive", description: "Manage your profile" },
-    { icon: Settings, label: "Settings", action: "settings", color: "bg-muted", description: "App preferences" }
+    { icon: Settings, label: "About", action: "about", color: "bg-muted", description: "App information" }
   ] : [
-    { icon: Plus, label: "ලකුණු එකතු කරන්න", action: "marks", color: "bg-primary", description: "නව පරීක්ෂණ ලකුණු වාර්තා කරන්න" },
+    { icon: Plus, label: "ලකුණු එකතු කරන්න", action: "addmarks", color: "bg-primary", description: "නව පරීක්ෂණ ලකුණු වාර්තා කරන්න" },
     { icon: BarChart, label: "ප්‍රගතිය බලන්න", action: "dashboard", color: "bg-secondary", description: "ඔබේ ප්‍රගතිය පරීක්ෂා කරන්න" },
     { icon: Award, label: "විෂය විශ්ලේෂණය", action: "analysis", color: "bg-accent", description: "කාර්ය සාධනය විශ්ලේෂණය කරන්න" },
     { icon: Target, label: "ඉලක්ක සකසන්න", action: "goals", color: "bg-warning", description: "ඔබේ ඉලක්ක සැලසුම් කරන්න" },
     { icon: Eye, label: "පැතිකඩ", action: "profile", color: "bg-destructive", description: "ඔබේ පැතිකඩ කළමනාකරණය කරන්න" },
-    { icon: Settings, label: "සැකසීම්", action: "settings", color: "bg-muted", description: "යෙදුම් මනාප" }
+    { icon: Settings, label: "තොරතුරු", action: "about", color: "bg-muted", description: "යෙදුම් තොරතුරු" }
   ];
 
   return (
@@ -230,45 +215,6 @@ const Homepage = ({ language }: HomepageProps) => {
           </CardContent>
         </Card>
       </div>
-
-      {/* AL Exam Countdown */}
-      <Card className="academic-card bg-gradient-to-r from-red-500/10 to-orange-500/10 border-red-200 dark:border-red-800 countdown-card">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2 text-red-700 dark:text-red-300">
-            <Timer className="h-5 w-5" />
-            <span>{language === "en" ? "A/L Examination 2025 Countdown" : "උ.පො.ස. පරීක්ෂණ 2025 ගණනය"}</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center space-y-4">
-            <div className="text-2xl font-bold text-red-600 dark:text-red-400">
-              {language === "en" ? "November 11, 2025" : "2025 නොවැම්බර් 11"}
-            </div>
-            <div className="grid grid-cols-4 gap-4">
-              <div className="text-center p-3 bg-red-50 dark:bg-red-950/30 rounded-lg border dark:border-red-800/50">
-                <div className="text-2xl font-bold text-red-600 dark:text-red-400 countdown-number">{countdown.days}</div>
-                <div className="text-sm text-red-500 dark:text-red-400">{language === "en" ? "Days" : "දින"}</div>
-              </div>
-              <div className="text-center p-3 bg-red-50 dark:bg-red-950/30 rounded-lg border dark:border-red-800/50">
-                <div className="text-2xl font-bold text-red-600 dark:text-red-400 countdown-number">{countdown.hours}</div>
-                <div className="text-sm text-red-500 dark:text-red-400">{language === "en" ? "Hours" : "පැය"}</div>
-              </div>
-              <div className="text-center p-3 bg-red-50 dark:bg-red-950/30 rounded-lg border dark:border-red-800/50">
-                <div className="text-2xl font-bold text-red-600 dark:text-red-400 countdown-number">{countdown.minutes}</div>
-                <div className="text-sm text-red-500 dark:text-red-400">{language === "en" ? "Minutes" : "මිනිත්තු"}</div>
-              </div>
-              <div className="text-center p-3 bg-red-50 dark:bg-red-950/30 rounded-lg border dark:border-red-800/50">
-                <div className="text-2xl font-bold text-red-600 dark:text-red-400 countdown-number">{countdown.seconds}</div>
-                <div className="text-sm text-red-500 dark:text-red-400">{language === "en" ? "Seconds" : "තත්පර"}</div>
-              </div>
-            </div>
-            <Progress value={stats.targetProgress} className="w-full" />
-            <div className="text-sm text-muted-foreground">
-              {language === "en" ? `${stats.targetProgress}% exam preparation progress` : `${stats.targetProgress}% පරීක්ෂණ සූදානම් ප්‍රගතිය`}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Enhanced Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -343,6 +289,7 @@ const Homepage = ({ language }: HomepageProps) => {
                 key={index}
                 variant="outline"
                 className="h-24 flex-col space-y-2 academic-button hover-scale group relative overflow-hidden"
+                onClick={() => onNavigate && onNavigate(action.action)}
               >
                 <action.icon className="h-6 w-6 group-hover:scale-110 transition-transform" />
                 <span className="text-xs font-medium text-center">{action.label}</span>

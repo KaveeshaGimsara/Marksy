@@ -2,10 +2,6 @@ export interface AboutPageProps {
   language: "en" | "si";
 }
 
-export interface CreditsPageProps {
-  language: "en" | "si";
-}
-
 export interface DashboardProps {
   language: "en" | "si";
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Trophy, Target, Award, CheckCircle, Clock, BookOpen } from "lucide-react";
+import { Trophy, Target, Award, CheckCircle, Clock, BookOpen, Trash2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -102,34 +102,30 @@ const SubjectAnalysis = ({ language }: SubjectAnalysisProps) => {
     localStorage.setItem("alTodos", JSON.stringify(updatedTodos));
   };
 
-  const getAchievements = () => {
-    const totalPapers = marksData.length;
-    const grades = getGradeDistribution();
-    const achievements = [];
-
-    if (totalPapers >= 1) achievements.push({ name: "First Steps", desc: "Completed your first paper", icon: "🎯" });
-    if (totalPapers >= 5) achievements.push({ name: "Getting Started", desc: "Completed 5 papers", icon: "📚" });
-    if (totalPapers >= 10) achievements.push({ name: "Consistent Learner", desc: "Completed 10 papers", icon: "⭐" });
-    if (totalPapers >= 25) achievements.push({ name: "Dedicated Student", desc: "Completed 25 papers", icon: "🏆" });
-    if (grades.A >= 5) achievements.push({ name: "A-Grade Achiever", desc: "Earned 5 A grades", icon: "🌟" });
-    if (grades.A >= 10) achievements.push({ name: "Excellence Master", desc: "Earned 10 A grades", icon: "💎" });
-
-    return achievements;
+  const deleteTodo = (id: string) => {
+    const updatedTodos = todos.filter(todo => todo.id !== id);
+    setTodos(updatedTodos);
+    localStorage.setItem("alTodos", JSON.stringify(updatedTodos));
+    
+    toast({
+      title: "Task Deleted",
+      description: "Study task has been removed from your list.",
+    });
   };
 
   const subjectStats = getSubjectStats();
   const gradeDistribution = getGradeDistribution();
-  const achievements = getAchievements();
 
   return (
-    <div className="space-y-6 animate-slide-up">
-      <div className="text-center">
+    <div className="px-4 py-6">
+      <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-gradient mb-2">Subject Analysis & Goals</h2>
         <p className="text-muted-foreground">Detailed insights into your performance and study planning</p>
       </div>
 
-      {/* Statistics Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="space-y-6">
+        {/* Statistics Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="academic-card">
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
@@ -166,17 +162,6 @@ const SubjectAnalysis = ({ language }: SubjectAnalysisProps) => {
           </CardContent>
         </Card>
 
-        <Card className="academic-card">
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Award className="h-5 w-5 text-secondary" />
-              <div>
-                <p className="text-sm text-muted-foreground">Achievements</p>
-                <p className="text-xl font-bold">{achievements.length}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Subject Performance */}
@@ -247,35 +232,6 @@ const SubjectAnalysis = ({ language }: SubjectAnalysisProps) => {
         </CardContent>
       </Card>
 
-      {/* Achievements */}
-      <Card className="academic-card">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Trophy className="h-5 w-5" />
-            <span>Achievements & Milestones</span>
-          </CardTitle>
-          <CardDescription>Your academic accomplishments</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {achievements.length === 0 ? (
-            <div className="text-center py-8">
-              <Trophy className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">Complete more papers to unlock achievements!</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {achievements.map((achievement, index) => (
-                <div key={index} className="academic-card p-4 text-center">
-                  <div className="text-3xl mb-2">{achievement.icon}</div>
-                  <h3 className="font-semibold">{achievement.name}</h3>
-                  <p className="text-sm text-muted-foreground">{achievement.desc}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
       {/* To-Do List */}
       <Card className="academic-card">
         <CardHeader>
@@ -323,7 +279,7 @@ const SubjectAnalysis = ({ language }: SubjectAnalysisProps) => {
               todos.map((todo) => (
                 <div
                   key={todo.id}
-                  className={`flex items-center space-x-3 p-3 border rounded-lg ${
+                  className={`flex items-center space-x-3 p-3 border rounded-lg group ${
                     todo.completed ? 'bg-muted/50 opacity-75' : 'hover:bg-muted/30'
                   }`}
                 >
@@ -344,12 +300,134 @@ const SubjectAnalysis = ({ language }: SubjectAnalysisProps) => {
                       </span>
                     </div>
                   </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => deleteTodo(todo.id)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               ))
             )}
           </div>
         </CardContent>
       </Card>
+
+      {/* Subject Performance Section */}
+      <Card className="academic-card">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Award className="h-5 w-5" />
+            <span>{language === "en" ? "Subject Performance Overview" : "විෂය කාර්යසාධන සාරාංශය"}</span>
+          </CardTitle>
+          <CardDescription>
+            {language === "en" 
+              ? "Detailed performance analysis for each subject with marks data" 
+              : "ලකුණු දත්ත සහිත එක් එක් විෂය සඳහා සවිස්තරාත්මක කාර්යසාධන විශ්ලේෂණය"
+            }
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {(() => {
+              const subjectsWithMarks = [...new Set(marksData.map((item: any) => item.subject))].filter(Boolean);
+              
+              if (subjectsWithMarks.length === 0) {
+                return (
+                  <div className="col-span-full text-center py-8">
+                    <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-muted-foreground mb-2">
+                      {language === "en" ? "No Performance Data" : "කාර්යසාධන දත්ත නැත"}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {language === "en" 
+                        ? "Add some marks to see your subject performance analysis" 
+                        : "ඔබේ විෂය කාර්යසාධන විශ්ලේෂණය බැලීමට සමහර ලකුණු එකතු කරන්න"
+                      }
+                    </p>
+                  </div>
+                );
+              }
+
+              return subjectsWithMarks.map((subject: string) => {
+                const subjectMarks = marksData.filter((item: any) => item.subject === subject);
+                const totalPapers = subjectMarks.length;
+                const totalMarks = subjectMarks.reduce((sum: number, item: any) => sum + (item.total || 0), 0);
+                const avgMarksValue = totalPapers > 0 ? (totalMarks / totalPapers) : 0;
+                const avgMarks = avgMarksValue.toFixed(1);
+                const bestMark = Math.max(...subjectMarks.map((item: any) => item.total || 0));
+                const worstMark = Math.min(...subjectMarks.map((item: any) => item.total || 0));
+                const improvement = subjectMarks.length >= 2 ? 
+                  (subjectMarks[subjectMarks.length - 1].total || 0) - (subjectMarks[0].total || 0) : 0;
+                
+                return (
+                  <Card key={subject} className="border-l-4 border-l-primary hover:shadow-md transition-shadow">
+                    <CardContent className="p-6">
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-bold text-xl text-primary">{subject}</h3>
+                          <Badge variant={avgMarksValue >= 75 ? "default" : avgMarksValue >= 50 ? "secondary" : "destructive"}>
+                            {avgMarksValue >= 75 ? "Excellent" : avgMarksValue >= 50 ? "Good" : "Needs Work"}
+                          </Badge>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="text-center p-3 bg-primary/10 rounded-lg">
+                            <div className="text-2xl font-bold text-primary">{totalPapers}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {language === "en" ? "Papers" : "ප්‍රශ්නපත්‍ර"}
+                            </div>
+                          </div>
+                          <div className="text-center p-3 bg-secondary/10 rounded-lg">
+                            <div className="text-2xl font-bold text-secondary">{avgMarks}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {language === "en" ? "Average" : "සාමාන්‍ය"}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">
+                              {language === "en" ? "Best Score:" : "හොඳම ලකුණු:"}
+                            </span>
+                            <span className="font-semibold text-green-600">{bestMark}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">
+                              {language === "en" ? "Lowest Score:" : "අඩුම ලකුණු:"}
+                            </span>
+                            <span className="font-semibold text-red-600">{worstMark}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">
+                              {language === "en" ? "Total Marks:" : "මුළු ලකුණු:"}
+                            </span>
+                            <span className="font-semibold">{totalMarks}</span>
+                          </div>
+                          {improvement !== 0 && (
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm text-muted-foreground">
+                                {language === "en" ? "Improvement:" : "වැඩිදියුණු කිරීම:"}
+                              </span>
+                              <span className={`font-semibold ${improvement > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                {improvement > 0 ? '+' : ''}{improvement}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              });
+            })()}
+          </div>
+        </CardContent>
+      </Card>
+      </div>
     </div>
   );
 };

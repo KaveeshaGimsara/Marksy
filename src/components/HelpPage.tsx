@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { HelpCircle, ChevronDown, ChevronRight, BookOpen, BarChart3, Trophy, Globe } from "lucide-react";
+import { HelpCircle, ChevronDown, ChevronRight, BookOpen, BarChart3, Trophy } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { HelpPageProps } from "@/types";
 
 const HelpPage = ({ language: initialLanguage }: HelpPageProps) => {
-  const [language, setLanguage] = useState<"en" | "si">(initialLanguage || "en");
+  const [language] = useState<"en" | "si">(initialLanguage || "en");
   const [openFaq, setOpenFaq] = useState<string | null>(null);
 
   const content = {
@@ -142,27 +142,15 @@ const HelpPage = ({ language: initialLanguage }: HelpPageProps) => {
   };
 
   return (
-    <div className="space-y-6 animate-slide-up">
-      {/* Header with Language Toggle */}
-      <div className="text-center relative">
-        <div className="absolute top-0 right-0">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setLanguage(language === "en" ? "si" : "en")}
-            className="flex items-center space-x-2"
-          >
-            <Globe className="h-4 w-4" />
-            <span>{language === "en" ? "සිංහල" : "English"}</span>
-          </Button>
-        </div>
-        
+    <div className="px-4 py-6">
+      <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-gradient mb-2">{currentContent.title}</h2>
         <p className="text-muted-foreground">{currentContent.subtitle}</p>
       </div>
 
-      {/* Quick Start Guide */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="space-y-6">
+        {/* Quick Start Guide */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="academic-card">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center space-x-2 text-primary">
@@ -260,6 +248,7 @@ const HelpPage = ({ language: initialLanguage }: HelpPageProps) => {
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 };

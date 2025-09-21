@@ -1,8 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Star, Heart, Code, Palette, Zap, Play, Pause } from "lucide-react";
-import { CreditsPageProps } from "@/types";
 
-const CreditsPage = ({ language }: CreditsPageProps) => {
+const CreditsPage = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);

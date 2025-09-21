@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { GraduationCap, User, MessageSquare, Globe, Sparkles } from "lucide-react";
+import { GraduationCap, User, MessageSquare, Sparkles } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AboutPageProps } from "@/types";
 
 const AboutPage = ({ language: initialLanguage }: AboutPageProps) => {
-  const [language, setLanguage] = useState<"en" | "si">(initialLanguage || "en");
+  const [language] = useState<"en" | "si">(initialLanguage || "en");
   const [imageClicked, setImageClicked] = useState(false);
 
   const content = {
@@ -69,27 +69,15 @@ const AboutPage = ({ language: initialLanguage }: AboutPageProps) => {
   const currentContent = content[language];
 
   return (
-    <div className="space-y-6 animate-slide-up">
-      {/* Header with Language Toggle */}
-      <div className="text-center relative">
-        <div className="absolute top-0 right-0">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setLanguage(language === "en" ? "si" : "en")}
-            className="flex items-center space-x-2"
-          >
-            <Globe className="h-4 w-4" />
-            <span>{language === "en" ? "සිංහල" : "English"}</span>
-          </Button>
-        </div>
-        
+    <div className="px-4 py-6">
+      <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-gradient mb-2">{currentContent.title}</h2>
         <p className="text-muted-foreground text-lg">{currentContent.subtitle}</p>
       </div>
 
-      {/* Main Description */}
-      <Card className="academic-card">
+      <div className="space-y-6">
+        {/* Main Description */}
+        <Card className="academic-card">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <GraduationCap className="h-6 w-6" />
@@ -210,6 +198,7 @@ const AboutPage = ({ language: initialLanguage }: AboutPageProps) => {
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 };

@@ -12,6 +12,7 @@ import SubjectAnalysis from "@/components/SubjectAnalysis";
 import AboutPage from "@/components/AboutPage";
 import HelpPage from "@/components/HelpPage";
 import CreditsPage from "@/components/CreditsPage";
+import VersionPage from "@/components/VersionPage";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -88,9 +89,10 @@ const Index = () => {
   const renderActiveSection = () => {
     switch (activeSection) {
       case "home":
-        return <Homepage language={language} />;
+        return <Homepage language={language} onNavigate={setActiveSection} />;
       case "profile":
         return <ProfilePage language={language} />;
+      case "addmarks":
       case "marks":
         return <AddMarks language={language} />;
       case "dashboard":
@@ -102,9 +104,11 @@ const Index = () => {
       case "help":
         return <HelpPage language={language} />;
       case "credits":
-        return <CreditsPage language={language} />;
+        return <CreditsPage />;
+      case "version":
+        return <VersionPage language={language} />;
       default:
-        return <Homepage language={language} />;
+        return <Homepage language={language} onNavigate={setActiveSection} />;
     }
   };
 

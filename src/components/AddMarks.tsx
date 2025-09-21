@@ -48,6 +48,12 @@ const AddMarks = ({ language }: AddMarksProps) => {
   
   const [searchTerm, setSearchTerm] = useState("");
   const [showSubjectDialog, setShowSubjectDialog] = useState(false);
+  
+  // Recent Marks filter states
+  const [recentMarksSearch, setRecentMarksSearch] = useState("");
+  const [selectedSubjectFilter, setSelectedSubjectFilter] = useState("all");
+  const [displayCount, setDisplayCount] = useState("10");
+  const [subjectSearchTerm, setSubjectSearchTerm] = useState(""); // Search for main subject list
 
   // Available subjects for search (100 subjects)
   const availableSubjects = [
@@ -72,6 +78,37 @@ const AddMarks = ({ language }: AddMarksProps) => {
     "Sports Science", "Urban Planning", "Veterinary Science", "Web Development"
   ];
 
+  // Load subjects from localStorage on component mount
+  useEffect(() => {
+    const savedSubjects = localStorage.getItem("alSubjects");
+    if (savedSubjects) {
+      try {
+        const parsedSubjects = JSON.parse(savedSubjects);
+        if (Array.isArray(parsedSubjects) && parsedSubjects.length > 0) {
+          setSubjects(parsedSubjects);
+        }
+      } catch (error) {
+        console.error("Error parsing saved subjects:", error);
+      }
+    }
+
+    // Migration: Check if there's old marks data that needs to be migrated
+    const oldMarksData = localStorage.getItem("marksy-data");
+    const newMarksData = localStorage.getItem("alMarksData");
+    
+    if (oldMarksData && !newMarksData) {
+      try {
+        const oldData = JSON.parse(oldMarksData);
+        if (Array.isArray(oldData) && oldData.length > 0) {
+          localStorage.setItem("alMarksData", JSON.stringify(oldData));
+          console.log("Migrated marks data from old storage key");
+        }
+      } catch (error) {
+        console.error("Error migrating old marks data:", error);
+      }
+    }
+  }, []);
+
   // Auto calculate total whenever marks change
   useEffect(() => {
     const total = (parseFloat(marks.mcq) || 0) + (parseFloat(marks.seq) || 0) + (parseFloat(marks.essay) || 0);
@@ -80,22 +117,58 @@ const AddMarks = ({ language }: AddMarksProps) => {
 
   const addSubject = (subjectName: string) => {
     if (subjectName.trim() !== "" && !subjects.find(s => s.name === subjectName)) {
-      setSubjects([...subjects, { 
+      const favoriteCount = subjects.filter(s => s.isFavorite).length;
+      
+      if (favoriteCount >= 6) {
+        toast.error(
+          language === "en" 
+            ? "Maximum 6 subjects can be starred. Unstar a subject first." 
+            : "උපරිම විෂය 6ක් තරු කළ හැක. පළමුව විෂයක තරුව ඉවත් කරන්න."
+        );
+        return;
+      }
+
+      const newSubjects = [...subjects, { 
         name: subjectName.trim(), 
-        isFavorite: false 
-      }]);
+        isFavorite: true // Automatically star new subjects
+      }];
+      setSubjects(newSubjects);
+      localStorage.setItem("alSubjects", JSON.stringify(newSubjects));
+      setSelectedSubject(subjectName.trim()); // Auto-select the new subject
       setShowSubjectDialog(false);
       setSearchTerm("");
-      toast.success(`${subjectName} added to subjects`);
+      toast.success(
+        language === "en" 
+          ? `${subjectName} added, starred and selected` 
+          : `${subjectName} එකතු කර, තරු කර තෝරන ලදී`
+      );
     }
   };
 
   const toggleFavorite = (subjectName: string) => {
-    setSubjects(subjects.map(subject => 
-      subject.name === subjectName 
+    const favoriteCount = subjects.filter(s => s.isFavorite).length;
+    const subject = subjects.find(s => s.name === subjectName);
+    
+    if (subject && !subject.isFavorite && favoriteCount >= 6) {
+      toast.error(
+        language === "en" ? "Maximum 6 subjects can be starred" : "උපරිම විෂය 6ක් තරු කළ හැක"
+      );
+      return;
+    }
+
+    const updatedSubjects = subjects.map(subject =>
+      subject.name === subjectName
         ? { ...subject, isFavorite: !subject.isFavorite }
         : subject
-    ));
+    );
+    setSubjects(updatedSubjects);
+    localStorage.setItem("alSubjects", JSON.stringify(updatedSubjects));
+    
+    toast.success(
+      subject?.isFavorite 
+        ? (language === "en" ? "Subject unstarred" : "විෂයේ තරුව ඉවත් කරන ලදී")
+        : (language === "en" ? "Subject starred" : "විෂයට තරුව දමන ලදී")
+    );
   };
 
   const selectSubject = (subjectName: string) => {
@@ -118,18 +191,18 @@ const AddMarks = ({ language }: AddMarksProps) => {
     }
 
     // Save to localStorage
-    const existingData = JSON.parse(localStorage.getItem("marksy-data") || "[]");
+    const existingData = JSON.parse(localStorage.getItem("alMarksData") || "[]");
     const newEntry = {
       subject: selectedSubject,
       ...marks,
       timestamp: Date.now()
     };
     existingData.push(newEntry);
-    localStorage.setItem("marksy-data", JSON.stringify(existingData));
+    localStorage.setItem("alMarksData", JSON.stringify(existingData));
 
     toast.success(language === "en" ? "Marks saved successfully!" : "ලකුණු සාර්ථකව සුරකින ලදී!");
     
-    // Reset form
+    // Reset only the form, keep subject selected for more entries
     setMarks({
       mcq: "",
       seq: "",
@@ -138,18 +211,22 @@ const AddMarks = ({ language }: AddMarksProps) => {
       date: new Date().toISOString().split('T')[0],
       total: 0
     });
-    setSelectedSubject(null);
+    // Don't reset selectedSubject - let user add more marks for same subject
   };
 
   // Sort subjects with favorites first
-  const sortedSubjects = [...subjects].sort((a, b) => {
-    if (a.isFavorite && !b.isFavorite) return -1;
-    if (!a.isFavorite && b.isFavorite) return 1;
-    return 0;
-  });
+  const sortedSubjects = [...subjects]
+    .filter(subject => 
+      subject.name.toLowerCase().includes(subjectSearchTerm.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (a.isFavorite && !b.isFavorite) return -1;
+      if (!a.isFavorite && b.isFavorite) return 1;
+      return 0;
+    });
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="min-h-screen px-4 py-6 pb-24">
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
           {language === "en" ? "Add Your Marks" : "ඔබේ ලකුණු එකතු කරන්න"}
@@ -174,7 +251,7 @@ const AddMarks = ({ language }: AddMarksProps) => {
               <Dialog open={showSubjectDialog} onOpenChange={setShowSubjectDialog}>
                 <DialogTrigger asChild>
                   <Button variant="outline" size="sm">
-                    <Plus className="h-4 w-4 mr-2" />
+                    <Star className="h-4 w-4 mr-2" />
                     {language === "en" ? "Add Subject" : "විෂයක් එකතු කරන්න"}
                   </Button>
                 </DialogTrigger>
@@ -223,8 +300,82 @@ const AddMarks = ({ language }: AddMarksProps) => {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Search input for subjects */}
+            <div className="mb-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  placeholder={language === "en" ? "Search starred subjects..." : "තරු සහිත විෂයන් සොයන්න..."}
+                  value={subjectSearchTerm}
+                  onChange={(e) => setSubjectSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+            
+            {/* Show message if no starred subjects */}
+            {sortedSubjects.filter(s => s.isFavorite).length === 0 && (
+              <div className="text-center py-8">
+                <Star className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground mb-4">
+                  {language === "en" ? "No starred subjects yet. Add subjects and star them to see them here!" : "තරු සහිත විෂයන් නැත. විෂයන් එකතු කර ඒවාට තරු දමන්න!"}
+                </p>
+                <Dialog open={showSubjectDialog} onOpenChange={setShowSubjectDialog}>
+                  <DialogTrigger asChild>
+                    <Button>
+                      <Plus className="h-4 w-4 mr-2" />
+                      {language === "en" ? "Add Subject" : "විෂයක් එකතු කරන්න"}
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>{language === "en" ? "Add New Subject" : "නව විෂයක් එකතු කරන්න"}</DialogTitle>
+                      <DialogDescription>
+                        {language === "en" ? "Search and add subjects to your list" : "ඔබේ ලැයිස්තුවට විෂයන් සොයා එකතු කරන්න"}
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                        <Input
+                          placeholder={language === "en" ? "Search subjects..." : "විෂයන් සොයන්න..."}
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+                      <div className="max-h-60 overflow-y-auto space-y-2">
+                        {availableSubjects
+                          .filter(subject => 
+                            subject.toLowerCase().includes(searchTerm.toLowerCase()) &&
+                            !subjects.find(s => s.name === subject)
+                          )
+                          .slice(0, 10)
+                          .map(subject => (
+                            <Button
+                              key={subject}
+                              variant="ghost"
+                              className="w-full justify-between"
+                              onClick={() => addSubject(subject)}
+                            >
+                              <span>{subject}</span>
+                              <Star className="h-4 w-4" />
+                            </Button>
+                          ))}
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            )}
+            
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {sortedSubjects.map((subject) => (
+              {sortedSubjects
+                .filter(subject => 
+                  subject.isFavorite && 
+                  (subjectSearchTerm === "" || subject.name.toLowerCase().includes(subjectSearchTerm.toLowerCase()))
+                ) // Only show starred/favorite subjects that match search
+                .map((subject) => (
                 <Card 
                   key={subject.name}
                   className={`cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-md ${
@@ -376,6 +527,121 @@ const AddMarks = ({ language }: AddMarksProps) => {
           </CardContent>
         </Card>
       )}
+
+      {/* Recent Marks Section */}
+      {(() => {
+        const marksData = JSON.parse(localStorage.getItem("alMarksData") || "[]");
+        
+        if (marksData.length === 0) return null;
+
+        return (
+          <Card className="mt-8">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Calculator className="h-5 w-5" />
+                <span>{language === "en" ? "Recent Marks" : "මෑත කාලීන ලකුණු"}</span>
+              </CardTitle>
+              <CardDescription>
+                {language === "en" 
+                  ? "Your latest paper submissions with filtering options" 
+                  : "පෙරහන් විකල්ප සමඟ ඔබේ නවතම ප්‍රශ්නපත්‍ර ඉදිරිපත් කිරීම්"
+                }
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {/* Filter Options */}
+                <div className="flex flex-wrap gap-4">
+                  <Input
+                    placeholder={language === "en" ? "Search by subject or paper name..." : "විෂය හෝ ප්‍රශ්නපත්‍ර නම අනුව සොයන්න..."}
+                    className="max-w-sm"
+                    value={recentMarksSearch}
+                    onChange={(e) => setRecentMarksSearch(e.target.value)}
+                  />
+                  <select 
+                    className="px-3 py-2 border rounded-md bg-background"
+                    value={selectedSubjectFilter}
+                    onChange={(e) => setSelectedSubjectFilter(e.target.value)}
+                  >
+                    <option value="all">{language === "en" ? "All Subjects" : "සියලුම විෂය"}</option>
+                    {[...new Set(marksData.map((item: any) => item.subject))].map((subject: string) => (
+                      <option key={subject} value={subject}>{subject}</option>
+                    ))}
+                  </select>
+                  <select 
+                    className="px-3 py-2 border rounded-md bg-background"
+                    value={displayCount}
+                    onChange={(e) => setDisplayCount(e.target.value)}
+                  >
+                    <option value="10">{language === "en" ? "Last 10" : "අවසන් 10"}</option>
+                    <option value="25">{language === "en" ? "Last 25" : "අවසන් 25"}</option>
+                    <option value="50">{language === "en" ? "Last 50" : "අවසන් 50"}</option>
+                    <option value="100">{language === "en" ? "Last 100" : "අවසන් 100"}</option>
+                  </select>
+                </div>
+
+                {/* Marks List */}
+                <div className="max-h-96 overflow-y-auto border rounded-lg">
+                  <div className="space-y-2 p-4">
+                    {(() => {
+                      // Filter the marks data
+                      let filteredMarks = marksData;
+                      
+                      // Filter by subject
+                      if (selectedSubjectFilter !== "all") {
+                        filteredMarks = filteredMarks.filter((mark: any) => mark.subject === selectedSubjectFilter);
+                      }
+                      
+                      // Filter by search term
+                      if (recentMarksSearch) {
+                        filteredMarks = filteredMarks.filter((mark: any) => 
+                          mark.subject?.toLowerCase().includes(recentMarksSearch.toLowerCase()) ||
+                          mark.paperName?.toLowerCase().includes(recentMarksSearch.toLowerCase())
+                        );
+                      }
+                      
+                      // Limit the count and reverse to show newest first
+                      const displayedMarks = filteredMarks
+                        .slice(-parseInt(displayCount))
+                        .reverse();
+                      
+                      if (displayedMarks.length === 0) {
+                        return (
+                          <div className="text-center py-8 text-muted-foreground">
+                            <Calculator className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                            <p>{language === "en" ? "No marks found matching your filters" : "ඔබේ පෙරහන් වලට ගැලපෙන ලකුණු හමු නොවිණි"}</p>
+                          </div>
+                        );
+                      }
+                      
+                      return displayedMarks.map((mark: any, index: number) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-1">
+                              <Badge variant="outline">{mark.subject}</Badge>
+                              <span className="font-medium">{mark.paperName}</span>
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              {new Date(mark.timestamp).toLocaleDateString()} • 
+                              MCQ: {mark.mcq || 0} • SEQ: {mark.seq || 0} • Essay: {mark.essay || 0}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-2xl font-bold text-primary">{mark.total || 0}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {language === "en" ? "Total" : "මුළු"}
+                            </div>
+                          </div>
+                        </div>
+                      ));
+                    })()}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })()}
     </div>
   );
 };

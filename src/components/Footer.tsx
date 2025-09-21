@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { HelpCircle, Star, Settings, Heart, ExternalLink } from "lucide-react";
+import { HelpCircle, Star, Settings, Heart, ExternalLink, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -82,14 +82,19 @@ const Footer = ({ activeSection, setActiveSection, showAdmin, setShowAdmin, lang
 
           {/* Right side - Version & Copyright */}
           <div className="flex items-center space-x-3">
-            <div className="text-xs text-muted-foreground animate-pulse">
-              <span className="bg-primary/10 px-2 py-1 rounded">v1.0.0</span>
-            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setActiveSection("version")}
+              className="text-xs text-muted-foreground hover:bg-primary/10 transition-colors"
+            >
+              <span className="bg-primary/10 px-2 py-1 rounded font-mono hover:bg-primary/20 transition-colors">v1.1.0</span>
+            </Button>
             
             <div className="text-xs text-muted-foreground">
-              <span>© 2024 Made with</span>
+              <span>© 2025</span>
               <Heart className="h-3 w-3 fill-current text-red-500 inline mx-1" />
-              <span>by Kaveesha</span>
+              <span>{language === "en" ? "Made for Sri Lankan Students" : "ශ්‍රී ලාංකික සිසුන් සඳහා නිර්මිත"}</span>
             </div>
           </div>
         </div>
