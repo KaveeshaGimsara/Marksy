@@ -1,5 +1,36 @@
 [
   {
+    "version": "v1.9.5",
+    "date": "2025-09-22",
+    "type": "patch",
+    "features": [
+      "Integrated official Sri Lanka G.C.E. A/L subjects list (centralized data file)",
+      "Add Subject dialog shows all official subjects including already-added ones (disabled state)"
+    ],
+    "bugfixes": [
+      "Removed non-official / tertiary-only fields (e.g., Software Engineering) from selectable list"
+    ],
+    "improvements": [
+      "Clearer dialog description (official list + disabled existing items)",
+      "Single source of truth for subjects for future validation"
+    ]
+  },
+  {
+    "version": "v1.9.4",
+    "date": "2025-09-22",
+    "type": "patch",
+    "features": [
+      "Add Subject dialog now shows already-added subjects (disabled with Added label)"
+    ],
+    "bugfixes": [
+      "Physics and other existing subjects were hidden from search results"
+    ],
+    "improvements": [
+      "Clearer dialog description about existing subjects",
+      "Keyboard navigation logic only targets addable subjects"
+    ]
+  },
+  {
     "version": "v1.9.3",
     "date": "2025-09-21",
     "type": "patch",

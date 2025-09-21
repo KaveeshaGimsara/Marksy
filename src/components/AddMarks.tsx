@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Plus, BookOpen, Star, Search, ArrowLeft, Calculator, Trash2 } from "lucide-react";
+import { Plus, BookOpen, Star, Search, ArrowLeft, Calculator, Trash2, Check } from "lucide-react";
+import AL_SUBJECTS from "@/data/al-subjects";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -98,23 +99,8 @@ const AddMarks = ({ language }: AddMarksProps) => {
     }
   };
 
-  // Curated Sri Lanka G.C.E. A/L subject list (core + popular electives only)
-  const availableSubjects = [
-    // Science Stream Core
-    "Biology","Chemistry","Physics","Combined Mathematics","Agricultural Science",
-    // Commerce Stream Core
-    "Accounting","Business Studies","Economics",
-    // Arts / Languages
-    "Sinhala","Tamil","English","French","German","Japanese","Arabic","Pali","Sanskrit",
-    // Arts / Humanities & Social Sciences
-    "Geography","History","Political Science","Logic & Scientific Method","Buddhist Civilization","Christian Civilization","Hindu Civilization","Drama & Theatre","Music","Art","Dancing","Home Economics",
-    // Technology Stream
-    "Engineering Technology","Science for Technology","Bio-systems Technology",
-    // Common / Cross Stream
-    "Information and Communication Technology (ICT)","General English","Common General Test",
-    // Popular Supporting / Extension (limited set – no speculative research fields)
-    "Statistics","Pure Mathematics","Applied Mathematics","Environmental Science","Computer Science","Software Engineering","Psychology","Sociology"
-  ];
+  // Official Sri Lanka G.C.E. A/L verified subjects (imported)
+  const availableSubjects = AL_SUBJECTS;
 
   // Load subjects from localStorage on component mount
   useEffect(() => {
@@ -306,7 +292,9 @@ const AddMarks = ({ language }: AddMarksProps) => {
                   <DialogHeader>
                     <DialogTitle>{language === "en" ? "Add New Subject" : "නව විෂයක් එක් කරන්න"}</DialogTitle>
                     <DialogDescription>
-                      {language === "en" ? "Search from 100+ available subjects" : "විෂය 100කට වැඩි ප්‍රමාණයකින් සොයන්න"}
+                      {language === "en" 
+                        ? "Search and add official Sri Lanka A/L subjects. Already added ones are disabled." 
+                        : "ශ්‍රී ලංකා A/L නිල විෂය සෙවී එකතු කරන්න. දැනටමත් ඇති විෂයන් අක්‍රීය වේ."}
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4">
@@ -315,18 +303,23 @@ const AddMarks = ({ language }: AddMarksProps) => {
                       value={searchTerm}
                       onChange={(e) => { setSearchTerm(e.target.value); setSearchActiveIndex(-1); }}
                       onKeyDown={(e) => {
-                        const filtered = availableSubjects.filter(sub => sub.toLowerCase().includes(searchTerm.trim().toLowerCase()) && !subjects.find(s=>s.name===sub)).slice(0,10);
+                        const term = searchTerm.trim().toLowerCase();
+                        const allMatches = availableSubjects.filter(sub => sub.toLowerCase().includes(term)).slice(0,10);
+                        const addableMatches = allMatches.filter(sub => !subjects.find(s=>s.name===sub));
                         if (e.key === 'ArrowDown') {
                           e.preventDefault();
-                          setSearchActiveIndex(prev => (prev + 1) % Math.max(filtered.length,1));
+                          setSearchActiveIndex(prev => (prev + 1) % Math.max(addableMatches.length,1));
                         } else if (e.key === 'ArrowUp') {
                           e.preventDefault();
-                          setSearchActiveIndex(prev => (prev - 1 + Math.max(filtered.length,1)) % Math.max(filtered.length,1));
+                          setSearchActiveIndex(prev => (prev - 1 + Math.max(addableMatches.length,1)) % Math.max(addableMatches.length,1));
                         } else if (e.key === 'Enter') {
-                          if (searchActiveIndex >= 0 && filtered[searchActiveIndex]) {
-                            addSubject(filtered[searchActiveIndex]);
-                          } else if (filtered.length === 1) {
-                            addSubject(filtered[0]);
+                          if (searchActiveIndex >= 0 && addableMatches[searchActiveIndex]) {
+                            addSubject(addableMatches[searchActiveIndex]);
+                          } else if (addableMatches.length === 1) {
+                            addSubject(addableMatches[0]);
+                          } else if (addableMatches.length === 0 && allMatches.length === 1) {
+                            // Only existing subject matches – inform user
+                            toast.info(language === 'en' ? 'Subject already added' : 'විෂය දැනටමත් එකතු කර ඇත');
                           }
                         } else if (e.key === 'Escape') {
                           setShowSubjectDialog(false);
@@ -337,10 +330,10 @@ const AddMarks = ({ language }: AddMarksProps) => {
                     <div className="max-h-60 overflow-y-auto space-y-1 rounded-md border border-muted/40">
                       {(() => {
                         const normalized = searchTerm.trim().toLowerCase();
-                        const filtered = availableSubjects
-                          .filter(subject => subject.toLowerCase().includes(normalized) && !subjects.find(s => s.name === subject))
+                        const allMatches = availableSubjects
+                          .filter(subject => subject.toLowerCase().includes(normalized))
                           .slice(0, 10);
-                        if (filtered.length === 0) {
+                        if (allMatches.length === 0) {
                           return (
                             <div className="text-center text-xs text-muted-foreground py-4">
                               {normalized === ''
@@ -349,19 +342,20 @@ const AddMarks = ({ language }: AddMarksProps) => {
                             </div>
                           );
                         }
-                        return filtered.map((subject, idx) => {
-                          const start = subject.toLowerCase().indexOf(normalized);
+                        return allMatches.map((subject) => {
+                          const already = !!subjects.find(s=>s.name===subject);
+                          const start = normalized ? subject.toLowerCase().indexOf(normalized) : -1;
                           const end = start + normalized.length;
-                          const before = subject.slice(0,start);
-                          const match = subject.slice(start,end);
-                          const after = subject.slice(end);
-                          const active = idx === searchActiveIndex;
+                          const before = start >=0 ? subject.slice(0,start) : subject;
+                          const match = start >=0 ? subject.slice(start,end) : '';
+                          const after = start >=0 ? subject.slice(end) : '';
                           return (
                             <button
                               key={subject}
                               type="button"
-                              onClick={() => addSubject(subject)}
-                              className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors ${active ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}`}
+                              disabled={already}
+                              onClick={() => { if(!already) addSubject(subject); }}
+                              className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors ${already ? 'opacity-60 cursor-not-allowed' : 'hover:bg-muted'} disabled:opacity-60`}
                             >
                               <span className="truncate text-left">
                                 {start >= 0 ? (<>
@@ -370,7 +364,11 @@ const AddMarks = ({ language }: AddMarksProps) => {
                                   {after}
                                 </>) : subject}
                               </span>
-                              <Plus className="h-4 w-4" />
+                              {already ? (
+                                <span className="flex items-center text-xs font-medium text-muted-foreground"><Check className="h-4 w-4 mr-1" />{language==='en' ? 'Added' : 'එකතු වී ඇත'}</span>
+                              ) : (
+                                <Plus className="h-4 w-4" />
+                              )}
                             </button>
                           );
                         });
