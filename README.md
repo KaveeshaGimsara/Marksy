@@ -93,6 +93,25 @@ LocalStorage keys currently used:
 
 No network sync & no analytics collection.
 
+## New Cloud Sync & Realtime Updates (2025)
+
+- Automatic two‑way sync (Firestore userBundles/{uid})
+- Realtime propagation across logged-in devices (onSnapshot)
+- Local change auto-detection (monkey‑patched localStorage.setItem)
+- Offline queue (pendingBundles) flushed when connectivity returns
+- Conflict minimization via clientUpdatedAt + sessionId echo suppression
+
+### Additional LocalStorage Keys
+| Key | Purpose |
+| --- | ------- |
+| pendingBundles | Array of queued partial bundles while offline |
+
+### Offline Behavior
+All writes apply locally immediately; if push fails they queue and sync later (transparent to user).
+
+### Security
+Each bundle stored at userBundles/{uid}; rules should restrict read/write to the authenticated user UID.
+
 ## Accessibility & UX
 
 - High contrast dark/light variants on key interactive surfaces

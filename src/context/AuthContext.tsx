@@ -9,7 +9,7 @@ import {
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db, authPersistenceReady } from '@/lib/firebase';
 import { syncLoginSession } from '@/lib/backendSync';
-import { fullSync } from '@/lib/syncService';
+import { fullSync, initRealtimeUserSync, stopRealtimeUserSync, pushUserBundle } from '@/lib/syncService';
 
 interface AuthContextType {
   user: User | null;
@@ -50,8 +50,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(u);
         setInitializing(false);
         if (u) {
-          // Perform silent full sync when session is restored (e.g., refresh / new tab)
-            fullSync(u.uid, u.email || undefined);
+          initRealtimeUserSync(u.uid, u.email || undefined);
+        } else {
+          stopRealtimeUserSync();
         }
       });
     });
@@ -134,8 +135,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setError(null);
       setActionLoading(true);
+      if (user) {
+        // Best-effort final push
+        try { await pushUserBundle({ uid: user.uid, email: user.email || null }); } catch {}
+      }
       if (import.meta.env.DEV) console.time('auth:logout');
       await signOut(auth);
+      stopRealtimeUserSync();
       if (import.meta.env.DEV) console.timeEnd('auth:logout');
     } catch (err) {
       setError('Failed to logout. Please try again.');

@@ -86,6 +86,37 @@ Login details are automatically saved to Firestore in the `userSessions` collect
 - Login timestamp
 - Last active timestamp
 
+## 🔁 Realtime Data Sync (New)
+User data now lives in Firestore under:
+- Collection: userBundles
+- Doc ID: {uid}
+
+Each document contains:
+- subjects, marks, timerSessions, todos, achievements, notes, resources
+- profile, dailyGoal
+- metadata: lastSynced (serverTimestamp), clientUpdatedAt, sessionId
+
+### Firestore Rules (Add)
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    match /userBundles/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    match /userSessions/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
+```
+
+### Offline Queue
+Failed pushes are stored in localStorage key `pendingBundles` and auto-flushed on `online` event.
+
+### Conflict Handling
+Latest write determined by numeric `clientUpdatedAt`; session echoes ignored using `sessionId` guard.
+
 ## 🔒 Security Features
 
 - **Firebase Auth State Persistence** - keeps users logged in across browser sessions

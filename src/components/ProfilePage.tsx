@@ -275,7 +275,7 @@ const ProfilePage = ({ language }: ProfilePageProps) => {
         if (importedData.profile) {
           setProfileData(importedData.profile);
           localStorage.setItem("marksy-profile", JSON.stringify(importedData.profile));
-  if (user) schedulePush(user.uid, user.email || undefined);
+          if (user) schedulePush(user.uid, user.email || undefined, 1200);
         }
         
         if (importedData.marks) {
@@ -358,6 +358,7 @@ const ProfilePage = ({ language }: ProfilePageProps) => {
 
   const handleSave = () => {
     localStorage.setItem("marksy-profile", JSON.stringify(profileData));
+    if (user) schedulePush(user.uid, user.email || undefined, 600);
     setIsEditing(false);
     toast({
       title: "Profile Updated",
