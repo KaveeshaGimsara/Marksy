@@ -8,6 +8,7 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db, authPersistenceReady } from '@/lib/firebase';
+import { syncLoginSession } from '@/lib/backendSync';
 
 interface AuthContextType {
   user: User | null;
@@ -78,6 +79,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           loginTime: serverTimestamp(),
           lastActive: serverTimestamp(),
         }, { merge: true });
+
+        // Store lightweight session snapshot locally for faster UI hydration
+        const sessionSnapshot = {
+          uid: result.user.uid,
+          email: result.user.email,
+          displayName: result.user.displayName,
+          lastLogin: Date.now()
+        };
+        try {
+          localStorage.setItem('marksy_session', JSON.stringify(sessionSnapshot));
+        } catch {}
+
+        // Fire and forget backend sync (no await to avoid blocking redirect)
+        syncLoginSession(result.user);
       }
     } catch (err) {
       const authError = err as AuthError;

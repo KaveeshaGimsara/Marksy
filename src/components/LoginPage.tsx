@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -21,9 +21,9 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const { login, error } = useAuth();
+  const { login, error, user, actionLoading, initializing } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
 
   const {
@@ -35,27 +35,30 @@ const LoginPage: React.FC = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = async (data: LoginFormData) => {
+  // Auto-redirect if already authenticated (avoid showing form flash)
+  useEffect(() => {
+    if (!initializing && user) {
+      // If user was sent to login from a protected route, go back there.
+      const redirectTo = (location.state as any)?.from?.pathname || '/';
+      navigate(redirectTo, { replace: true });
+    }
+  }, [user, initializing, navigate, location.state]);
+
+  const onSubmit = async (data: LoginFormData, e?: React.BaseSyntheticEvent) => {
+    e?.preventDefault(); // Explicitly prevent full page reload
     try {
-      setIsLoading(true);
       await login(data.email, data.password);
-      
       toast({
-        title: "Login Successful!",
-        description: "Welcome back to Marksy",
-        duration: 3000,
+        title: 'Login Successful!',
+        description: 'Welcome back to Marksy',
+        duration: 2500,
       });
-      
-      // Redirect to dashboard/homepage
-      navigate('/');
+      // Redirect handled in effect once user becomes truthy.
     } catch (error: any) {
-      // Error is already handled in AuthContext
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+      if (error?.code === 'auth/user-not-found' || error?.code === 'auth/wrong-password' || error?.code === 'auth/invalid-credential') {
         setError('email', { message: 'Invalid email or password' });
         setError('password', { message: 'Invalid email or password' });
       }
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -100,7 +103,7 @@ const LoginPage: React.FC = () => {
               </Alert>
             )}
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
               {/* Email Field */}
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-medium">
@@ -114,7 +117,8 @@ const LoginPage: React.FC = () => {
                     placeholder="enter your email"
                     className="pl-10 h-12 border-2 focus:border-blue-500 transition-colors"
                     {...register('email')}
-                    disabled={isLoading}
+                    autoComplete="username"
+                    disabled={actionLoading || initializing}
                   />
                 </div>
                 {errors.email && (
@@ -135,13 +139,14 @@ const LoginPage: React.FC = () => {
                     placeholder="enter your password"
                     className="pl-10 pr-10 h-12 border-2 focus:border-blue-500 transition-colors"
                     {...register('password')}
-                    disabled={isLoading}
+                    autoComplete="current-password"
+                    disabled={actionLoading || initializing}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-3 h-4 w-4 text-gray-400 hover:text-gray-600 transition-colors"
-                    disabled={isLoading}
+                    disabled={actionLoading || initializing}
                   >
                     {showPassword ? <EyeOff /> : <Eye />}
                   </button>
@@ -155,9 +160,9 @@ const LoginPage: React.FC = () => {
               <Button
                 type="submit"
                 className="w-full h-12 text-base font-medium bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
-                disabled={isLoading}
+                disabled={actionLoading || initializing || initializing}
               >
-                {isLoading ? (
+                {actionLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Signing In...
