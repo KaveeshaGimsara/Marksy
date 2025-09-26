@@ -10,9 +10,10 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/AuthContext";
+import { schedulePush } from "@/lib/syncService";
 import { ProfilePageProps } from "@/types";
 import SupportButton from "@/components/SupportButton";
-import { useAuth } from "@/context/AuthContext";
 
 interface ProfileData {
   name: string;
@@ -274,6 +275,7 @@ const ProfilePage = ({ language }: ProfilePageProps) => {
         if (importedData.profile) {
           setProfileData(importedData.profile);
           localStorage.setItem("marksy-profile", JSON.stringify(importedData.profile));
+  if (user) schedulePush(user.uid, user.email || undefined);
         }
         
         if (importedData.marks) {

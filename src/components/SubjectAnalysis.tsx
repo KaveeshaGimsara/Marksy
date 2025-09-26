@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from '@/context/AuthContext';
+import { schedulePush } from '@/lib/syncService';
 
 interface TodoItem {
   id: string;
@@ -19,6 +21,7 @@ import { SubjectAnalysisProps } from "@/types";
 
 const SubjectAnalysis = ({ language }: SubjectAnalysisProps) => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [marksData, setMarksData] = useState<any[]>([]);
   const [todos, setTodos] = useState<TodoItem[]>([]);
   const [newTodo, setNewTodo] = useState({ task: "", subject: "" });
@@ -91,6 +94,7 @@ const SubjectAnalysis = ({ language }: SubjectAnalysisProps) => {
     setTodos(updatedTodos);
     localStorage.setItem("alTodos", JSON.stringify(updatedTodos));
     setNewTodo({ task: "", subject: "" });
+  if (user) schedulePush(user.uid, user.email || undefined);
 
     toast({
       title: "Task Added",
@@ -104,6 +108,7 @@ const SubjectAnalysis = ({ language }: SubjectAnalysisProps) => {
     );
     setTodos(updatedTodos);
     localStorage.setItem("alTodos", JSON.stringify(updatedTodos));
+    if (user) schedulePush(user.uid, user.email || undefined, 1500);
   };
 
   const deleteTodo = (id: string) => {
@@ -115,6 +120,7 @@ const SubjectAnalysis = ({ language }: SubjectAnalysisProps) => {
       title: "Task Deleted",
       description: "Study task has been removed from your list.",
     });
+    if (user) schedulePush(user.uid, user.email || undefined);
   };
 
   const subjectStats = getSubjectStats();

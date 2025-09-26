@@ -11,6 +11,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useTimer } from "@/context/TimerContext";
 import TimerStatusButton from "@/components/TimerStatusButton";
+import { useAuth } from '@/context/AuthContext';
+import { schedulePush } from '@/lib/syncService';
 
 interface TimerSession {
   id: string;
@@ -35,6 +37,7 @@ interface CircularTimerProps {
 
 const TimerWidget = ({ language, onNavigate }: TimerWidgetProps) => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const {
     isRunning,
     isPaused,
@@ -247,6 +250,7 @@ const TimerWidget = ({ language, onNavigate }: TimerWidgetProps) => {
     sessions.push(session);
     localStorage.setItem('timerSessions', JSON.stringify(sessions));
     loadTodayStats();
+    if (user) schedulePush(user.uid, user.email || undefined);
   };
 
   const handleStart = () => {
@@ -361,6 +365,7 @@ const TimerWidget = ({ language, onNavigate }: TimerWidgetProps) => {
               onClick={() => {
                 setTimerTheme('digital');
                 localStorage.setItem('marksy-timer-theme', 'digital');
+                if (user) schedulePush(user.uid, user.email || undefined, 4000);
               }}
               className="text-xs"
             >
@@ -372,6 +377,7 @@ const TimerWidget = ({ language, onNavigate }: TimerWidgetProps) => {
               onClick={() => {
                 setTimerTheme('circular');
                 localStorage.setItem('marksy-timer-theme', 'circular');
+                if (user) schedulePush(user.uid, user.email || undefined, 4000);
               }}
               className="text-xs"
             >

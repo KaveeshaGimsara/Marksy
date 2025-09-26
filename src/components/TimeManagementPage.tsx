@@ -13,6 +13,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import { useTimer } from '@/context/TimerContext';
+import { useAuth } from '@/context/AuthContext';
+import { schedulePush } from '@/lib/syncService';
 
 interface TimerSession {
   id: string;
@@ -79,6 +81,7 @@ const TimeManagementPage: React.FC = () => {
   const [chartType, setChartType] = useState<'daily' | 'weekly' | 'tags'>('daily');
   const { toast } = useToast();
   const { isRunning, isPaused, elapsedSeconds } = useTimer();
+  const { user } = useAuth();
 
   const formattedTimer = useMemo(() => {
     const hours = Math.floor(elapsedSeconds / 3600).toString().padStart(2, '0');
@@ -260,6 +263,9 @@ const TimeManagementPage: React.FC = () => {
     const goalInSeconds = tempDailyGoal * 3600; // Convert hours to seconds
     setDailyGoal(goalInSeconds);
     localStorage.setItem('marksy-daily-goal', goalInSeconds.toString());
+
+    // Schedule cloud sync
+    if (user) schedulePush(user.uid, user.email || undefined);
     
     toast({
       title: "Daily Goal Updated",
@@ -273,6 +279,8 @@ const TimeManagementPage: React.FC = () => {
     setSessions(updatedSessions);
     setDeleteDialogOpen(false);
     setSessionToDelete(null);
+
+    if (user) schedulePush(user.uid, user.email || undefined);
     
     toast({
       title: "Session Deleted",
@@ -284,6 +292,14 @@ const TimeManagementPage: React.FC = () => {
     setSessionToDelete(sessionId);
     setDeleteDialogOpen(true);
   };
+
+  // Sync when sessions list changes size significantly (e.g., new session added elsewhere)
+  useEffect(() => {
+    if (user && sessions.length > 0) {
+      // Debounced push to avoid spamming while user rapidly records sessions
+      schedulePush(user.uid, user.email || undefined, 3000);
+    }
+  }, [sessions.length, user]);
 
   const getChartData = () => {
     const now = new Date();

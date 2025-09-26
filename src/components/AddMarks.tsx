@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useAuth } from '@/context/AuthContext';
+import { schedulePush } from '@/lib/syncService';
 
 interface AddMarksProps {
   language: "en" | "si";
@@ -28,6 +30,7 @@ interface MarksEntry {
 }
 
 const AddMarks = ({ language }: AddMarksProps) => {
+  const { user } = useAuth();
   const [subjects, setSubjects] = useState<Subject[]>([
     { name: "Biology", isFavorite: false },
     { name: "Chemistry", isFavorite: false },
@@ -185,8 +188,9 @@ const AddMarks = ({ language }: AddMarksProps) => {
         ? { ...subject, isFavorite: !subject.isFavorite }
         : subject
     );
-    setSubjects(updatedSubjects);
-    localStorage.setItem("alSubjects", JSON.stringify(updatedSubjects));
+  setSubjects(updatedSubjects);
+  localStorage.setItem("alSubjects", JSON.stringify(updatedSubjects));
+  if (user) schedulePush(user.uid, user.email || undefined);
     
     toast.success(
       subject?.isFavorite 
@@ -221,8 +225,9 @@ const AddMarks = ({ language }: AddMarksProps) => {
       ...marks,
       timestamp: Date.now()
     };
-    existingData.push(newEntry);
-    localStorage.setItem("alMarksData", JSON.stringify(existingData));
+  existingData.push(newEntry);
+  localStorage.setItem("alMarksData", JSON.stringify(existingData));
+  if (user) schedulePush(user.uid, user.email || undefined);
 
     toast.success(language === "en" ? "Marks saved successfully!" : "ලකුණු සාර්ථකව සුරකින ලදී!");
     

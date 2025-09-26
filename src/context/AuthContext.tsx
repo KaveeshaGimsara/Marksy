@@ -9,6 +9,7 @@ import {
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db, authPersistenceReady } from '@/lib/firebase';
 import { syncLoginSession } from '@/lib/backendSync';
+import { fullSync } from '@/lib/syncService';
 
 interface AuthContextType {
   user: User | null;
@@ -48,6 +49,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       unsub = onAuthStateChanged(auth, (u) => {
         setUser(u);
         setInitializing(false);
+        if (u) {
+          // Perform silent full sync when session is restored (e.g., refresh / new tab)
+            fullSync(u.uid, u.email || undefined);
+        }
       });
     });
     return () => {
@@ -93,6 +98,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         // Fire and forget backend sync (no await to avoid blocking redirect)
         syncLoginSession(result.user);
+        // Kick off data sync chain (cloud <-> local)
+        fullSync(result.user.uid, result.user.email || undefined);
       }
     } catch (err) {
       const authError = err as AuthError;
