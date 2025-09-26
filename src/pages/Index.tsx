@@ -26,7 +26,7 @@ const Index = () => {
   const [showAdmin, setShowAdmin] = useState(false);
   const { toast } = useToast();
 
-  // Load theme preference - default to light mode
+  // Load theme preference and handle URL parameters
   useEffect(() => {
     const savedTheme = localStorage.getItem("marksy-theme");
     const savedLanguage = localStorage.getItem("marksy-language");
@@ -46,6 +46,13 @@ const Index = () => {
     
     if (savedLanguage && (savedLanguage === "en" || savedLanguage === "si")) {
       setLanguage(savedLanguage as "en" | "si");
+    }
+
+    // Handle URL parameters for direct page access
+    const urlParams = new URLSearchParams(window.location.search);
+    const page = urlParams.get('page');
+    if (page && ['profile', 'add-marks', 'dashboard', 'analysis', 'about', 'help', 'credits', 'version'].includes(page)) {
+      setActiveSection(page);
     }
   }, []);
 
@@ -78,6 +85,18 @@ const Index = () => {
     });
   };
 
+  const handleNavigate = (section: string) => {
+    setActiveSection(section);
+    // Update URL without page reload
+    const url = new URL(window.location.href);
+    if (section === 'home') {
+      url.searchParams.delete('page');
+    } else {
+      url.searchParams.set('page', section);
+    }
+    window.history.pushState({}, '', url.toString());
+  };
+
   const navigationItems = [
     { id: "home", label: language === "en" ? "Home" : "මුල් පිටුව", icon: Home },
     { id: "marks", label: language === "en" ? "Add Marks" : "ලකුණු එකතු කරන්න", icon: BookOpen },
@@ -92,7 +111,7 @@ const Index = () => {
   const renderActiveSection = () => {
     switch (activeSection) {
       case "home":
-        return <Homepage language={language} onNavigate={setActiveSection} />;
+        return <Homepage language={language} onNavigate={handleNavigate} />;
       case "profile":
         return <ProfilePage language={language} />;
       case "addmarks":
@@ -113,7 +132,7 @@ const Index = () => {
       case "license":
         return <LicensePage />;
       default:
-        return <Homepage language={language} onNavigate={setActiveSection} />;
+        return <Homepage language={language} onNavigate={handleNavigate} />;
     }
   };
 
@@ -121,7 +140,7 @@ const Index = () => {
     <div className="min-h-screen bg-background transition-colors duration-300">
       <Header 
         activeSection={activeSection}
-        setActiveSection={setActiveSection}
+        setActiveSection={handleNavigate}
         isDarkMode={isDarkMode}
         toggleDarkMode={toggleTheme}
         language={language}
@@ -138,7 +157,7 @@ const Index = () => {
 
       <Footer 
         activeSection={activeSection}
-        setActiveSection={setActiveSection}
+        setActiveSection={handleNavigate}
         showAdmin={showAdmin}
         setShowAdmin={setShowAdmin}
         language={language} 

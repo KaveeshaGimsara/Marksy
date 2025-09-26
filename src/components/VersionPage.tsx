@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import versionsFallback from "@/versioning/versions.json";
 import commitsData from "@/versioning/commits.json";
-import { Code, Calendar, Star, Zap, Bug, Shield, Sparkles, ArrowRight } from "lucide-react";
+import { Code, Calendar, Star, Zap, Bug, Shield, Sparkles, ArrowRight, Share2, Check } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,8 +27,21 @@ interface CommitInfo {
 
 const VersionPage = ({ language }: VersionPageProps) => {
   const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
+  const [shareClicked, setShareClicked] = useState(false);
 
   const [versions, setVersions] = useState<VersionInfo[]>(versionsFallback as VersionInfo[]);
+
+  const handleShare = async () => {
+    try {
+      if (typeof window !== 'undefined' && navigator?.clipboard) {
+        await navigator.clipboard.writeText(window.location.href);
+        setShareClicked(true);
+        setTimeout(() => setShareClicked(false), 2000);
+      }
+    } catch {
+      // ignore copy errors
+    }
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -66,7 +79,7 @@ const VersionPage = ({ language }: VersionPageProps) => {
 
   return (
     <div className="min-h-screen px-4 py-6">
-      <div className="text-center mb-8">
+      <div className="text-center mb-8 relative">
         <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
           {language === "en" ? "Version History" : "අනුවාද ඉතිහාසය"}
         </h1>
@@ -76,6 +89,28 @@ const VersionPage = ({ language }: VersionPageProps) => {
             : "Marksy හි පරිණාමය සවිස්තරාත්මක වෙනස්කම් ලොගය සමඟ නිරීක්ෂණය කරන්න"
           }
         </p>
+        
+        {/* Share Button */}
+        <div className="absolute top-0 right-0">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleShare}
+            className="flex items-center gap-2 text-xs"
+          >
+            {shareClicked ? (
+              <>
+                <Check className="h-3 w-3 text-green-500" />
+                <span>{language === 'en' ? 'Copied!' : 'පිටපත් වුණා!'}</span>
+              </>
+            ) : (
+              <>
+                <Share2 className="h-3 w-3" />
+                <span>{language === 'en' ? 'Share' : 'බෙදාගන්න'}</span>
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-6 max-w-4xl mx-auto">
