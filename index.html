@@ -16,9 +16,20 @@
 
   <meta property="og:title" content="Marksy – A/L Progress Tracker" />
   <meta property="og:description" content="Track, analyze, and visualize your A/L subject performance with Marksy." />
-    <meta property="og:type" content="website" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@Marksy" />
+  <meta name="twitter:image" content="/og-image.png" />
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GRETTK23ZM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);} 
+    gtag('js', new Date());
+    gtag('config', 'G-GRETTK23ZM', { anonymize_ip: true });
+  </script>
   </head>
-
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import versionsData from "@/versioning/versions.json";
+import { useState, useEffect } from "react";
+import versionsFallback from "@/versioning/versions.json";
 import commitsData from "@/versioning/commits.json";
 import { Code, Calendar, Star, Zap, Bug, Shield, Sparkles, ArrowRight } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,7 +28,22 @@ interface CommitInfo {
 const VersionPage = ({ language }: VersionPageProps) => {
   const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
 
-  const versions: VersionInfo[] = versionsData as VersionInfo[];
+  const [versions, setVersions] = useState<VersionInfo[]>(versionsFallback as VersionInfo[]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const mod: any = await import('@/versioning/full-history.json');
+        if (!cancelled && Array.isArray(mod.default)) {
+          setVersions(mod.default as VersionInfo[]);
+        }
+      } catch {
+        // ignore – fallback already loaded
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
   const commits: CommitInfo[] = commitsData as CommitInfo[];
 
   const getVersionTypeColor = (type: string) => {

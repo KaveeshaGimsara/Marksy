@@ -1,5 +1,5 @@
-import { useState } from "react";
-import versionsData from "@/versioning/versions.json";
+import { useState, useEffect } from "react";
+import versionsFallback from "@/versioning/versions.json";
 import { HelpCircle, Star, Settings, Heart, ExternalLink, Code, Coffee } from "lucide-react";
 import HeartLogo from "@/components/HeartLogo";
 import BuyMeCoffee from "@/components/BuyMeCoffee";
@@ -17,7 +17,22 @@ interface FooterProps {
 
 const Footer = ({ activeSection, setActiveSection, showAdmin, setShowAdmin, language }: FooterProps) => {
   const [showAdDialog, setShowAdDialog] = useState(false);
-  const currentVersion = (versionsData as any[])[0]?.version || "v0.0.0";
+  const [versions, setVersions] = useState<any[]>(versionsFallback as any[]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const mod: any = await import('@/versioning/full-history.json');
+        if (!cancelled && Array.isArray(mod.default)) {
+          setVersions(mod.default);
+        }
+      } catch {/* silently ignore */}
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  const currentVersion = versions[0]?.version || "v0.0.0";
 
   return (
     <footer className="relative border-t bg-card/60 backdrop-blur supports-[backdrop-filter]:bg-card/40 mt-auto">
