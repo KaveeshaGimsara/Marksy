@@ -10,14 +10,11 @@ import {
   Menu,
   Plus,
   Clock,
-  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import HeartLogo from "@/components/HeartLogo";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useTimer } from "@/context/TimerContext";
-import { useAuth } from "@/context/AuthContext";
-import { useToast } from "@/hooks/use-toast";
 
 interface HeaderProps {
   activeSection: string;
@@ -42,26 +39,6 @@ const Header = ({
 }: HeaderProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { elapsedSeconds, isRunning, isPaused } = useTimer();
-  const { logout } = useAuth();
-  const { toast } = useToast();
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      toast({
-        title: "Logged out successfully",
-        description: "See you soon!",
-        duration: 3000,
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to logout. Please try again.",
-        variant: "destructive",
-        duration: 3000,
-      });
-    }
-  };
 
   const formattedTimer = useMemo(() => {
     const hours = Math.floor(elapsedSeconds / 3600)
@@ -217,23 +194,6 @@ const Header = ({
               </div>
             </div>
 
-            {/* Logout Button */}
-            <div className="relative group">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleLogout}
-                aria-label={language === "en" ? "Logout" : "ඉවත් වන්න"}
-                className="hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-all duration-200 h-9 w-9"
-              >
-                <LogOut className="h-4 w-4" />
-              </Button>
-              <div className="hidden md:block absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-2 bg-background dark:bg-card text-foreground dark:text-foreground text-xs rounded-lg border border-border shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                {language === "en" ? "Logout" : "ඉවත් වන්න"}
-                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-background dark:bg-card rotate-45 border-l border-t border-border" />
-              </div>
-            </div>
-
             {/* Theme Toggle */}
             <div className="relative group">
               <Button
@@ -278,20 +238,9 @@ const Header = ({
                       );
                     })}
                   </nav>
-                  <div className="mt-4 space-y-2">
-                    <div className="grid grid-cols-2 gap-2">
-                      <Button variant="outline" onClick={toggleLanguage} className="text-xs" aria-label="Toggle language">{language === "en" ? "සිංහල" : "English"}</Button>
-                      <Button variant="outline" onClick={toggleDarkMode} className="text-xs" aria-label="Toggle theme">{isDarkMode ? (language === "en" ? "Light" : "ආලෝක") : (language === "en" ? "Dark" : "අඳුරු")}</Button>
-                    </div>
-                    <Button 
-                      variant="destructive" 
-                      onClick={handleLogout} 
-                      className="w-full text-xs" 
-                      aria-label="Logout"
-                    >
-                      <LogOut className="h-4 w-4 mr-2" />
-                      {language === "en" ? "Logout" : "ඉවත් වන්න"}
-                    </Button>
+                  <div className="mt-4 grid grid-cols-2 gap-2">
+                    <Button variant="outline" onClick={toggleLanguage} className="text-xs" aria-label="Toggle language">{language === "en" ? "සිංහල" : "English"}</Button>
+                    <Button variant="outline" onClick={toggleDarkMode} className="text-xs" aria-label="Toggle theme">{isDarkMode ? (language === "en" ? "Light" : "ආලෝක") : (language === "en" ? "Dark" : "අඳුරු")}</Button>
                   </div>
                 </div>
               </SheetContent>

@@ -493,4 +493,12 @@
     transform: translateY(-4px) scale(1.02);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   }
+
+  /* Login page background pattern */
+  .bg-grid-pattern {
+    background-image: 
+      linear-gradient(rgba(0, 0, 0, .1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 0, 0, .1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
 }

@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useToast } from "@/hooks/use-toast";
 import { ProfilePageProps } from "@/types";
 import SupportButton from "@/components/SupportButton";
+import { useAuth } from "@/context/AuthContext";
 
 interface ProfileData {
   name: string;
@@ -58,6 +59,7 @@ interface BadgeData {
 
 const ProfilePage = ({ language }: ProfilePageProps) => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [profileData, setProfileData] = useState<ProfileData>({
@@ -757,6 +759,59 @@ const ProfilePage = ({ language }: ProfilePageProps) => {
       </div>
 
       <div className="space-y-6">
+        {/* User Authentication Info Card */}
+        <Card className="academic-card border-green-200 bg-green-50 dark:bg-green-900/10 dark:border-green-800">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2 text-green-700 dark:text-green-400">
+              <Shield className="h-5 w-5" />
+              <span>Account Status</span>
+            </CardTitle>
+            <CardDescription className="text-green-600 dark:text-green-300">
+              Currently logged in and synced with Firebase
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-medium text-green-700 dark:text-green-400">Email Address</Label>
+                <p className="text-sm bg-white dark:bg-gray-800 rounded px-3 py-2 border mt-1">
+                  {user?.email || 'Not available'}
+                </p>
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-green-700 dark:text-green-400">User ID</Label>
+                <p className="text-sm bg-white dark:bg-gray-800 rounded px-3 py-2 border mt-1 font-mono">
+                  {user?.uid ? user.uid.substring(0, 8) + '...' : 'Not available'}
+                </p>
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-green-700 dark:text-green-400">Account Created</Label>
+                <p className="text-sm bg-white dark:bg-gray-800 rounded px-3 py-2 border mt-1">
+                  {user?.metadata?.creationTime 
+                    ? new Date(user.metadata.creationTime).toLocaleDateString()
+                    : 'Not available'
+                  }
+                </p>
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-green-700 dark:text-green-400">Last Sign In</Label>
+                <p className="text-sm bg-white dark:bg-gray-800 rounded px-3 py-2 border mt-1">
+                  {user?.metadata?.lastSignInTime 
+                    ? new Date(user.metadata.lastSignInTime).toLocaleDateString()
+                    : 'Not available'
+                  }
+                </p>
+              </div>
+            </div>
+            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+              <p className="text-sm text-blue-700 dark:text-blue-300">
+                <Database className="h-4 w-4 inline mr-2" />
+                All your progress and data is automatically synced with Firebase and secured with your account.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Profile Information Card */}
         <Card className="academic-card">
         <CardHeader>
