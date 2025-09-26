@@ -203,25 +203,38 @@ const AboutPage = ({ language: initialLanguage }: AboutPageProps) => {
           {/* English Letter */}
           <div className="prose prose-sm dark:prose-invert max-w-none leading-relaxed text-amber-900 dark:text-amber-100 text-sm">
             <p>
-              <span className="first-letter:text-4xl first-letter:font-extrabold first-letter:mr-1 first-letter:float-left first-letter:font-serif first-letter:text-amber-600 dark:first-letter:text-amber-400">H</span>ey future scholar! 👋 <span className="bg-gradient-to-r from-amber-300 via-yellow-400 to-orange-300 bg-clip-text text-transparent font-semibold">First, breathe.</span> Seriously — shoulders down, jaw unclench, eyes blink. You're doing something courageous: choosing discipline when ease is always an option. This platform isn't just another marks app — it's a <span className="font-semibold text-amber-700 dark:text-amber-300">mirror</span>, a <span className="font-semibold text-amber-700 dark:text-amber-300">compass</span>, and sometimes a reality check. Every number you enter isn't a judgment; it's a breadcrumb on your academic trail across months of effort, focus, and small recoveries after not-so-great days.
+              <span className="first-letter:text-4xl first-letter:font-extrabold first-letter:mr-1 first-letter:float-left first-letter:font-serif first-letter:text-amber-600 dark:first-letter:text-amber-400">H</span>ey there, 👋
             </p>
             <p>
-              You might feel others are racing ahead — the student who finishes papers faster, the friend who says "I barely studied" (but somehow scores 80+), or the comparison trap with past you. But <span className="underline decoration-wavy decoration-amber-500/70 dark:decoration-amber-300/60">progress isn't loud</span>. It's the silent decision to sit for 25 more minutes. It's re-attempting that organic mechanism. It's choosing revision over scrolling. Exams reward consistency more than raw talent — and consistency is a skill you build, not a gift you're born with.
+              I'm not sure of your age or what level you're at. But I bet you clicked this link and came here looking for an answer, right? 🤔
             </p>
             <p>
-              Use this tool like an honest coach: log your marks even when they're average, especially when they drop. Patterns matter. Spot weak MCQ topics? Create a mini blitz week. Essays dropping? Outline structure before writing. Timing issues? Practice in strict blocks. And celebrate micro-wins: <span className="text-emerald-600 dark:text-emerald-400 font-semibold">+5 improvement</span>, finishing a paper without skipping, understanding instead of memorizing. These stack. 📈
+              Initially, my biggest problem was figuring out how to manage my papers and keep track of my scores to see my progress. I found some good sites and apps for it, but they never had a free version. So, I thought to myself, 'This isn't gonna work.' I decided to create my own 100% free tool to track my progress. 💻✨
             </p>
             <p>
-              Also: rest is <span className="italic text-amber-700 dark:text-amber-300">strategic</span>, not lazy. Burnout pretends to be productivity until your brain refuses. Sleep, hydration, real food, sunlight — these are performance enhancers (legal ones 😄). Talk kindly to yourself. Your internal narration affects retention and recall more than you think. Replace "I can't" with <span className="font-semibold text-amber-700 dark:text-amber-300">"I haven't mastered this yet."</span> That word 'yet' is powerful.
+              In the end, I put in the hard work and built this site. There's no point in me being the only one to benefit from my effort, right? So, I decided to share it with everyone who's also putting in the effort. I've added as many features as I could and hosted it.
             </p>
             <p>
-              And if you're reading this late at night feeling behind — you're not alone. Thousands of Sri Lankan students are grinding through similar doubts. You're part of a resilient, brilliant community. Your value is not defined by a single rank or letter. You're building resilience, learning frameworks, and intellectual stamina that will outlast any exam hall.
+              Now, it's your turn to get your work organized. 🚀
             </p>
             <p>
-              So keep showing up — imperfectly is fine. Track honestly. Adjust intelligently. Rest deliberately. Believe stubbornly. Your future self will be so grateful you started measuring instead of guessing. 🌟
+              <span className="font-semibold text-amber-700 dark:text-amber-300">Privacy & Policy</span><br />
+              Your data (details, scores) isn't saved anywhere else but on your device, so you don't have to worry about that. There are no login or signup buttons, which means no one else can access your data. However, remember to carefully export the file you get from your Profile if you switch your browser or delete it. That's where all your data is stored.
+            </p>
+            <p>
+              <span className="font-semibold text-amber-700 dark:text-amber-300">Self Study</span><br />
+              You can get into this work with passion and even become addicted to doing papers. You can complete achievements and earn badges. You can also add a To-Do List to get your work done systematically. As I said at the start, I built this for solo studying. So, make the most of it. It doesn't cost a single cent. 😉
+            </p>
+            <p>
+              <span className="font-semibold text-amber-700 dark:text-amber-300">Important</span><br />
+              Make sure to export your data and keep it safe at least once a day. You never know what might happen.
+            </p>
+            <p>
+              <span className="font-semibold text-amber-700 dark:text-amber-300">Data Export & Import</span><br />
+              You can store your data in both .XLS and .JSON formats. You can open the .XLS file with software like Excel to edit and add data, or see your progress beyond the site itself.
             </p>
             <p className="font-semibold text-amber-800 dark:text-amber-200">
-              With respect and code,<br />Kaveesha Gimsara
+              Good Luck buddies 🐼❤️
             </p>
           </div>
 
@@ -235,24 +248,42 @@ const AboutPage = ({ language: initialLanguage }: AboutPageProps) => {
           {showSinhalaLetter && (
             <div className="prose prose-sm dark:prose-invert max-w-none leading-relaxed text-amber-900 dark:text-amber-100 text-sm animate-fade-in">
               <p>
-                <span className="first-letter:text-4xl first-letter:font-extrabold first-letter:mr-1 first-letter:float-left first-letter:font-serif first-letter:text-amber-600 dark:first-letter:text-amber-400">ආ</span>යුබෝවන් අනාගත ජයග්‍රාහකයානි! 👋 <span className="bg-gradient-to-r from-amber-300 via-yellow-400 to-orange-300 bg-clip-text text-transparent font-semibold">පළමුව හුස්ම ගන්න.</span> උරහිස් පහත් කරන්න, ඇස් පියවලා නැවත විවෘත කරන්න. ඔබ කිරීමේ දේ අභියෝගාත්මකයි: පහසුවේ විකල්පය තිබුණත් अनुශ්ඨානය තෝරා ගැනීම. මේ වේදිකාව සාමාන්‍ය ලකුණු යෙදුමක් නොවෙයි — ඔබේ කුසලතා මාවතක්, දැක්මක් සහ අවස්ථාවවලදී සැබෑ ඇඟවේදය. ඔබ ඇතුල් කරන සෑම අංකයක්ම විනිශ්චයකරුවෙක් නොව — කාලය පුරා ඔබේ උත්සාහයේ breadcrumb එකක්.
+                <span className="first-letter:text-4xl first-letter:font-extrabold first-letter:mr-1 first-letter:float-left first-letter:font-serif first-letter:text-amber-600 dark:first-letter:text-amber-400">හෙ</span>ලෝ හෙලෝ, 👋
               </p>
               <p>
-                අනෙක් කවුදෝ ඉදිරියට පනිනයයි වගේ ඔබට දැනේවි — ඉක්මනින් පත්‍ර අවසන් කරන ශිෂ්‍යයා, "මම වැඩියෙන් ඉගෙනෙලා නැහැ" කියන හැබැයි 80+ අරින යාළුවා, හෝ පසුගිය ඔබ එක්ක කරන සසඳීම. නමුත් <span className="underline decoration-wavy decoration-amber-500/70 dark:decoration-amber-300/60">ප්‍රගතිය ශබ්දවත් නෙවෙයි</span>. එය තව මිනිත්තු 25ක් ඉඳින තීරණය. නැවත organic mechanism එක උත්සාහ කිරීම. Scroll කිරීම වෙනුවට අවලංගු කිරීම තෝරා ගැනීම. විභාග වලට දායක වන්නේ ස්ථිරත්වයයි — සහ ඒක ඔබ ගොඩනගන කුසලතාවක්.
+                මම දන්නෙ නෑ මේක කියවන ඔයා මොන වයසෙද, මොන මට්ටමකද කියලා. හැබැයි මේ ලින්ක් එක ක්ලික් කරලා මේකට ආවේ අනිවාර්යයෙන්ම මොකක් හරි උත්තරයක් හොයාගන්න වෙන්න ඇති, නේද? 🤔
               </p>
               <p>
-                මේ මෙවලම විවෘත පුහුණුඥෙකුක් වගේ භාවිතා කරලා බලන්න: සාමාන්‍ය ලකුණු ආවත් ලියන්න. වැටෙද්දී නම් තව වඩාත් ලියන්න. රටා වැදගත්. අඩු MCQ ප්‍රතිඵල? සතියක blitz එකක්. Essay වැටෙද්දී? ලියන්න පෙර ව්‍යුහය ලියන්න. කාලය බිඳ වැටෙද්දී? දැඩි කොටස් වලට විභාග simulation. පුංචි ජයග්‍රහණ වලටට්ටු දෙන්න: <span className="text-emerald-600 dark:text-emerald-400 font-semibold">+5 වැඩිවීම</span>, එක පත්‍රයක් skip නැතුව අවසන් වීම, මතක කිරීම badunaṭa badila තේරුම්ගැනීම. ඒවා එකතු වෙයි. 📈
+                මුලින්ම මට තිබුණ ලොකුම ප්‍රශ්නයක් තමයි පේපර්ස් මැනේජ් කරගන්නෙ කොහොමද, ඒ වගේම ඒවායේ ලකුණු පිළිවෙලකට තියාගෙන ප්‍රොග්‍රස් එක බලන්නෙ කොහොමද කියන එක. මේකට හොඳ සයිට්ස්, ඇප්ස් ටිකක් හම්බ වුණා, හැබැයි ඒවයේ ෆ්‍රී වර්ෂන් නම් තිබුණෙම නෑ. ඒක නිසා මට හිතුණා මේ වැඩේ හරියන්නෙ නෑ, කොහොම හරි 100% ෆ්‍රී එකක් හදාගෙන මගේම ප්‍රොග්‍රස් එක බලාගන්න ඕනෙ කියලා. 💻✨
               </p>
               <p>
-                විවේකය <span className="italic text-amber-700 dark:text-amber-300">අලාසියක් නෙවෙයි</span> — තාක්ෂණය. කාලය හරියට නාස්ති වෙද්දී මනස ඉගෙනීම අවහිර වෙනවා. නිදාගැනීම, ජලය, සත්‍ය ආහාර, හිරු ආලෝකය — මේවා performance boosters (නීතිසම්මත 😄). ඔබ ඔබට කාරුණිකව කතා කරන්න. "මට බැහැ" වෙනුවට <span className="font-semibold text-amber-700 dark:text-amber-300">"මට තව mastering කරලා නෑ"</span> කියන්න. 'තව' කියන වචනයට බලය දරයි.
+                අන්තිමට මම මහන්සි වෙලා මේ සයිට් එක හැදුවා. මගේ මහන්සියෙන් මම විතරක් ප්‍රයෝජන අරන් වැඩක් නෑනෙ. ඒක නිසා මම හිතුවා මහන්සි වෙන සෙට් එකක් එක්ක මේක බෙදාගන්න ඕනෙ කියලා. මම මේකට පුළුවන් තරම් ෆීචර්ස් ඇඩ් කරලා හොස්ට් කළා.
               </p>
               <p>
-                රාත්‍රී අවසන් වෙලා ඔබ අස්ථිර තත්ත්වයක තියෙන වේලාවක මේක කියවන්නේ නම් — ඔබ තනි නෙවෙයි. දහස් ගණනක් ශ්‍රී ලාංකික සිසුන්ටත් මේම වගේ සැකය සහ common grind තියෙනවා. ඔබ ප්‍රතිරෝධශීලී හවුල්කාරක පිරිසක කොටසක්. ඔබේ අගය එක අකුරකින් හෝ rank එකකින් තීරණය නොවේ.
+                දැන් තියෙන්නෙ ඔයාලගෙ වැඩ ටික පිළිවෙලකට කරගෙන යන්න. 🚀
               </p>
               <p>
-                ඒ නිසා ඉදිරියට යන්න — පරිපූර්ණ නොවුවත් සරිය. සත්‍ය ලෙස ලියන්න. බුද්ධිමත්ව සකස් කරන්න. අදහස්පුර්වක විවේක ගන්න. කටුවෙන්ම විශ්වාස කරන්න. ඔබේ අනාගත ඔබට මේක ගැන ස්තුතියි වේවි. 🌟
+                <span className="font-semibold text-amber-700 dark:text-amber-300">පෞද්ගලිකත්වය සහ ප්‍රතිපත්තිය (Privacy & Policy)</span><br />
+                සයිට් එකේ ඩේටා (විස්තර, ලකුණු) ඔයාගේ ඩිවයිස් එකේ ඇර වෙන කොහෙවත් සේව් වෙන්නෙ නෑ. ඒ නිසා ඒ ගැන බය වෙන්න එපා. ලොගින්, සයින්අප් බටන් මුකුත් නෑ. ඒ නිසා ඔයාගේ ඩේටා වෙන කාටවත් ලොක් වෙන්නෙත් නෑ. හැබැයි, මතක ඇතුව ඔයා බ්‍රවුසර් එක මාරු කරනවා නම් හරි, බ්‍රවුසර් එක ඩිලීට් කරනවා නම් හරි, ප්‍රොෆයිල් වලට ගිහින් එක්ස්පෝර්ට් කරලා එන ෆයිල් එක පරිස්සමෙන් තියාගන්න. ඒකෙ තමා ඔයාගේ ඔක්කොම ඩේටා තියෙන්නෙ.
               </p>
-              <p className="font-semibold text-amber-800 dark:text-amber-200">ගෞරවයෙන් හා කේතය සමඟ,<br />කවීෂ ගිම්සර</p>
+              <p>
+                <span className="font-semibold text-amber-700 dark:text-amber-300">ස්වයං අධ්‍යයනය (Self Study)</span><br />
+                මේ වැඩේ තනියම ආසාවෙන් කරගෙන යන්න වගේම ඇඩික්ට් වෙලා වගේ පේපර්ස් කරලා ඇචීව්මන්ට් කම්ප්ලීට් කරන්න, බෑජ් ගන්න පුළුවන්. ඒ වගේම ටු-ඩූ ලිස්ට් ඇඩ් කරලා ඔයාගේ වැඩ ටික පිළිවෙලකට කරගෙන යන්නත් පුළුවන්. මුලින්ම කිව්වනෙ මේක හැදුවෙ තනියෙන් ඉගෙන ගන්න කියලා. ඒ නිසා පුළුවන් තරම් ප්‍රයෝජනෙ ගන්න. සතයක්වත් යන්නෙ නෑනෙ. �
+              </p>
+              <p>
+                <span className="font-semibold text-amber-700 dark:text-amber-300">වැදගත් (Important)</span><br />
+                අනිවාර්යයෙන් දවසකට සැරයක්වත් ඩේටා එක්ස්පෝර්ට් කරලා පරිස්සමෙන් තියාගන්න. මොනවා වෙයිද කියලා කියන්න බෑනෙ.
+              </p>
+              <p>
+                <span className="font-semibold text-amber-700 dark:text-amber-300">ඩේටා එක්ස්පෝර්ට් සහ ඉම්පෝර්ට් (Data Export & Import)</span><br />
+                .XLS සහ .JSON කියන ෆෝමැට් දෙකෙන්ම ඔයාලගේ ඩේටා ස්ටෝර් කරගන්න පුළුවන් විදියට දීලා තියෙනවා. .XLS එක එක්සෙල් වගේ සොෆ්ට්වෙයාර් එකකින් ඕපන් කරලා ඩේටා එඩිට් කරන්න, ඇඩ් කරන්න. සයිට් එකට එහා ගිය ප්‍රොග්‍රස් බලන්නත් පුළුවන්.
+              </p>
+              <p>
+                ආ, කියන්න බැරි වුණා. කඩ්ඩ බැරි අයට, ඔන්න ඔය උඩ කෙළවරේ බට්න් එකක් ඇති. ඒක ඔබලා සිංහලට දාගන්න පුලාන්. 😉
+              </p>
+              <p className="font-semibold text-amber-800 dark:text-amber-200">
+                ගෞරවයෙන් හා කේතය සමඟ,<br />කවීෂ ගිම්සර
+              </p>
             </div>
           )}
         </CardContent>
