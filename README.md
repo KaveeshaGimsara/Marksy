@@ -49,6 +49,19 @@ npm run dev
 
 Then open the Vite dev URL (usually http://localhost:5173/).
 
+### Environment Variables
+
+Two environment files are included:
+
+- `.env.development` sets `VITE_SITE_URL=http://localhost:5173`
+- `.env.production` sets `VITE_SITE_URL=https://marksy-al.vercel.app`
+
+Use `VITE_SITE_URL` anywhere in `index.html` as `%VITE_SITE_URL%` for absolute social meta tags (Telegram & LinkedIn require absolute URLs).
+
+During `vite build` a small plugin replaces the placeholder `__OG_UPDATED_TIME__` with the current ISO timestamp so `og:updated_time` always reflects the deployment and helps cache bust social previews.
+
+If you change the deployment domain, update `.env.production` only—no need to edit `index.html` again.
+
 ## Usage Overview
 
 1. Go to Add Marks
