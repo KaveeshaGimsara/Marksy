@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { TimerProvider } from "@/context/TimerContext";
 import { AuthProvider } from "@/context/AuthContext";
 import Index from "./pages/Index";
@@ -17,16 +17,8 @@ import HeartbeatLoader from "./components/HeartbeatLoader";
 const queryClient = new QueryClient();
 
 const App = () => {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulate app initialization
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 3000); // 3 second loading minimum
-
-    return () => clearTimeout(timer);
-  }, []);
+  // Fallback local loader for non-auth async prep if needed later
+  const [appReady, setAppReady] = useState(true); // currently immediate
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -34,10 +26,10 @@ const App = () => {
         <TimerProvider>
           <TooltipProvider>
             <HeartbeatLoader 
-              isLoading={isLoading} 
-              onLoadingComplete={() => setIsLoading(false)}
+              isLoading={!appReady}
+              onLoadingComplete={() => setAppReady(true)}
             />
-            {!isLoading && (
+            {appReady && (
               <>
                 <Toaster />
                 <Sonner />

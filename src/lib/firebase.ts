@@ -12,16 +12,19 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-// Initialize Firebase
+// Initialize Firebase (singleton by design). Guard against duplicate init in HMR.
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firebase Authentication and get a reference to the service
 export const auth = getAuth(app);
-
-// Initialize Cloud Firestore and get a reference to the service
 export const db = getFirestore(app);
 
-// Set persistence to local storage
-setPersistence(auth, browserLocalPersistence);
+// Export a promise so other modules can await persistence being ready before auth ops.
+export const authPersistenceReady = setPersistence(auth, browserLocalPersistence)
+  .catch(err => {
+    if (import.meta.env.DEV) {
+      // Non-fatal: auth will fallback to in-memory persistence
+      console.error('[firebase] Failed to set persistence:', err);
+    }
+  });
 
 export default app;

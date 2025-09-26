@@ -7,11 +7,14 @@ import {
   AuthError
 } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase';
+import { auth, db, authPersistenceReady } from '@/lib/firebase';
 
 interface AuthContextType {
   user: User | null;
-  loading: boolean;
+  /** True while the initial auth state is being resolved */
+  initializing: boolean;
+  /** True while a login/logout action is in flight */
+  actionLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   error: string | null;
@@ -33,24 +36,38 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [initializing, setInitializing] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
+    let unsub: (() => void) | undefined;
+    // Ensure persistence layer is ready before attaching listener to avoid double callbacks.
+    authPersistenceReady.finally(() => {
+      unsub = onAuthStateChanged(auth, (u) => {
+        setUser(u);
+        setInitializing(false);
+      });
     });
-
-    return unsubscribe;
+    return () => {
+      if (unsub) unsub();
+    };
   }, []);
 
   const login = async (email: string, password: string): Promise<void> => {
     try {
       setError(null);
-      setLoading(true);
-      
-      const result = await signInWithEmailAndPassword(auth, email, password);
+      setActionLoading(true);
+      const trimmedEmail = email.trim();
+      const trimmedPassword = password.trim();
+      if (!trimmedEmail || !trimmedPassword) {
+        setError('Email and password are required.');
+        return;
+      }
+      if (import.meta.env.DEV) console.time('auth:login');
+      await authPersistenceReady; // Ensure persistence configured
+      const result = await signInWithEmailAndPassword(auth, trimmedEmail, trimmedPassword);
+      if (import.meta.env.DEV) console.timeEnd('auth:login');
       
       // Save login details to Firestore
       if (result.user) {
@@ -87,23 +104,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       throw err;
     } finally {
-      setLoading(false);
+      setActionLoading(false);
     }
   };
 
   const logout = async (): Promise<void> => {
     try {
       setError(null);
+      setActionLoading(true);
+      if (import.meta.env.DEV) console.time('auth:logout');
       await signOut(auth);
+      if (import.meta.env.DEV) console.timeEnd('auth:logout');
     } catch (err) {
       setError('Failed to logout. Please try again.');
       throw err;
+    } finally {
+      setActionLoading(false);
     }
   };
 
   const value: AuthContextType = {
     user,
-    loading,
+    initializing,
+    actionLoading,
     login,
     logout,
     error
