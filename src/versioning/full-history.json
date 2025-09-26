@@ -1,5 +1,20 @@
 [
   {
+    "version": "v2.0.1",
+    "date": "2025-09-27",
+    "type": "patch",
+    "features": [
+      "Timer widget layout adapts fluidly across screen sizes",
+      "Average session summary now displays decimal-hour precision"
+    ],
+    "bugfixes": [
+      "Prevented timer controls from wrapping awkwardly on compact devices"
+    ],
+    "improvements": [
+      "Refined timer reset button styling for consistency"
+    ]
+  },
+  {
     "version": "v2.0.0",
     "date": "2025-09-26",
     "type": "major",

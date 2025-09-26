@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
-import { Play, Pause, Square, Clock, Target, Plus } from "lucide-react";
+import { Play, Pause, Square, Clock, Target, Plus, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useTimer } from "@/context/TimerContext";
+import TimerStatusButton from "@/components/TimerStatusButton";
 
 interface TimerSession {
   id: string;
@@ -208,10 +209,10 @@ const TimerWidget = ({ language, onNavigate }: TimerWidgetProps) => {
   const loadTodayStats = () => {
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
     const sessions = getStoredSessions().filter(s => s.date === today);
-    
+
     const totalTime = sessions.reduce((sum, session) => sum + session.duration, 0);
     const sessionCount = sessions.length;
-    const averageSession = sessionCount > 0 ? Math.floor(totalTime / sessionCount) : 0;
+    const averageSession = sessionCount > 0 ? totalTime / sessionCount : 0;
 
     setTodayStats({ totalTime, sessionCount, averageSession });
   };
@@ -330,6 +331,10 @@ const TimerWidget = ({ language, onNavigate }: TimerWidgetProps) => {
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const formatAverageHours = (seconds: number): string => {
+    return (seconds / 3600).toFixed(3);
+  };
+
   const progressPercentage = Math.min((todayStats.totalTime / dailyGoal) * 100, 100);
 
   const time = elapsedSeconds;
@@ -379,7 +384,7 @@ const TimerWidget = ({ language, onNavigate }: TimerWidgetProps) => {
         <div className="text-center">
           {timerTheme === 'digital' ? (
             <div className="relative">
-              <div className={`text-6xl font-mono font-bold mb-4 tracking-wider transition-all duration-300 ${
+              <div className={`text-4xl sm:text-6xl font-mono font-bold mb-4 tracking-wider transition-all duration-300 ${
                 isRunning 
                   ? 'bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent drop-shadow-lg' 
                   : 'text-primary'
@@ -390,8 +395,8 @@ const TimerWidget = ({ language, onNavigate }: TimerWidgetProps) => {
               {/* Status indicator */}
               {isRunning && (
                 <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
-                  <Badge variant="secondary" className="text-xs animate-pulse bg-green-500/10 text-green-600 border-green-500/20">
-                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse" />
+                  <Badge variant="secondary" className="flex items-center gap-2 px-3 py-1 text-[11px] sm:text-xs whitespace-nowrap animate-pulse bg-green-500/10 text-green-600 border-green-500/20">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                     {language === "en" ? "Recording" : "පටිගත කරමින්"}
                   </Badge>
                 </div>
@@ -414,11 +419,11 @@ const TimerWidget = ({ language, onNavigate }: TimerWidgetProps) => {
           )}
           
           {/* Timer Controls */}
-          <div className="flex justify-center gap-3 mb-4">
+          <div className="flex flex-wrap justify-center gap-3 mb-4">
             {!isRunning ? (
               <Button 
                 onClick={handleStart} 
-                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  className="w-full sm:w-auto bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >
                 <Play className="h-4 w-4 mr-2" />
                 {currentContent.start}
@@ -428,7 +433,7 @@ const TimerWidget = ({ language, onNavigate }: TimerWidgetProps) => {
                 {!isPaused ? (
                   <Button 
                     onClick={handlePause} 
-                    className="bg-orange-500/90 text-white shadow-md hover:bg-orange-500 hover:shadow-xl focus-visible:ring-2 focus-visible:ring-orange-400/70 focus-visible:ring-offset-2 transition-all duration-300 transform hover:scale-105 dark:bg-orange-500"
+                      className="w-full sm:w-auto bg-orange-500/90 text-white shadow-md hover:bg-orange-500 hover:shadow-xl focus-visible:ring-2 focus-visible:ring-orange-400/70 focus-visible:ring-offset-2 transition-all duration-300 transform hover:scale-105 dark:bg-orange-500"
                   >
                     <Pause className="h-4 w-4 mr-2" />
                     {currentContent.pause}
@@ -436,7 +441,7 @@ const TimerWidget = ({ language, onNavigate }: TimerWidgetProps) => {
                 ) : (
                   <Button 
                     onClick={handleStart} 
-                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                      className="w-full sm:w-auto bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   >
                     <Play className="h-4 w-4 mr-2" />
                     {currentContent.resume}
@@ -444,7 +449,7 @@ const TimerWidget = ({ language, onNavigate }: TimerWidgetProps) => {
                 )}
                 <Button 
                   onClick={handleStop} 
-                  className="bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                    className="w-full sm:w-auto bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
                   <Square className="h-4 w-4 mr-2" />
                   {currentContent.stop}
@@ -454,17 +459,22 @@ const TimerWidget = ({ language, onNavigate }: TimerWidgetProps) => {
             <Button 
               onClick={handleReset} 
               variant="outline"
-              className="border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 transform hover:scale-105"
+                className="w-full sm:w-auto group relative overflow-hidden border-slate-300 text-slate-700 dark:text-slate-200 dark:border-slate-600 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800/60 dark:to-slate-900/40 hover:from-slate-100 hover:to-slate-200 hover:border-slate-400 focus-visible:ring-2 focus-visible:ring-slate-400/70 focus-visible:ring-offset-2 transition-all duration-300 transform hover:-translate-y-1"
             >
+              <span
+                className="absolute inset-0 translate-x-[-100%] bg-gradient-to-r from-transparent via-slate-300/40 to-transparent dark:via-slate-700/40 transition-transform duration-500 group-hover:translate-x-0"
+                aria-hidden="true"
+              />
+              <RotateCcw className="h-4 w-4 mr-2" />
               {currentContent.reset}
             </Button>
           </div>
 
           {/* Current Tag */}
-          <div className="flex justify-center items-center gap-2 mb-4">
+            <div className="flex flex-wrap justify-center items-center gap-2 mb-4">
             <Badge variant="secondary" className="text-sm">{currentTag}</Badge>
             <Select value={currentTag} onValueChange={setTag}>
-              <SelectTrigger className="w-32">
+                <SelectTrigger className="w-32 sm:w-40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -524,7 +534,7 @@ const TimerWidget = ({ language, onNavigate }: TimerWidgetProps) => {
         </div>
 
         {/* Today's Stats */}
-        <div className="grid grid-cols-3 gap-4 text-center">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
           <div className="space-y-1">
             <div className="text-2xl font-bold text-primary">{formatTime(todayStats.totalTime)}</div>
             <div className="text-xs text-muted-foreground">{currentContent.todayTotal}</div>
@@ -534,20 +544,20 @@ const TimerWidget = ({ language, onNavigate }: TimerWidgetProps) => {
             <div className="text-xs text-muted-foreground">{currentContent.sessions}</div>
           </div>
           <div className="space-y-1">
-            <div className="text-2xl font-bold text-primary">{formatTime(todayStats.averageSession)}</div>
+            <div className="text-2xl font-bold text-primary">{formatAverageHours(todayStats.averageSession)} hrs</div>
             <div className="text-xs text-muted-foreground">{currentContent.average}</div>
           </div>
         </div>
 
         {/* View All Sessions Button */}
         {onNavigate && (
-          <Button 
-            variant="outline" 
-            className="w-full mt-4"
-            onClick={() => onNavigate('time-management')}
-          >
-            {language === "en" ? "View All Sessions & Analytics" : "සියලු සැසි සහ විශ්ලේෂණ බලන්න"}
-          </Button>
+          <TimerStatusButton
+            variant="outline"
+            className="w-full mt-4 justify-center sm:justify-start"
+            label={language === "en" ? "View All Sessions & Analytics" : "සියලු සැසි සහ විශ්ලේෂණ බලන්න"}
+            onClick={() => onNavigate("time-management")}
+            aria-label={language === "en" ? "Open time management" : "කාල කළමනාකරණය විවෘත කරන්න"}
+          />
         )}
       </CardContent>
     </Card>

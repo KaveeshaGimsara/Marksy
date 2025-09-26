@@ -1,7 +1,15 @@
 import { useState, useMemo } from "react";
-import { 
-  Home, BookOpen, BarChart3, Trophy, User, 
-  Moon, Sun, Languages, Settings, Menu, X, Plus, Clock 
+import {
+  Home,
+  BarChart3,
+  Trophy,
+  User,
+  Moon,
+  Sun,
+  Languages,
+  Menu,
+  Plus,
+  Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import HeartLogo from "@/components/HeartLogo";
@@ -19,23 +27,29 @@ interface HeaderProps {
   setShowAdmin: (show: boolean) => void;
 }
 
-const Header = ({ 
-  activeSection, 
-  setActiveSection, 
-  isDarkMode, 
-  toggleDarkMode, 
-  language, 
+const Header = ({
+  activeSection,
+  setActiveSection,
+  isDarkMode,
+  toggleDarkMode,
+  language,
   toggleLanguage,
   showAdmin,
-  setShowAdmin
+  setShowAdmin,
 }: HeaderProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { elapsedSeconds, isRunning, isPaused } = useTimer();
 
   const formattedTimer = useMemo(() => {
-    const hours = Math.floor(elapsedSeconds / 3600).toString().padStart(2, "0");
-    const minutes = Math.floor((elapsedSeconds % 3600) / 60).toString().padStart(2, "0");
-    const seconds = Math.floor(elapsedSeconds % 60).toString().padStart(2, "0");
+    const hours = Math.floor(elapsedSeconds / 3600)
+      .toString()
+      .padStart(2, "0");
+    const minutes = Math.floor((elapsedSeconds % 3600) / 60)
+      .toString()
+      .padStart(2, "0");
+    const seconds = Math.floor(elapsedSeconds % 60)
+      .toString()
+      .padStart(2, "0");
     return `${hours}:${minutes}:${seconds}`;
   }, [elapsedSeconds]);
 
@@ -103,18 +117,24 @@ const Header = ({
                 {navItems.map(item => {
                   const Icon = item.icon; 
                   const isActive = activeSection === item.id;
+                  const showRunningDot = item.id === "time-management" && isRunning;
                   return (
-                    <Button
-                      key={item.id}
-                      variant={isActive ? "default" : "ghost"}
-                      size="icon"
-                      aria-label={item.label}
-                      aria-current={isActive ? "page" : undefined}
-                      onClick={() => setActiveSection(item.id)}
-                      className={`${isActive ? "bg-primary text-primary-foreground" : "hover:bg-muted/70"} h-10 w-10 flex-shrink-0 transition-colors duration-200`}
-                    >
-                      <Icon className="h-5 w-5" />
-                    </Button>
+                    <div key={item.id} className="relative">
+                      <Button
+                        key={item.id}
+                        variant={isActive ? "default" : "ghost"}
+                        size="icon"
+                        aria-label={item.label}
+                        aria-current={isActive ? "page" : undefined}
+                        onClick={() => setActiveSection(item.id)}
+                        className={`${isActive ? "bg-primary text-primary-foreground" : "hover:bg-muted/70"} h-10 w-10 flex-shrink-0 transition-colors duration-200`}
+                      >
+                        <Icon className="h-5 w-5" />
+                      </Button>
+                      {showRunningDot && (
+                        <span className="pointer-events-none absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-red-500 shadow-lg ring-2 ring-background animate-pulse" />
+                      )}
+                    </div>
                   );
                 })}
               </div>
@@ -126,6 +146,7 @@ const Header = ({
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeSection === item.id;
+              const showRunningDot = item.id === "time-management" && isRunning;
               return (
                 <div key={item.id} className="relative group">
                   <Button
@@ -142,6 +163,9 @@ const Header = ({
                   >
                     <Icon className="h-5 w-5" />
                   </Button>
+                  {showRunningDot && (
+                    <span className="pointer-events-none absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-red-500 shadow-lg ring-2 ring-background animate-pulse" />
+                  )}
                   <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 bg-background dark:bg-card text-foreground dark:text-foreground text-xs rounded-lg border border-border shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
                     {item.label}
                     <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-background dark:bg-card rotate-45 border-l border-t border-border"></div>
@@ -153,31 +177,6 @@ const Header = ({
 
           {/* Right side actions */}
           <div className="flex items-center gap-1 sm:gap-2">
-            <Button
-              variant={isRunning ? "default" : "ghost"}
-              size="icon"
-              className={`md:hidden h-9 w-9 ${isRunning ? "bg-primary text-primary-foreground" : ""}`}
-              onClick={() => setActiveSection("time-management")}
-              aria-label={`${timerStatusLabel} ${formattedTimer}`}
-            >
-              <Clock className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={isRunning ? "default" : "outline"}
-              size="sm"
-              className="hidden md:flex items-center gap-2 transition-all"
-              onClick={() => setActiveSection("time-management")}
-            >
-              <span className={`flex h-2 w-2 rounded-full ${isRunning ? "bg-green-500 animate-pulse" : isPaused && elapsedSeconds > 0 ? "bg-yellow-500" : "bg-muted-foreground"}`} />
-              <Clock className="h-4 w-4" />
-              <span className="font-mono text-xs sm:text-sm">
-                {formattedTimer}
-              </span>
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                {timerStatusLabel}
-              </span>
-            </Button>
-
             {/* Language Toggle */}
             <div className="relative group">
               <Button

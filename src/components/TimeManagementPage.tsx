@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Clock, Calendar, Target, Trash2, AlertCircle, Tag, Plus, BarChart3, TrendingUp, Filter, Eye, EyeOff } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
@@ -12,6 +12,7 @@ import TimerWidget from './TimerWidget';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import { useTimer } from '@/context/TimerContext';
 
 interface TimerSession {
   id: string;
@@ -77,6 +78,27 @@ const TimeManagementPage: React.FC = () => {
   const [showAllSessions, setShowAllSessions] = useState(false);
   const [chartType, setChartType] = useState<'daily' | 'weekly' | 'tags'>('daily');
   const { toast } = useToast();
+  const { isRunning, isPaused, elapsedSeconds } = useTimer();
+
+  const formattedTimer = useMemo(() => {
+    const hours = Math.floor(elapsedSeconds / 3600).toString().padStart(2, '0');
+    const minutes = Math.floor((elapsedSeconds % 3600) / 60).toString().padStart(2, '0');
+    const seconds = Math.floor(elapsedSeconds % 60).toString().padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+  }, [elapsedSeconds]);
+
+  const timerStatusLabel = useMemo(() => {
+    if (isRunning) {
+      return 'Running';
+    }
+    if (isPaused && elapsedSeconds > 0) {
+      return 'Paused';
+    }
+    if (elapsedSeconds > 0) {
+      return 'Logged';
+    }
+    return 'Timer';
+  }, [elapsedSeconds, isPaused, isRunning]);
 
   // Load sessions and settings from localStorage
   useEffect(() => {
@@ -334,32 +356,52 @@ const TimeManagementPage: React.FC = () => {
 
   const chartData = getChartData();
 
+  const chartAverageHours = useMemo(() => {
+    if (chartData.length === 0) {
+      return 0;
+    }
+
+    const totalHours = chartData.reduce((sum, item) => {
+      const value = typeof item.totalTime === 'number' ? item.totalTime : 0;
+      return sum + value;
+    }, 0);
+
+    return totalHours / chartData.length;
+  }, [chartData]);
+
   const progressPercentage = Math.min((todayStats.totalTime / dailyGoal) * 100, 100);
 
+  const handleTimerJump = () => {
+    const timerSection = document.getElementById('time-management-timer');
+    if (timerSection) {
+      timerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
-    <div className="px-4 py-6 space-y-6">
-      <div className="text-center mb-8 animate-fade-in">
-        <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4 animate-bounce-in">
+    <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 py-6 space-y-6">
+      <div className="text-center space-y-3 animate-fade-in">
+        <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-bounce-in">
           Time Management
         </h2>
-        <p className="text-lg text-foreground/80 font-medium animate-slide-up animation-delay-300">
+        <p className="text-base sm:text-lg text-foreground/80 font-medium animate-slide-up animation-delay-300">
           Track your study sessions and manage your time effectively
         </p>
-        <div className="mt-4 flex justify-center">
+        <div className="flex justify-center">
           <div className="h-1 w-24 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse"></div>
         </div>
       </div>
 
       {/* Timer Widget */}
-      <div className="animate-slide-up animation-delay-500">
+      <div id="time-management-timer" className="animate-slide-up animation-delay-500 scroll-mt-24">
         <TimerWidget language="en" />
       </div>
 
       {/* Charts Section - Enhanced */}
       <Card className="academic-card animate-fade-in animation-delay-700 border-2 border-primary/20 shadow-xl hover:shadow-2xl transition-all duration-500">
         <CardHeader className="bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 border-b border-border/50">
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center space-x-3">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between text-center sm:text-left">
+            <CardTitle className="flex items-center justify-center sm:justify-start space-x-3">
               <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg shadow-lg">
                 <BarChart3 className="h-6 w-6 text-white" />
               </div>
@@ -367,12 +409,14 @@ const TimeManagementPage: React.FC = () => {
                 Study Analytics
               </span>
             </CardTitle>
-            <div className="flex items-center space-x-3">
-              <Label className="text-sm font-semibold text-foreground">Chart Type:</Label>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
+              <Label className="text-sm font-semibold text-foreground whitespace-nowrap">
+                Chart Type:
+              </Label>
               <select
                 value={chartType}
                 onChange={(e) => setChartType(e.target.value as 'daily' | 'weekly' | 'tags')}
-                className="px-4 py-2 border-2 border-primary/20 rounded-lg bg-background text-foreground font-medium hover:border-primary/40 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                className="w-full sm:w-48 px-4 py-2 border-2 border-primary/20 rounded-lg bg-background text-foreground font-medium hover:border-primary/40 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
               >
                 <option value="daily">📊 Daily (7 days)</option>
                 <option value="weekly">📈 Weekly (4 weeks)</option>
@@ -382,7 +426,7 @@ const TimeManagementPage: React.FC = () => {
           </div>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="h-80 w-full mb-6">
+          <div className="h-[260px] sm:h-[320px] md:h-80 w-full mb-6">
             <ResponsiveContainer width="100%" height="100%">
               {chartType === 'tags' ? (
                 <PieChart>
@@ -472,7 +516,7 @@ const TimeManagementPage: React.FC = () => {
           </div>
           
           {/* Enhanced Chart Summary */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
             <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl border border-blue-200 dark:border-blue-800 hover:scale-105 transition-transform duration-300">
               <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">
                 {formatTime(chartData.reduce((sum, item) => sum + (item.totalTime * 3600), 0))}
@@ -487,10 +531,7 @@ const TimeManagementPage: React.FC = () => {
             </div>
             <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl border border-green-200 dark:border-green-800 hover:scale-105 transition-transform duration-300">
               <div className="text-2xl font-bold text-green-600 dark:text-green-400 mb-1">
-                {chartData.length > 0 ? 
-                  formatTime((chartData.reduce((sum, item) => sum + (item.totalTime * 3600), 0)) / chartData.length) : 
-                  '00:00:00'
-                }
+                {chartData.length > 0 ? `${chartAverageHours.toFixed(3)} hrs` : '0.000 hrs'}
               </div>
               <div className="text-sm font-semibold text-green-700 dark:text-green-300">Daily Average</div>
             </div>
@@ -509,11 +550,11 @@ const TimeManagementPage: React.FC = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex items-center justify-between p-4 bg-muted/50 rounded-xl border border-border">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between p-4 bg-muted/50 rounded-xl border border-border text-center sm:text-left">
             <Label htmlFor="dailyGoal" className="text-base font-semibold text-foreground">
               Hours per day:
             </Label>
-            <div className="flex items-center space-x-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
               <Input
                 id="dailyGoal"
                 type="number"
@@ -521,11 +562,11 @@ const TimeManagementPage: React.FC = () => {
                 max="12"
                 value={tempDailyGoal}
                 onChange={(e) => setTempDailyGoal(parseInt(e.target.value) || 1)}
-                className="w-24 text-center font-bold text-lg border-2 border-primary/20 focus:border-primary"
+                className="w-full sm:w-24 text-center font-bold text-lg border-2 border-primary/20 focus:border-primary"
               />
               <Button 
                 onClick={updateDailyGoal} 
-                className="bg-gradient-to-r from-primary to-secondary text-white font-semibold px-6 hover:scale-105 transition-transform duration-200"
+                className="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white font-semibold px-6 hover:scale-105 transition-transform duration-200"
               >
                 Update
               </Button>
@@ -581,10 +622,10 @@ const TimeManagementPage: React.FC = () => {
               <BarChart3 className="h-6 w-6 text-green-600 dark:text-green-400" />
             </div>
             <div className="text-2xl font-bold text-green-700 dark:text-green-300 mb-1">
-              {formatTime(todayStats.averageSession)}
+              {chartData.length > 0 ? `${chartAverageHours.toFixed(3)} hrs` : '0.000 hrs'}
             </div>
             <div className="text-xs font-semibold text-green-600 dark:text-green-400 uppercase tracking-wider bg-green-100 dark:bg-green-900/40 px-2 py-1 rounded-full">
-              Average
+              Daily Average
             </div>
           </CardContent>
         </Card>
@@ -599,26 +640,26 @@ const TimeManagementPage: React.FC = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-wrap gap-6 items-center">
-            <div className="flex items-center space-x-3">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="flex flex-col gap-2">
               <Label className="font-semibold text-foreground">Period:</Label>
               <select 
                 value={selectedPeriod}
                 onChange={(e) => setSelectedPeriod(e.target.value as 'week' | 'month' | 'all')}
-                className="px-4 py-2 border-2 border-muted rounded-lg bg-background text-foreground font-medium hover:border-primary/40 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                className="w-full px-4 py-2 border-2 border-muted rounded-lg bg-background text-foreground font-medium hover:border-primary/40 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
               >
                 <option value="week">📅 Last Week</option>
                 <option value="month">🗓️ Last Month</option>
                 <option value="all">🌟 All Time</option>
               </select>
             </div>
-            
-            <div className="flex items-center space-x-3">
+
+            <div className="flex flex-col gap-2">
               <Label className="font-semibold text-foreground">Tag:</Label>
               <select
                 value={selectedTag}
                 onChange={(e) => setSelectedTag(e.target.value)}
-                className="px-4 py-2 border-2 border-muted rounded-lg bg-background text-foreground font-medium hover:border-primary/40 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                className="w-full px-4 py-2 border-2 border-muted rounded-lg bg-background text-foreground font-medium hover:border-primary/40 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
               >
                 <option value="all">🏷️ All Tags</option>
                 {getUniqueTagsFromSessions().map(tag => (
@@ -626,13 +667,16 @@ const TimeManagementPage: React.FC = () => {
                 ))}
               </select>
             </div>
-            
-            <Input
-              placeholder="🔍 Search sessions..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="max-w-xs border-2 border-muted font-medium hover:border-primary/40 focus:border-primary text-foreground placeholder:text-muted-foreground/70"
-            />
+
+            <div className="flex flex-col gap-2 sm:col-span-2 xl:col-span-2">
+              <Label className="font-semibold text-foreground">Search:</Label>
+              <Input
+                placeholder="🔍 Search sessions..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full border-2 border-muted font-medium hover:border-primary/40 focus:border-primary text-foreground placeholder:text-muted-foreground/70"
+              />
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -640,8 +684,8 @@ const TimeManagementPage: React.FC = () => {
       {/* Recent Activity - Enhanced */}
       <Card className="academic-card animate-fade-in animation-delay-1400 bg-gradient-to-br from-background to-muted/20">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="text-center sm:text-left">
               <CardTitle className="flex items-center space-x-3">
                 <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg shadow-lg">
                   <Clock className="h-6 w-6 text-white" />
@@ -656,7 +700,7 @@ const TimeManagementPage: React.FC = () => {
               <Button
                 variant="outline"
                 onClick={() => setShowAllSessions(!showAllSessions)}
-                className="flex items-center space-x-2 border-2 border-primary/30 text-primary hover:bg-primary hover:text-white font-semibold transition-all duration-300 hover:scale-105"
+                className="w-full sm:w-auto justify-center flex items-center space-x-2 border-2 border-primary/30 text-primary hover:bg-primary hover:text-white font-semibold transition-all duration-300 hover:scale-105"
               >
                 {showAllSessions ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 <span>{showAllSessions ? 'Show Less' : `Show All (${filteredSessions.length})`}</span>
@@ -736,7 +780,7 @@ const TimeManagementPage: React.FC = () => {
                   <Button
                     variant="ghost"
                     onClick={() => setShowAllSessions(true)}
-                    className="text-primary hover:text-white hover:bg-primary font-bold text-base px-6 py-3 rounded-xl border-2 border-primary/30 hover:border-primary transition-all duration-300 hover:scale-105"
+                    className="w-full sm:w-auto text-primary hover:text-white hover:bg-primary font-bold text-base px-6 py-3 rounded-xl border-2 border-primary/30 hover:border-primary transition-all duration-300 hover:scale-105"
                   >
                     ✨ + {filteredSessions.length - 5} more sessions
                   </Button>
@@ -753,7 +797,7 @@ const TimeManagementPage: React.FC = () => {
           <CardTitle>Session Statistics</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">{formatTime(getTotalTime())}</div>
               <div className="text-sm text-muted-foreground">Total Time (Filtered)</div>
