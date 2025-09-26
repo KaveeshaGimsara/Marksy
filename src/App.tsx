@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { TimerProvider } from "@/context/TimerContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import LicensePage from "./components/LicensePage";
@@ -25,26 +26,28 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <HeartbeatLoader 
-          isLoading={isLoading} 
-          onLoadingComplete={() => setIsLoading(false)}
-        />
-        {!isLoading && (
-          <>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/license" element={<LicensePage />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </>
-        )}
-      </TooltipProvider>
+      <TimerProvider>
+        <TooltipProvider>
+          <HeartbeatLoader 
+            isLoading={isLoading} 
+            onLoadingComplete={() => setIsLoading(false)}
+          />
+          {!isLoading && (
+            <>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/license" element={<LicensePage />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </>
+          )}
+        </TooltipProvider>
+      </TimerProvider>
     </QueryClientProvider>
   );
 };

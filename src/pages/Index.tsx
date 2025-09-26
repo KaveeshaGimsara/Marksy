@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { 
   Home, BookOpen, BarChart3, Trophy, User, HelpCircle, Star, 
-  Moon, Sun, Languages, Settings 
+  Moon, Sun, Languages, Settings, Timer
 } from "lucide-react";
 import Header from "@/components/Header";
 import Homepage from "@/components/Homepage";
@@ -14,6 +14,7 @@ import HelpPage from "@/components/HelpPage";
 import CreditsPage from "@/components/CreditsPage";
 import VersionPage from "@/components/VersionPage";
 import LicensePage from "@/components/LicensePage";
+import TimeManagementPage from "@/components/TimeManagementPage";
 import Footer from "@/components/Footer";
 import BuyMeCoffee from "@/components/BuyMeCoffee";
 import { Button } from "@/components/ui/button";
@@ -51,7 +52,7 @@ const Index = () => {
     // Handle URL parameters for direct page access
     const urlParams = new URLSearchParams(window.location.search);
     const page = urlParams.get('page');
-    if (page && ['profile', 'add-marks', 'dashboard', 'analysis', 'about', 'help', 'credits', 'version'].includes(page)) {
+    if (page && ['profile', 'add-marks', 'dashboard', 'analysis', 'about', 'help', 'credits', 'version', 'time-management'].includes(page)) {
       setActiveSection(page);
     }
   }, []);
@@ -102,6 +103,7 @@ const Index = () => {
     { id: "marks", label: language === "en" ? "Add Marks" : "ලකුණු එකතු කරන්න", icon: BookOpen },
     { id: "dashboard", label: language === "en" ? "Progress" : "ප්‍රගතිය", icon: BarChart3 },
     { id: "analysis", label: language === "en" ? "Analysis" : "විශ්ලේෂණය", icon: Trophy },
+    { id: "time-management", label: language === "en" ? "Time Tracker" : "කාල කළමනාකරණය", icon: Timer },
     { id: "about", label: language === "en" ? "About" : "පිළිබඳව", icon: User },
     { id: "help", label: language === "en" ? "Help" : "උදව්", icon: HelpCircle },
     { id: "credits", label: language === "en" ? "Credits" : "ගෞරවය", icon: Star },
@@ -121,6 +123,8 @@ const Index = () => {
         return <Dashboard language={language} />;
       case "analysis":
         return <SubjectAnalysis language={language} />;
+      case "time-management":
+        return <TimeManagementPage />;
       case "about":
         return <AboutPage language={language} />;
       case "help":

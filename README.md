@@ -10,19 +10,24 @@ Implemented today (only listing what actually exists):
 
 - Add marks per paper (MCQ / Structured / Essay) with automatic total
 - Subject list with starring (favorites) and persistent storage
-- Delete individual marks entries
+- Delete individual marks entries with confirmation dialogs
 - Real‑time quick stats (total marks sum, papers done, average score, simple activity streak)
 - Subject performance analysis (per‑subject averages, best / worst, improvement)
 - Grade distribution (A / B / C / S / W / F) logic
 - Study task (todo) list with per‑task completion
+- **Comprehensive Timer Widget with session tracking and analytics**
+- **Auto-generated unique tag colors for study sessions**
+- **Enhanced Quick Actions with modern hover animations and smooth transitions**
 - Bilingual interface (English + Sinhala for key UI strings)
 - Motivational rotating quotes (English & Sinhala sets)
-- Responsive UI (mobile friendly)
+- **Fully responsive mobile-first design with optimized performance**
+- **Improved accessibility with proper focus states and reduced motion support**
 - Dark mode support (CSS variables + Tailwind)
-- Accessible focus styles & improved contrast for notice board + buttons
+- Enhanced hover states for better light mode visibility
 - Unified support link (BuyMeACoffee → geekyedu)
 - MIT license (2025) with proper attribution
 - Modern favicon (SVG gradient)
+- **Performance optimizations: hardware acceleration, lazy loading, smooth scrolling**
 
 Intentionally omitted until real data is available: upcoming exam/event placeholders, artificial stats, fake timelines.
 

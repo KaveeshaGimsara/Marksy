@@ -3,7 +3,7 @@ import {
   Clock, Calendar, TrendingUp, Award, Target, Brain,
   ChevronRight, Sparkles, BookOpen, Users, Zap, Download,
   Timer, Bell, GraduationCap, BarChart, Plus, Eye, Settings, Code,
-  Heart, Github, Coffee
+  Heart, Github, Coffee, ArrowRight, User
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -165,19 +165,19 @@ const Homepage = ({ language, onNavigate }: HomepageProps) => {
   ];
 
   const quickActions = language === "en" ? [
-    { icon: Plus, label: "Add Marks", action: "addmarks", color: "bg-primary", description: "Record new test scores" },
-    { icon: BarChart, label: "View Dashboard", action: "dashboard", color: "bg-secondary", description: "Check your progress" },
-    { icon: Award, label: "Subject Analysis", action: "analysis", color: "bg-accent", description: "Analyze performance" },
-    { icon: Target, label: "Set Goals", action: "goals", color: "bg-warning", description: "Plan your targets" },
-    { icon: Eye, label: "Profile", action: "profile", color: "bg-destructive", description: "Manage your profile" },
-    { icon: Settings, label: "About", action: "about", color: "bg-muted", description: "App information" }
+    { icon: Plus, label: "Add Marks", action: "marks", color: "from-blue-500 to-blue-600", description: "Record new test scores", gradient: "bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20" },
+    { icon: BarChart, label: "View Progress", action: "dashboard", color: "from-purple-500 to-purple-600", description: "Check your analytics", gradient: "bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20" },
+    { icon: Award, label: "Analysis", action: "analysis", color: "from-emerald-500 to-emerald-600", description: "Subject performance", gradient: "bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20" },
+    { icon: Timer, label: "Time Tracker", action: "time-management", color: "from-orange-500 to-orange-600", description: "Study timer & goals", gradient: "bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20" },
+    { icon: User, label: "Profile", action: "profile", color: "from-pink-500 to-pink-600", description: "Manage account", gradient: "bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-800/20" },
+    { icon: Settings, label: "About", action: "about", color: "from-gray-500 to-gray-600", description: "App information", gradient: "bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900/20 dark:to-gray-800/20" }
   ] : [
-    { icon: Plus, label: "ලකුණු එකතු කරන්න", action: "addmarks", color: "bg-primary", description: "නව පරීක්ෂණ ලකුණු වාර්තා කරන්න" },
-    { icon: BarChart, label: "ප්‍රගතිය බලන්න", action: "dashboard", color: "bg-secondary", description: "ඔබේ ප්‍රගතිය පරීක්ෂා කරන්න" },
-    { icon: Award, label: "විෂය විශ්ලේෂණය", action: "analysis", color: "bg-accent", description: "කාර්ය සාධනය විශ්ලේෂණය කරන්න" },
-    { icon: Target, label: "ඉලක්ක සකසන්න", action: "goals", color: "bg-warning", description: "ඔබේ ඉලක්ක සැලසුම් කරන්න" },
-    { icon: Eye, label: "පැතිකඩ", action: "profile", color: "bg-destructive", description: "ඔබේ පැතිකඩ කළමනාකරණය කරන්න" },
-    { icon: Settings, label: "තොරතුරු", action: "about", color: "bg-muted", description: "යෙදුම් තොරතුරු" }
+    { icon: Plus, label: "ලකුණු එකතු කරන්න", action: "marks", color: "from-blue-500 to-blue-600", description: "නව පරීක්ෂණ ලකුණු", gradient: "bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20" },
+    { icon: BarChart, label: "ප්‍රගතිය", action: "dashboard", color: "from-purple-500 to-purple-600", description: "ඔබේ විශ්ලේෂණ", gradient: "bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20" },
+    { icon: Award, label: "විශ්ලේෂණය", action: "analysis", color: "from-emerald-500 to-emerald-600", description: "විෂය කාර්යසාධනය", gradient: "bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20" },
+    { icon: Timer, label: "කාල කළමනාකරණය", action: "time-management", color: "from-orange-500 to-orange-600", description: "අධ්‍යයන ටයිමර්", gradient: "bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20" },
+    { icon: User, label: "පැතිකඩ", action: "profile", color: "from-pink-500 to-pink-600", description: "ගිණුම් කළමනාකරණය", gradient: "bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-800/20" },
+    { icon: Settings, label: "තොරතුරු", action: "about", color: "from-gray-500 to-gray-600", description: "යෙදුම් තොරතුරු", gradient: "bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900/20 dark:to-gray-800/20" }
   ];
 
   return (
@@ -274,27 +274,71 @@ const Homepage = ({ language, onNavigate }: HomepageProps) => {
         </Card>
       </div>
 
-      {/* Enhanced Quick Actions */}
-      <Card className="academic-card">
-        <CardHeader>
+      {/* Enhanced Quick Actions with Modern Animations */}
+      <Card className="academic-card overflow-hidden relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5 pointer-events-none" />
+        <CardHeader className="relative">
           <CardTitle className="flex items-center space-x-2">
-            <Zap className="h-5 w-5 text-primary" />
-            <span>{language === "en" ? "Quick Actions" : "ඉක්මන් ක්‍රියා"}</span>
+            <div className="p-2 bg-gradient-to-r from-primary to-secondary rounded-lg shadow-lg">
+              <Zap className="h-5 w-5 text-white" />
+            </div>
+            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent font-bold">
+              {language === "en" ? "Quick Actions" : "ඉක්මන් ක්‍රියා"}
+            </span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="relative">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {quickActions.map((action, index) => (
-              <Button
+              <div
                 key={index}
-                variant="outline"
-                className="h-24 flex-col space-y-2 academic-button hover-scale group relative overflow-hidden"
-                onClick={() => onNavigate && onNavigate(action.action)}
+                className="group relative overflow-hidden rounded-xl transition-all duration-500 hover:scale-105 hover:-translate-y-1 animate-fade-in"
+                style={{ animationDelay: `${index * 100}ms` }}
               >
-                <action.icon className="h-6 w-6 group-hover:scale-110 transition-transform" />
-                <span className="text-xs font-medium text-center">{action.label}</span>
-                <span className="text-xs text-muted-foreground text-center opacity-70">{action.description}</span>
-              </Button>
+                <div className={`${action.gradient} p-6 rounded-xl border border-border/50 transition-all duration-500 group-hover:border-primary/30 group-hover:shadow-2xl backdrop-blur-sm cursor-pointer`}>
+                  {/* Animated background gradient */}
+                  <div className={`absolute inset-0 bg-gradient-to-r ${action.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-xl`} />
+                  
+                  {/* Floating particles on hover */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
+                    <div className="absolute top-2 right-3 w-1 h-1 bg-current rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <div className="absolute top-4 right-6 w-0.5 h-0.5 bg-current rounded-full animate-ping" style={{ animationDelay: '200ms' }} />
+                    <div className="absolute bottom-3 right-2 w-1 h-1 bg-current rounded-full animate-pulse" style={{ animationDelay: '400ms' }} />
+                  </div>
+
+                  <div className="relative z-10 text-center space-y-3">
+                    <div className="relative inline-block">
+                      <div className={`p-3 bg-gradient-to-r ${action.color} rounded-xl shadow-lg transition-all duration-500 group-hover:scale-110 group-hover:rotate-3`}>
+                        <action.icon className="h-6 w-6 text-white drop-shadow-sm" />
+                      </div>
+                      
+                      {/* Ripple effect */}
+                      <div className={`absolute inset-0 bg-gradient-to-r ${action.color} rounded-xl opacity-0 group-hover:opacity-30 animate-ping`} />
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <h3 className="font-semibold text-sm leading-tight text-foreground group-hover:text-primary transition-colors duration-300">
+                        {action.label}
+                      </h3>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        {action.description}
+                      </p>
+                    </div>
+
+                    {/* Arrow indicator */}
+                    <div className="flex justify-center">
+                      <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all duration-300" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Click overlay */}
+                <button
+                  onClick={() => onNavigate && onNavigate(action.action)}
+                  className="absolute inset-0 w-full h-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-xl"
+                  aria-label={action.label}
+                />
+              </div>
             ))}
           </div>
         </CardContent>

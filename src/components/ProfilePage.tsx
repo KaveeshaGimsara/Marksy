@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { User, Camera, Edit3, Save, Trophy, Star, Upload, Download, FileText, FileSpreadsheet, Import } from "lucide-react";
+import { User, Camera, Edit3, Save, Trophy, Star, Upload, Download, FileText, Database, Shield } from "lucide-react";
+import * as XLSX from "xlsx";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,9 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+
 import { useToast } from "@/hooks/use-toast";
 import { ProfilePageProps } from "@/types";
-import * as XLSX from 'xlsx';
 import SupportButton from "@/components/SupportButton";
 
 interface ProfileData {
@@ -20,6 +21,30 @@ interface ProfileData {
   subjects: string[];
   profilePicture: string;
   unlockedBadges: string[];
+  totalStudyHours: number;
+  preferences: {
+    timerTheme: 'digital' | 'circular';
+    notifications: boolean;
+  };
+}
+
+interface MarksyData {
+  profile: ProfileData;
+  marks: any[];
+  subjects: any[];
+  timerSessions: any[];
+  customData: any[];
+  siteVisits: string[];
+  todoList: any[];
+  timeManagementNotes: any[];
+  badges: BadgeData[];
+  achievements: any[];
+  preferences: any;
+  metadata: {
+    exportVersion: string;
+    exportDate: string;
+    appVersion: string;
+  };
 }
 
 interface BadgeData {
@@ -42,8 +67,15 @@ const ProfilePage = ({ language }: ProfilePageProps) => {
     grade: "",
     subjects: [],
     profilePicture: "",
-    unlockedBadges: []
+    unlockedBadges: [],
+    totalStudyHours: 0,
+    preferences: {
+      timerTheme: 'digital',
+      notifications: true
+    }
   });
+
+  const [showImportDialog, setShowImportDialog] = useState(false);
 
   const [badges, setBadges] = useState<BadgeData[]>([
     { id: "first_mark", name: "First Steps", description: "Add your first mark", condition: "marks_count >= 1", icon: "🎯", unlocked: false },
@@ -141,6 +173,183 @@ const ProfilePage = ({ language }: ProfilePageProps) => {
     });
 
     setBadges(updatedBadges);
+  };
+
+  // Comprehensive Export Function
+  const exportAllData = () => {
+    try {
+      // Collect all data from localStorage and state
+      const marksyData: MarksyData = {
+        profile: profileData,
+        marks: JSON.parse(localStorage.getItem("alMarksData") || "[]"),
+        subjects: JSON.parse(localStorage.getItem("marksy-subjects") || "[]"),
+        timerSessions: JSON.parse(localStorage.getItem("timerSessions") || "[]"),
+        customData: JSON.parse(localStorage.getItem("marksy-custom-data") || "[]"),
+        siteVisits: JSON.parse(localStorage.getItem("marksy-site-visits") || "[]"),
+        todoList: JSON.parse(localStorage.getItem("marksy-todo-list") || "[]"),
+        timeManagementNotes: JSON.parse(localStorage.getItem("marksy-time-notes") || "[]"),
+        badges: badges,
+        achievements: JSON.parse(localStorage.getItem("marksy-achievements") || "[]"),
+        preferences: {
+          theme: localStorage.getItem("marksy-theme"),
+          language: localStorage.getItem("marksy-language"),
+          timerPreferences: JSON.parse(localStorage.getItem("timerPreferences") || "{}")
+        },
+        metadata: {
+          exportVersion: "2.0",
+          exportDate: new Date().toISOString(),
+          appVersion: "Marksy v2.0"
+        }
+      };
+
+      // Create custom Marksy format
+      const marksyContent = `MARKSY_DATA_EXPORT\n${JSON.stringify(marksyData, null, 2)}\nEND_MARKSY_DATA`;
+      
+      // Create and download file
+      const blob = new Blob([marksyContent], { type: 'text/marksy' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `marksy-complete-backup-${new Date().toISOString().split('T')[0]}.marksy`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      // Record the export in site visits
+      const visits = JSON.parse(localStorage.getItem("marksy-site-visits") || "[]");
+      visits.push(`export_${new Date().toISOString()}`);
+      localStorage.setItem("marksy-site-visits", JSON.stringify(visits));
+
+      toast({
+        title: language === "en" ? "Export Successful!" : "අපනයනය සාර්ථකයි!",
+        description: language === "en" 
+          ? "All your Marksy data has been exported successfully." 
+          : "ඔබේ සියලු Marksy දත්ත සාර්ථකව අපනයනය කර ඇත.",
+      });
+
+    } catch (error) {
+      console.error("Export error:", error);
+      toast({
+        title: language === "en" ? "Export Failed" : "අපනයනය අසාර්ථකයි",
+        description: language === "en" 
+          ? "Failed to export data. Please try again." 
+          : "දත්ත අපනයනය කිරීමට අසමත්විය. කරුණාකර නැවත උත්සාහ කරන්න.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Comprehensive Import Function
+  const importAllData = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        
+        // Check if it's a Marksy format file
+        if (!content.startsWith('MARKSY_DATA_EXPORT') || !content.endsWith('END_MARKSY_DATA')) {
+          throw new Error("Invalid Marksy file format");
+        }
+
+        // Extract JSON data
+        const jsonContent = content.substring(
+          content.indexOf('\n') + 1,
+          content.lastIndexOf('\nEND_MARKSY_DATA')
+        );
+
+        const importedData: MarksyData = JSON.parse(jsonContent);
+
+        // Validate data structure
+        if (!importedData.metadata || !importedData.profile) {
+          throw new Error("Invalid data structure");
+        }
+
+        // Import all data
+        if (importedData.profile) {
+          setProfileData(importedData.profile);
+          localStorage.setItem("marksy-profile", JSON.stringify(importedData.profile));
+        }
+        
+        if (importedData.marks) {
+          localStorage.setItem("alMarksData", JSON.stringify(importedData.marks));
+        }
+        
+        if (importedData.subjects) {
+          localStorage.setItem("marksy-subjects", JSON.stringify(importedData.subjects));
+        }
+        
+        if (importedData.timerSessions) {
+          localStorage.setItem("timerSessions", JSON.stringify(importedData.timerSessions));
+        }
+        
+        if (importedData.customData) {
+          localStorage.setItem("marksy-custom-data", JSON.stringify(importedData.customData));
+        }
+        
+        if (importedData.siteVisits) {
+          localStorage.setItem("marksy-site-visits", JSON.stringify(importedData.siteVisits));
+        }
+        
+        if (importedData.todoList) {
+          localStorage.setItem("marksy-todo-list", JSON.stringify(importedData.todoList));
+        }
+        
+        if (importedData.timeManagementNotes) {
+          localStorage.setItem("marksy-time-notes", JSON.stringify(importedData.timeManagementNotes));
+        }
+        
+        if (importedData.badges) {
+          setBadges(importedData.badges);
+        }
+        
+        if (importedData.achievements) {
+          localStorage.setItem("marksy-achievements", JSON.stringify(importedData.achievements));
+        }
+        
+        if (importedData.preferences) {
+          if (importedData.preferences.theme) {
+            localStorage.setItem("marksy-theme", importedData.preferences.theme);
+          }
+          if (importedData.preferences.language) {
+            localStorage.setItem("marksy-language", importedData.preferences.language);
+          }
+          if (importedData.preferences.timerPreferences) {
+            localStorage.setItem("timerPreferences", JSON.stringify(importedData.preferences.timerPreferences));
+          }
+        }
+
+        // Record the import
+        const visits = JSON.parse(localStorage.getItem("marksy-site-visits") || "[]");
+        visits.push(`import_${new Date().toISOString()}`);
+        localStorage.setItem("marksy-site-visits", JSON.stringify(visits));
+
+        toast({
+          title: language === "en" ? "Import Successful!" : "ආනයනය සාර්ථකයි!",
+          description: language === "en" 
+            ? `Successfully imported data from ${importedData.metadata.exportDate.split('T')[0]}` 
+            : `${importedData.metadata.exportDate.split('T')[0]} දින දත්ත සාර්ථකව ආනයනය කරන ලදී`,
+        });
+
+        setShowImportDialog(false);
+
+      } catch (error) {
+        console.error("Import error:", error);
+        toast({
+          title: language === "en" ? "Import Failed" : "ආනයනය අසාර්ථකයි",
+          description: language === "en" 
+            ? "Failed to import data. Please check the file format." 
+            : "දත්ත ආනයනය කිරීමට අසමත්විය. ගොනු ආකෘතිය පරීක්ෂා කරන්න.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    reader.readAsText(file);
+    event.target.value = ''; // Reset input
   };
 
   const handleSave = () => {
@@ -794,137 +1003,139 @@ const ProfilePage = ({ language }: ProfilePageProps) => {
         </CardContent>
       </Card>
 
-      {/* Data Management Card */}
-      <Card className="academic-card">
+      {/* Comprehensive Data Management Card */}
+      <Card className="academic-card border-2 border-dashed border-primary/30 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Download className="h-5 w-5" />
-            <span>Data Management</span>
+          <CardTitle className="flex items-center space-x-2 text-xl">
+            <Database className="h-6 w-6 text-primary" />
+            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              {language === "en" ? "Complete Data Management" : "සම්පූර්ණ දත්ත කළමනාකරණය"}
+            </span>
           </CardTitle>
-          <CardDescription>
-            Export and import your complete academic data including marks, subjects, todos, badges, and settings
+          <CardDescription className="text-base">
+            {language === "en" 
+              ? "Export and import ALL your Marksy data including marks, subjects, timer sessions, goals, badges, achievements, and preferences in one secure file" 
+              : "ඔබේ සියලු Marksy දත්ත ලකුණු, විෂය, ටයිමර් සැසි, ඉලක්ක, බැඳි, ජයග්‍රහණ සහ මනාපයන් එක් ආරක්ෂිත ගොනුවකින් අපනයනය සහ ආනයනය කරන්න"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-6">
+          <div className="grid md:grid-cols-2 gap-6">
             {/* Export Section */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
-                <FileText className="h-5 w-5" />
-                <span>Export Data</span>
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Download your complete academic data with watermark. Works on any device and includes all your marks, subjects, study tasks, badges, and settings.
-              </p>
-              <div className="flex justify-center">
-                <Dialog open={showExportDialog} onOpenChange={setShowExportDialog}>
-                  <DialogTrigger asChild>
-                    <Button className="flex items-center space-x-2">
-                      <Download className="h-4 w-4" />
-                      <span>Export Data</span>
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                      <DialogTitle className="flex items-center space-x-2">
-                        <Download className="h-5 w-5" />
-                        <span>Choose Export Format</span>
-                      </DialogTitle>
-                      <DialogDescription>
-                        Select your preferred format to export your complete academic data.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4 py-4">
-                      <div className="grid grid-cols-1 gap-4">
-                        <Button 
-                          onClick={exportToJSON} 
-                          className="flex items-center justify-center space-x-2 h-14"
-                        >
-                          <FileText className="h-5 w-5" />
-                          <div className="text-left">
-                            <div className="font-medium">JSON Format</div>
-                            <div className="text-xs opacity-80">Universal format, smaller file size</div>
-                          </div>
-                        </Button>
-                        <Button 
-                          onClick={exportToExcel} 
-                          variant="outline" 
-                          className="flex items-center justify-center space-x-2 h-14"
-                        >
-                          <FileSpreadsheet className="h-5 w-5" />
-                          <div className="text-left">
-                            <div className="font-medium">Excel Format</div>
-                            <div className="text-xs opacity-80">Organized sheets, easy to view</div>
-                          </div>
-                        </Button>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                  <Download className="h-5 w-5 text-green-600 dark:text-green-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg text-green-700 dark:text-green-300">
+                    {language === "en" ? "Export Everything" : "සියල්ල අපනයනය කරන්න"}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {language === "en" ? "Download complete backup" : "සම්පූර්ණ උපස්ථය බාගන්න"}
+                  </p>
+                </div>
               </div>
+              
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <div className="flex items-center space-x-2">
+                  <Shield className="h-4 w-4 text-blue-500" />
+                  <span>{language === "en" ? "Secure .marksy format" : "ආරක්ෂිත .marksy ආකෘතිය"}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-1 text-xs">
+                  <span>• {language === "en" ? "All marks & scores" : "සියලු ලකුණු සහ ලකුණු"}</span>
+                  <span>• {language === "en" ? "Subject data" : "විෂය දත්ත"}</span>
+                  <span>• {language === "en" ? "Timer sessions" : "ටයිමර් සැසි"}</span>
+                  <span>• {language === "en" ? "Study goals" : "අධ්‍යයන ඉලක්ක"}</span>
+                  <span>• {language === "en" ? "Badges & achievements" : "බැඩ්ජ් සහ ජයග්‍රහණ"}</span>
+                  <span>• {language === "en" ? "App preferences" : "යෙදුම් මනාපයන්"}</span>
+                </div>
+              </div>
+              
+              <Button 
+                onClick={exportAllData}
+                className="w-full h-12 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                <Download className="h-5 w-5 mr-2" />
+                {language === "en" ? "Export Complete Backup" : "සම්පූර්ණ උපස්ථය අපනයනය කරන්න"}
+              </Button>
             </div>
 
             {/* Import Section */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
-                <Import className="h-5 w-5" />
-                <span>Import Data</span>
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Import your previously exported data. This will merge with your current data. Page will refresh automatically after import.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <input
-                    type="file"
-                    id="json-import"
-                    accept=".json"
-                    onChange={importFromJSON}
-                    className="hidden"
-                  />
-                  <Button 
-                    onClick={() => document.getElementById('json-import')?.click()}
-                    variant="outline"
-                    className="w-full flex items-center space-x-2"
-                  >
-                    <FileText className="h-4 w-4" />
-                    <span>Import JSON</span>
-                  </Button>
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                  <Upload className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <input
-                    type="file"
-                    id="excel-import"
-                    accept=".xlsx,.xls"
-                    onChange={importFromExcel}
-                    className="hidden"
-                  />
-                  <Button 
-                    onClick={() => document.getElementById('excel-import')?.click()}
-                    variant="outline"
-                    className="w-full flex items-center space-x-2"
-                  >
-                    <FileSpreadsheet className="h-4 w-4" />
-                    <span>Import Excel</span>
-                  </Button>
+                  <h3 className="font-semibold text-lg text-blue-700 dark:text-blue-300">
+                    {language === "en" ? "Import Everything" : "සියල්ල ආනයනය කරන්න"}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {language === "en" ? "Restore from backup" : "උපස්ථයෙන් ප්‍රතිෂ්ඨාපනය කරන්න"}
+                  </p>
                 </div>
               </div>
+              
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <div className="flex items-center space-x-2">
+                  <Shield className="h-4 w-4 text-green-500" />
+                  <span>{language === "en" ? "Safe import process" : "ආරක්ෂිත ආනයන ක්‍රියාවලිය"}</span>
+                </div>
+                <p className="text-xs">
+                  {language === "en" 
+                    ? "Only accepts valid .marksy files. Your existing data will be merged safely."
+                    : "වලංගු .marksy ගොනු පමණක් පිළිගනී. ඔබේ පවතින දත්ත ආරක්ෂිතව ඒකාබද්ධ වනු ඇත."}
+                </p>
+              </div>
+              
+              <div className="relative">
+                <input
+                  type="file"
+                  accept=".marksy"
+                  onChange={importAllData}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+                <Button 
+                  className="w-full h-12 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  <Upload className="h-5 w-5 mr-2" />
+                  {language === "en" ? "Import Complete Backup" : "සම්පූර්ණ උපස්ථය ආනයනය කරන්න"}
+                </Button>
+              </div>
             </div>
-
-            {/* Device Compatibility Info */}
-            <div className="bg-muted/50 p-4 rounded-lg">
-              <h4 className="font-medium mb-2 flex items-center space-x-2">
-                <Trophy className="h-4 w-4" />
-                <span>Quality Features</span>
-              </h4>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>✅ Works on all devices (Mobile, Tablet, Desktop)</li>
-                <li>✅ Includes watermark and metadata</li>
-                <li>✅ Complete data backup (Images, Todos, Marks, Charts, Badges)</li>
-                <li>✅ Secure JSON and Excel formats</li>
-                <li>✅ Easy data transfer between devices</li>
-                <li>✅ Automatic validation and error handling</li>
-              </ul>
+          </div>
+          
+          {/* Data Summary */}
+          <div className="mt-6 p-4 bg-muted/30 rounded-lg border">
+            <h4 className="font-medium mb-2 flex items-center space-x-2">
+              <FileText className="h-4 w-4" />
+              <span>{language === "en" ? "Your Data Summary" : "ඔබේ දත්ත සාරාංශය"}</span>
+            </h4>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div className="text-center">
+                <div className="font-bold text-lg text-primary">
+                  {JSON.parse(localStorage.getItem("alMarksData") || "[]").length}
+                </div>
+                <div className="text-muted-foreground">{language === "en" ? "Marks" : "ලකුණු"}</div>
+              </div>
+              <div className="text-center">
+                <div className="font-bold text-lg text-primary">
+                  {JSON.parse(localStorage.getItem("timerSessions") || "[]").length}
+                </div>
+                <div className="text-muted-foreground">{language === "en" ? "Sessions" : "සැසි"}</div>
+              </div>
+              <div className="text-center">
+                <div className="font-bold text-lg text-primary">
+                  {Math.round(JSON.parse(localStorage.getItem("timerSessions") || "[]").reduce((total: number, session: any) => total + session.duration, 0) / 3600)}
+                </div>
+                <div className="text-muted-foreground">{language === "en" ? "Hours" : "පැය"}</div>
+              </div>
+              <div className="text-center">
+                <div className="font-bold text-lg text-primary">
+                  {badges.filter(b => b.unlocked).length}
+                </div>
+                <div className="text-muted-foreground">{language === "en" ? "Badges" : "බැඩ්ජ්"}</div>
+              </div>
             </div>
           </div>
         </CardContent>

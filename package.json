@@ -9,8 +9,8 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-  "version:bump": "node scripts/bump-version.mjs 'Automated update' patch",
-  "history:generate": "node scripts/generate-history.mjs"
+    "version:bump": "node scripts/bump-version.mjs 'Automated update' patch",
+    "history:generate": "node scripts/generate-history.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
