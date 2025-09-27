@@ -22,41 +22,29 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TimerProvider>
-          <TooltipProvider>
-            <HeartbeatLoader 
-              isLoading={!appReady}
-              onLoadingComplete={() => setAppReady(true)}
-            />
-            {appReady && (
-              <>
-                <Toaster />
-                <Sonner />
-                <BrowserRouter>
-                  <Routes>
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/" element={
-                      <ProtectedRoute>
-                        <Index />
-                      </ProtectedRoute>
-                    } />
-                    <Route path="/license" element={
-                      <ProtectedRoute>
-                        <LicensePage />
-                      </ProtectedRoute>
-                    } />
-                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </BrowserRouter>
-              </>
-            )}
-          </TooltipProvider>
-        </TimerProvider>
-      </AuthProvider>
+      <TimerProvider>
+        <TooltipProvider>
+          <HeartbeatLoader 
+            isLoading={!appReady}
+            onLoadingComplete={() => setAppReady(true)}
+          />
+          {appReady && (
+            <>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/license" element={<LicensePage />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </>
+          )}
+        </TooltipProvider>
+      </TimerProvider>
     </QueryClientProvider>
   );
-};
+}
 
 export default App;
